@@ -100,10 +100,13 @@ export interface LiveSource {
   format?: (value: unknown) => string;
 }
 
-/** Configuration for a computed chip whose value derives from sibling state. */
+/**
+ * Configuration for a computed chip whose value derives from sibling state.
+ * Uses import('...') to avoid circular dependency with state.ts.
+ */
 export interface ComputedSource<T = unknown> {
   /** Derive value from current sentence state */
-  compute: (state: SentenceState) => T;
+  compute: (state: import('./state').SentenceState) => T;
 
   /** Which chip IDs to watch for changes */
   dependencies: string[];
@@ -202,7 +205,7 @@ export interface SentenceDefinition {
   palette: Palette;
 
   /** Custom serializer (if not provided, default flat serialization is used) */
-  serializer?: (state: SentenceState) => Record<string, unknown>;
+  serializer?: (state: import('./state').SentenceState) => Record<string, unknown>;
 
   /** Custom deserializer (if not provided, default flat deserialization is used) */
   deserializer?: (data: Record<string, unknown>) => Record<string, unknown>;
@@ -245,6 +248,3 @@ export interface Palette {
  * its contingency chain to the nearest ancestor producer.
  */
 export type SentenceContext = Record<string, unknown>;
-
-// Forward reference — full definition in state.ts
-import type { SentenceState } from './state';

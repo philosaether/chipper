@@ -85,11 +85,7 @@ export function clause(): ClauseBuilder {
       return builder;
     },
     chip(id: string, domainName: string, options?: { mode?: ChipMode }) {
-      definition.chips.push({
-        id,
-        domainName,
-        mode: options?.mode ?? { type: 'interactive' },
-      });
+      definition.chips.push(chip(id, domainName, options));
       return builder;
     },
     contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>) {
@@ -167,9 +163,9 @@ export function sentence(palette?: Palette): SentenceBuilder {
     },
     clauses(clauseBuilders: ClauseBuilder[]) {
       // Clause composition helpers return arrays — spread them in
-      clauseBuilders.forEach((cb, index) => {
-        clauseDefinitions.push(cb._build(`_composed_${clauseDefinitions.length + index}`));
-      });
+      for (const cb of clauseBuilders) {
+        clauseDefinitions.push(cb._build(`_composed_${clauseDefinitions.length}`));
+      }
       return builder;
     },
     serializer(fn) {

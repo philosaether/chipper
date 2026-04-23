@@ -5,9 +5,6 @@
  * Import as 'chipper/headless'.
  */
 
-// Re-export hooks (the headless API)
-export {} from './src/hooks';
-
 // Re-export core types and state
 export type {
   Domain,
@@ -18,14 +15,19 @@ export type {
   ComputedSource,
   ChipDefinition,
   ClauseDefinition,
+  ContingencyConfig,
+  ClauseOverrides,
+  RepeatingClauseConfig,
   SentenceDefinition,
   SentenceContext,
   Palette,
+  ClauseTemplate,
 } from './src/core/types';
 
 export type {
   ChipState,
   ClauseState,
+  ContextScope,
   SentenceState,
 } from './src/core/state';
 
