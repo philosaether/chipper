@@ -8,13 +8,7 @@ import { sentenceReducer } from '../../src/core/reducer';
 import { sentence, clause } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
 import { enumDomain } from '../../src/domains/enum';
-
-const monthKeywords = [
-  { label: 'January', value: 'january' },
-  { label: 'February', value: 'february' },
-  { label: 'September', value: 'september' },
-  { label: 'December', value: 'december' },
-];
+import { monthKeywords } from '../fixtures/month-keywords';
 
 const palette = extendPalette({
   domains: {

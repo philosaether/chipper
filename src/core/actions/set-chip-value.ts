@@ -4,7 +4,7 @@
 
 import type { ChipState, ClauseState } from '../state';
 import type { SentenceStore } from '../store';
-import { computeDisplayValue } from '../initialize';
+import { computeClauseValidity, computeDisplayValue, computeSentenceValidity } from '../initialize';
 
 /** Set a chip's value. */
 export interface SetChipValueAction {
@@ -37,24 +37,19 @@ export function handleSetChipValue(
   };
 
   const newChips = { ...clause.chips, [chipId]: newChipState };
-  const clauseValid = Object.values(newChips).every((c) => c.valid);
 
-  const newClause: ClauseState = { ...clause, chips: newChips, valid: clauseValid };
+  const newClause: ClauseState = { ...clause, chips: newChips, valid: computeClauseValidity(newChips) };
   const newClauses: Record<string, ClauseState> = {
     ...store.state.clauses,
     [clauseId]: newClause,
   };
-
-  const sentenceValid = Object.values(newClauses).every(
-    (c) => !c.active || c.valid,
-  );
 
   return {
     ...store,
     state: {
       ...store.state,
       clauses: newClauses,
-      valid: sentenceValid,
+      valid: computeSentenceValidity(newClauses),
     },
   };
 }

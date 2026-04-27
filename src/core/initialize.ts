@@ -25,11 +25,21 @@ function resolveDomain(domainName: string, palette: Palette): Domain {
 }
 
 /** Compute displayValue from a domain and value. */
-function computeDisplayValue(domain: Domain, value: unknown, isValid: boolean): string {
+export function computeDisplayValue(domain: Domain, value: unknown, isValid: boolean): string {
   if (isValid) {
     return domain.display(value);
   }
   return domain.placeholder ?? domain.display(value);
+}
+
+/** Derive clause validity: all chips must be valid. */
+export function computeClauseValidity(chips: Record<string, ChipState>): boolean {
+  return Object.values(chips).every((c) => c.valid);
+}
+
+/** Derive sentence validity: all active clauses must be valid. */
+export function computeSentenceValidity(clauses: Record<string, ClauseState>): boolean {
+  return Object.values(clauses).every((c) => !c.active || c.valid);
 }
 
 /**
@@ -61,17 +71,15 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
     clauses[clauseDef.id] = {
       active: clauseDef.necessity === 'required',
       chips,
-      valid: Object.values(chips).every((c) => c.valid),
+      valid: computeClauseValidity(chips),
     };
   }
 
   const state: SentenceState = {
     clauses,
     contexts: [],
-    valid: Object.values(clauses).every((c) => !c.active || c.valid),
+    valid: computeSentenceValidity(clauses),
   };
 
   return { state, domains };
 }
-
-export { computeDisplayValue };

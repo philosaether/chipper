@@ -53,8 +53,12 @@ export interface EnumDomainConfig {
  * ```
  */
 export function enumDomain(config: EnumDomainConfig): Domain<string> {
-  const validValues = new Set(config.keywords.map((k) => k.value));
-  const labelByValue = new Map(config.keywords.map((k) => [k.value, k.label]));
+  const validValues = new Set<string>();
+  const labelByValue = new Map<string, string>();
+  for (const k of config.keywords) {
+    validValues.add(k.value);
+    labelByValue.set(k.value, k.label);
+  }
 
   return createDomain<string>({
     type: 'enum',
@@ -63,7 +67,7 @@ export function enumDomain(config: EnumDomainConfig): Domain<string> {
     defaultValue: config.defaultValue ?? '',
     placeholder: config.placeholder,
     validate: (value) => validValues.has(value),
-    display: (value) => labelByValue.get(value) ?? value,
+    display: (value) => labelByValue.get(value) ?? String(value),
     consumes: config.consumes,
     produces: config.produces,
     onContextChange: config.onContextChange,
