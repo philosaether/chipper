@@ -31,6 +31,9 @@ export type {
   SentenceState,
 } from './core/state';
 
+// Domains
+export { enumDomain, type EnumDomainConfig } from './domains';
+
 // Palette
 export { createPalette, extendPalette } from './palette';
 

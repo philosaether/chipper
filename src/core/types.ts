@@ -77,6 +77,9 @@ export interface Domain<T = unknown> {
   /** Default value (may or may not be valid) */
   defaultValue: T;
 
+  /** Text shown in the chip trigger when the current value is invalid */
+  placeholder?: string;
+
   /** Reconfigure domain based on context from ancestor clauses */
   onContextChange?: (context: SentenceContext) => Partial<Domain<T>>;
 }
