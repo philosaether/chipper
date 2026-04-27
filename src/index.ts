@@ -31,6 +31,15 @@ export type {
   SentenceState,
 } from './core/state';
 
+// Store + reducer
+export type { SentenceStore, ResolvedDomains } from './core/store';
+export { initializeSentenceState } from './core/initialize';
+export { sentenceReducer, type SentenceAction } from './core/reducer';
+export type { SetChipValueAction } from './core/actions/set-chip-value';
+export type { ToggleClauseAction } from './core/actions/toggle-clause';
+export type { SetContextAction } from './core/actions/set-context';
+export type { SetLiveValueAction } from './core/actions/set-live-value';
+
 // Domains
 export { enumDomain, type EnumDomainConfig } from './domains';
 

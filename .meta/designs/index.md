@@ -6,3 +6,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 |-----|--------|---------|
 | [chipper-architecture.md](chipper-architecture.md) | accepted | Library architecture: components, state, builder API, palette, package structure. |
 | [domain-factories.md](domain-factories.md) | accepted | Domain factory pattern: createDomain base, archetype factory conventions, enumDomain first application. |
+| [state-reducer.md](state-reducer.md) | accepted | State initializer and reducer: SentenceStore, domain resolution, SET_CHIP_VALUE, extension points. |
