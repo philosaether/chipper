@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-04-27
 Accepted: 2026-04-27
+Implemented: 2026-04-27 (feature/demo-page)
+Divergences: none
+Deferred: five future archetype factories (keyword-expr, multi-select, composite, reference, alt-coordinate)
 Assessment: assessments/vertical-slice.md
 ---
 

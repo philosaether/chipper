@@ -1,6 +1,9 @@
 ---
 Status: accepted
 Accepted: 2026-04-27
+Implemented: 2026-04-27 (feature/demo-page)
+Divergences: defensive null checks in SET_CHIP_VALUE handler (not in design, sensible addition)
+Deferred: TOGGLE_CLAUSE, SET_CONTEXT, SET_LIVE_VALUE handlers; context propagation
 Date: 2026-04-27
 Assessment: assessments/vertical-slice.md
 ---
