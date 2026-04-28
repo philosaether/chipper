@@ -93,13 +93,13 @@ React hooks — also the headless API (`chipper/headless`).
 
 ```
 hooks/
-└── index.ts              — (stub) Re-exports
+├── context.ts            — SentenceContext, SentenceContextValue, PopupState types
+├── SentenceProvider.tsx   — Provider: useReducer + popup useState + onChange callback
+├── useSentence.ts        — Sentence-level state, dispatch, definition, resolved domains
+├── useChip.ts            — Chip state + setValue dispatch for a single chip
+├── usePopup.ts           — Singleton popup open/close (one popup per sentence)
+└── index.ts              — Re-exports all hooks + SentenceProvider
 ```
-
-Future files (Stage 3 of vertical slice):
-- `useSentence.ts` — Sentence-level state + dispatch
-- `useChip.ts` — Chip value, display, interactions
-- `usePopup.ts` — Singleton popup open/close
 
 ### styles/
 
@@ -138,8 +138,10 @@ tests/
 │   ├── types.test.ts       — Builder smoke tests
 │   ├── initialize.test.ts  — State initialization from definitions
 │   └── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
-└── domains/
-    └── enum.test.ts        — enumDomain factory: validate, display, defaults, placeholder
+├── domains/
+│   └── enum.test.ts        — enumDomain factory: validate, display, defaults, placeholder
+└── hooks/
+    └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
 ```
 
 ---

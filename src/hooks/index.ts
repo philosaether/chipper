@@ -3,8 +3,10 @@
  *
  * These hooks are the same ones used internally by the built-in components.
  * Consumers import from 'chipper/headless' to use them without the default UI.
- *
- * Stub — implementations coming next.
  */
 
-export {};
+export { SentenceProvider, type SentenceProviderProps } from './SentenceProvider';
+export { useSentence } from './useSentence';
+export { useChip } from './useChip';
+export { usePopup } from './usePopup';
+export type { SentenceContextValue, PopupState } from './context';

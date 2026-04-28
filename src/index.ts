@@ -49,5 +49,16 @@ export { createPalette, extendPalette } from './palette';
 // Builder
 export { sentence, clause, chip, repeating } from './builder';
 
+// Hooks
+export {
+  SentenceProvider,
+  type SentenceProviderProps,
+  useSentence,
+  useChip,
+  usePopup,
+  type SentenceContextValue,
+  type PopupState,
+} from './hooks';
+
 // Components
 export { Chipper } from './components';
