@@ -3,7 +3,6 @@
 ## Session Start
 
 Read these files first:
-- `~/Development/.claude/WORKFLOW.md` - How to work with the team
 - `.meta/decisions.md` - Architectural decisions (append-only log)
 - `.meta/in-progress.md` - Current work state
 - `.meta/designs/chipper-architecture.md` - The architectural blueprint
@@ -47,6 +46,15 @@ or a decision in `decisions.md`.
 - One concern per file, 500 lines max
 - Tests alongside implementation
 - BEM class names prefixed with `chipper-`
+
+## Skills
+
+This project includes Claude Code skills in `.claude/skills/`.
+Key workflow: `/hello` (start) → `/assess` and/or `/draft` (design) →
+`/review` (pre-merge) → `/ttyl` (end session).
+
+Design docs in `.meta/designs/` are the shared source of truth.
+Use `/draft` to create them, `/ship` to begin implementation.
 
 ## Related Repos
 

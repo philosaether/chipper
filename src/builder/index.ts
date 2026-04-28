@@ -10,6 +10,7 @@ import type {
   ChipDefinition,
   ChipMode,
   ClauseDefinition,
+  ClauseSegment,
   ContingencyConfig,
   Palette,
   RepeatingClauseConfig,
@@ -44,7 +45,7 @@ export function chip(
 interface ClauseBuilder {
   required(): ClauseBuilder;
   optional(): ClauseBuilder;
-  lead(text: string): ClauseBuilder;
+  text(text: string): ClauseBuilder;
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
   chip(id: string, domainName: string, options?: { mode?: ChipMode }): ClauseBuilder;
@@ -55,56 +56,63 @@ interface ClauseBuilder {
 
 /**
  * Define a clause within a sentence.
+ *
+ * Segments are built in call order: .text(), .chip(), .text()
+ * all push to the segment list. Text and chips interleave freely.
  */
 export function clause(): ClauseBuilder {
-  const definition: Partial<ClauseDefinition> & { chips: ChipDefinition[] } = {
-    necessity: 'required',
-    chips: [],
-  };
+  const segments: ClauseSegment[] = [];
+  const chips: ChipDefinition[] = [];
+  let necessity: ClauseDefinition['necessity'] = 'required';
+  let placeholderText: string | undefined;
+  let contingency: ClauseDefinition['contingency'];
+  let contextProductions: ClauseDefinition['contextProductions'];
 
   const builder: ClauseBuilder = {
     required() {
-      definition.necessity = 'required';
+      necessity = 'required';
       return builder;
     },
     optional() {
-      definition.necessity = 'optional';
+      necessity = 'optional';
       return builder;
     },
-    lead(text: string) {
-      definition.lead = text;
+    text(value: string) {
+      segments.push({ type: 'text', value });
       return builder;
     },
     leads(_first: string, _rest: string) {
       // Used by repeating clauses — first/rest lead text
-      definition.lead = _first;
+      segments.push({ type: 'text', value: _first });
       return builder;
     },
     placeholder(text: string) {
-      definition.placeholder = text;
+      placeholderText = text;
       return builder;
     },
     chip(id: string, domainName: string, options?: { mode?: ChipMode }) {
-      definition.chips.push(chip(id, domainName, options));
+      const chipDef = chip(id, domainName, options);
+      chips.push(chipDef);
+      segments.push({ type: 'chip', chipId: id });
       return builder;
     },
     contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>) {
-      definition.contingency = { superclauseId, ...config };
+      contingency = { superclauseId, ...config };
       return builder;
     },
     produces(mapping: Record<string, string>) {
-      definition.contextProductions = mapping;
+      contextProductions = mapping;
       return builder;
     },
     _build(id: string): ClauseDefinition {
       return {
         id,
-        necessity: definition.necessity ?? 'required',
-        lead: definition.lead,
-        placeholder: definition.placeholder,
-        chips: definition.chips,
-        contingency: definition.contingency,
-        contextProductions: definition.contextProductions,
+        necessity,
+        segments,
+        chips,
+        placeholder: placeholderText,
+        contingency,
+        contextProductions,
       };
     },
   };
@@ -124,9 +132,11 @@ export function repeating(
   options: { min?: number; max?: number },
 ): RepeatingClauseConfig {
   const template = clauseBuilder._build('__template__');
+  const firstTextSegment = template.segments.find((s) => s.type === 'text');
+  const leadText = firstTextSegment?.type === 'text' ? firstTextSegment.value : '';
   return {
-    firstLead: template.lead ?? '',
-    restLead: template.lead ?? '',
+    firstLead: leadText,
+    restLead: leadText,
     min: options.min ?? 0,
     max: options.max ?? 5,
     template,

@@ -6,23 +6,30 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Repo scaffolding** — initial commit with types, stubs, build config, demo shell
-- **Architecture accepted** — designs/chipper-architecture.md is the blueprint
+- **Vertical slice: "Wake me up when [September] ends."** — building layer by layer toward a running demo page with one enum chip
+  - ~~Stage 1: enumDomain factory~~ — done
+  - ~~Stage 2: State initializer + reducer (SET_CHIP_VALUE)~~ — done
+  - ~~Stage 3: React hooks~~ — done
+  - ~~Stage 4: Interactive components~~ — done
+  - ~~Stage 5: Demo page v0.1~~ — done
+
+## Tech Debt
+
+- Keyboard arrow navigation in popups (roving tabindex) — needed for AA, deferred from vertical slice
+- ~~Interleaved text/chip rendering in clauses~~ — done, segments model added to ClauseDefinition
 
 ## Next up
 
-- Domain archetype implementations (enumDomain, keywordOrExpressionDomain, etc.)
-- State reducer (core/reducer.ts)
-- React components (Sentence, Clause, Chip, ChipPopup)
-- Hooks (useSentence, useClause, useChip, usePopup)
-- Default palette with general-purpose domains
-- Demo page with interactive examples
+- Remaining domain archetypes (keyword-expr, multi-select, composite, reference, alt-coordinate)
+- TOGGLE_CLAUSE, SET_CONTEXT, SET_LIVE_VALUE action handlers
+- Default chipperPalette with general-purpose domains
+- ~~Headless API (chipper/headless entry point)~~ — hooks are the headless API, exported from Stage 3
 
 ## Roadmap
 
-1. Core data model + builder + palette (types are done, logic next)
-2. React components + hooks
-3. Default palette + domain archetypes
+1. ~~Core data model + builder + palette~~ (types done, enumDomain + reducer done)
+2. React components + hooks (in progress via vertical slice)
+3. Default palette + remaining domain archetypes
 4. Demo page on philbas.com
 5. Documentation
 6. Publicity article

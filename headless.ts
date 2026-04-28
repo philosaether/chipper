@@ -31,6 +31,22 @@ export type {
   SentenceState,
 } from './src/core/state';
 
+// Store + reducer
+export type { SentenceStore, ResolvedDomains } from './src/core/store';
+export { initializeSentenceState } from './src/core/initialize';
+export { sentenceReducer, type SentenceAction } from './src/core/reducer';
+
+// Hooks
+export {
+  SentenceProvider,
+  type SentenceProviderProps,
+  useSentence,
+  useChip,
+  usePopup,
+  type SentenceContextValue,
+  type PopupState,
+} from './src/hooks';
+
 // Re-export builders and palette
 export { sentence, clause, chip, repeating } from './src/builder';
 export { createPalette, extendPalette } from './src/palette';

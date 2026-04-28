@@ -1,55 +1,35 @@
 /**
  * Chipper — top-level auto-rendering component.
  *
- * Reads a sentence definition and renders the full clause/chip tree.
- * Consumers who need custom layouts can drop down to individual
- * Clause and Chip components (not yet implemented).
+ * Wraps SentenceProvider + Sentence. Consumers write:
+ *   <Chipper sentence={def} onChange={fn} />
  *
- * See chipper-architecture.md §5.
+ * For custom layouts, pass children instead of relying on auto-render:
+ *   <Chipper sentence={def} onChange={fn}>
+ *     <MyCustomLayout />
+ *   </Chipper>
  */
 
 import type { SentenceDefinition } from '../core/types';
 import type { SentenceState } from '../core/state';
+import { SentenceProvider } from '../hooks/SentenceProvider';
+import { Sentence } from './Sentence';
 
 export interface ChipperProps {
   /** The sentence definition to render */
   sentence: SentenceDefinition;
 
-  /** Current state (controlled component) */
-  value?: SentenceState;
-
   /** Called on every state change */
   onChange?: (state: SentenceState) => void;
+
+  /** Custom children — if provided, replaces auto-rendered Sentence */
+  children?: React.ReactNode;
 }
 
-/**
- * Auto-rendering Chipper component.
- *
- * Placeholder — renders a sentence skeleton showing clause structure.
- * Full implementation will render interactive chips with popup editors.
- */
-export function Chipper({ sentence }: ChipperProps) {
+export function Chipper({ sentence, onChange, children }: ChipperProps) {
   return (
-    <div className="chipper-sentence">
-      {sentence.clauses.map((clauseDef) => (
-        <div key={clauseDef.id} className="chipper-clause">
-          {clauseDef.lead && (
-            <span className="chipper-clause__lead">{clauseDef.lead}</span>
-          )}
-          {clauseDef.chips.map((chipDef) => (
-            <span key={chipDef.id} className="chipper-chip">
-              <button
-                type="button"
-                className={`chipper-chip-trigger chipper-chip-trigger--placeholder`}
-              >
-                <span className="chipper-chip-trigger__text">
-                  {chipDef.domainName}
-                </span>
-              </button>
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
+    <SentenceProvider definition={sentence} onChange={onChange}>
+      {children ?? <Sentence />}
+    </SentenceProvider>
   );
 }

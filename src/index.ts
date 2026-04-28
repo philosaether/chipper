@@ -13,6 +13,9 @@ export type {
   LiveSource,
   ComputedSource,
   ChipDefinition,
+  TextSegment,
+  ChipSegment,
+  ClauseSegment,
   ClauseDefinition,
   ContingencyConfig,
   ClauseOverrides,
@@ -31,11 +34,46 @@ export type {
   SentenceState,
 } from './core/state';
 
+// Store + reducer
+export type { SentenceStore, ResolvedDomains } from './core/store';
+export { initializeSentenceState } from './core/initialize';
+export { sentenceReducer, type SentenceAction } from './core/reducer';
+export type { SetChipValueAction } from './core/actions/set-chip-value';
+export type { ToggleClauseAction } from './core/actions/toggle-clause';
+export type { SetContextAction } from './core/actions/set-context';
+export type { SetLiveValueAction } from './core/actions/set-live-value';
+
+// Domains
+export { enumDomain, type EnumDomainConfig } from './domains';
+
 // Palette
 export { createPalette, extendPalette } from './palette';
 
 // Builder
 export { sentence, clause, chip, repeating } from './builder';
 
+// Hooks
+export {
+  SentenceProvider,
+  type SentenceProviderProps,
+  useSentence,
+  useChip,
+  usePopup,
+  type SentenceContextValue,
+  type PopupState,
+} from './hooks';
+
 // Components
-export { Chipper } from './components';
+export {
+  Chipper,
+  type ChipperProps,
+  Sentence,
+  Clause,
+  type ClauseProps,
+  Chip,
+  type ChipProps,
+  ChipPopup,
+  type ChipPopupProps,
+  EnumPopup,
+  type EnumPopupProps,
+} from './components';

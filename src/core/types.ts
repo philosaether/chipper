@@ -77,6 +77,9 @@ export interface Domain<T = unknown> {
   /** Default value (may or may not be valid) */
   defaultValue: T;
 
+  /** Text shown in the chip trigger when the current value is invalid */
+  placeholder?: string;
+
   /** Reconfigure domain based on context from ancestor clauses */
   onContextChange?: (context: SentenceContext) => Partial<Domain<T>>;
 }
@@ -151,6 +154,25 @@ export interface ClauseOverrides {
   chipOverrides?: Record<string, Partial<Domain>>;
 }
 
+// ---------------------------------------------------------------------------
+// Clause segments
+// ---------------------------------------------------------------------------
+
+/** A text span within a clause (lead text, trailing text, interleaved text). */
+export interface TextSegment {
+  type: 'text';
+  value: string;
+}
+
+/** A chip reference within a clause. */
+export interface ChipSegment {
+  type: 'chip';
+  chipId: string;
+}
+
+/** One piece of a clause's rendering order. */
+export type ClauseSegment = TextSegment | ChipSegment;
+
 /** Definition of a single clause within a sentence. */
 export interface ClauseDefinition {
   /** Unique identifier within the sentence */
@@ -159,14 +181,14 @@ export interface ClauseDefinition {
   /** Whether the user can toggle this clause */
   necessity: 'required' | 'optional';
 
-  /** Lead-in text ("Every", "create a task named", etc.) */
-  lead?: string;
+  /** Rendering order: interleaved text spans and chip references */
+  segments: ClauseSegment[];
+
+  /** Extracted chip definitions (derived from segments for initializer/reducer convenience) */
+  chips: ChipDefinition[];
 
   /** Placeholder text shown when an optional clause is dormant */
   placeholder?: string;
-
-  /** Chips in this clause */
-  chips: ChipDefinition[];
 
   /** Contingency on a superclause */
   contingency?: ContingencyConfig;

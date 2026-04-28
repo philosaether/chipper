@@ -57,7 +57,8 @@
   gap: 0.25rem;
 }
 
-.chipper-clause__lead {
+.chipper-clause__lead,
+.chipper-clause__text {
   color: var(--chip-text);
   white-space: nowrap;
 }
@@ -113,8 +114,17 @@
   box-shadow: var(--chip-focus-ring);
 }
 
+.chipper-chip-trigger:not(.chipper-chip-trigger--placeholder) {
+  border-color: var(--chip-trigger-color, var(--chip-border));
+}
+
 .chipper-chip-trigger--placeholder {
   opacity: 0.5;
+}
+
+.chipper-chip-trigger--expanded {
+  border-color: var(--chip-trigger-color, var(--chip-border));
+  background-color: color-mix(in srgb, var(--chip-bg), var(--chip-border) 15%);
 }
 
 .chipper-chip-trigger--readonly {
@@ -147,4 +157,38 @@
 
 .chipper-popup--open {
   display: block;
+}
+
+/* ---------------------------------------------------------------------------
+   Enum popup
+   --------------------------------------------------------------------------- */
+
+.chipper-enum-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 8rem;
+}
+
+.chipper-enum-popup__option {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: var(--chip-radius);
+  background: transparent;
+  color: var(--chip-text);
+  font-family: var(--chip-font);
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chipper-enum-popup__option:hover {
+  background: color-mix(in srgb, var(--chip-bg), var(--chip-border) 20%);
+}
+
+.chipper-enum-popup__option--selected {
+  background: color-mix(in srgb, var(--chip-bg), var(--chip-border) 30%);
+  font-weight: 500;
 }
