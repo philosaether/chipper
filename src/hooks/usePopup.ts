@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useContext } from 'react';
-import { SentenceContext } from './context';
+import { SentenceContext, closedPopup } from './context';
 
 export function usePopup() {
   const context = useContext(SentenceContext);
@@ -24,7 +24,7 @@ export function usePopup() {
   );
 
   const close = useCallback(() => {
-    setPopupState({ chipId: null, clauseId: null, anchorElement: null });
+    setPopupState(closedPopup);
   }, [setPopupState]);
 
   const isOpen = useCallback(

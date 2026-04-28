@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-04-28
 Accepted: 2026-04-28
+Implemented: 2026-04-28 (feature/demo-page)
+Divergences: Clause uses segments array (resolves design's open question about interleaved text/chips); per-domain color via inline CSS variable instead of BEM modifier per color key
+Deferred: ClauseToggle, popup arrow-key navigation, JS popup positioning
 Assessment: assessments/vertical-slice.md (archived)
 ---
 

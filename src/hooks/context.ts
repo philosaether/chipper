@@ -30,4 +30,11 @@ export interface SentenceContextValue {
   setPopupState: React.Dispatch<React.SetStateAction<PopupState>>;
 }
 
+/** Initial popup state — no popup open. */
+export const closedPopup: PopupState = {
+  chipId: null,
+  clauseId: null,
+  anchorElement: null,
+};
+
 export const SentenceContext = createContext<SentenceContextValue | null>(null);

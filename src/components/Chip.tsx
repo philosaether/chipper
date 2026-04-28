@@ -26,11 +26,11 @@ export function Chip({ clauseId, chipId }: ChipProps) {
   const showPlaceholder = !valid;
 
   const handleClick = () => {
-    if (!isInteractive) return;
+    if (!isInteractive || !triggerRef.current) return;
     if (showPopup) {
       close();
     } else {
-      open(clauseId, chipId, triggerRef.current!);
+      open(clauseId, chipId, triggerRef.current);
     }
   };
 

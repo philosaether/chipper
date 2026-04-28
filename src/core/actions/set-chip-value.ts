@@ -23,8 +23,11 @@ export function handleSetChipValue(
   const domain = store.domains[chipId];
   const clause = store.state.clauses[clauseId];
 
-  if (!domain || !clause) {
-    return store;
+  if (!domain) {
+    throw new Error(`Domain not resolved for chip "${chipId}".`);
+  }
+  if (!clause) {
+    throw new Error(`Clause "${clauseId}" not found in sentence state.`);
   }
 
   const isValid = domain.validate(value);

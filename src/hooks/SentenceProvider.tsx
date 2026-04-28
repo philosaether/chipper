@@ -10,19 +10,13 @@ import type { SentenceDefinition } from '../core/types';
 import type { SentenceState } from '../core/state';
 import { sentenceReducer } from '../core/reducer';
 import { initializeSentenceState } from '../core/initialize';
-import { SentenceContext, type PopupState } from './context';
+import { SentenceContext, closedPopup } from './context';
 
 export interface SentenceProviderProps {
   definition: SentenceDefinition;
   onChange?: (state: SentenceState) => void;
   children: React.ReactNode;
 }
-
-const closedPopup: PopupState = {
-  chipId: null,
-  clauseId: null,
-  anchorElement: null,
-};
 
 export function SentenceProvider({ definition, onChange, children }: SentenceProviderProps) {
   const [store, dispatch] = useReducer(

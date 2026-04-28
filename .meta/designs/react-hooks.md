@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-04-28
 Accepted: 2026-04-28
+Implemented: 2026-04-28 (feature/demo-page)
+Divergences: useChip adds explicit error throws for missing chip/domain/definition (defensive, not in pseudocode)
+Deferred: useClause (awaits TOGGLE_CLAUSE)
 Assessment: assessments/vertical-slice.md (archived)
 ---
 

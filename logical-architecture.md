@@ -142,8 +142,10 @@ tests/
 │   └── enum.test.ts        — enumDomain factory: validate, display, defaults, placeholder
 ├── hooks/
 │   └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
-└── components/
-    └── components.test.tsx  — Chipper auto-render, popup interaction, selection, onChange
+├── components/
+│   └── components.test.tsx  — Chipper auto-render, popup interaction, selection, onChange
+└── fixtures/
+    └── month-keywords.ts   — Shared test fixture: month keyword subsets for enum domain tests
 ```
 
 ---
