@@ -113,16 +113,17 @@ styles/
 
 ## demo/
 
-Standalone demo app. Separate package with `link:..` dependency on chipper. Vite + React.
+Standalone demo app (v0.1). Separate package with `file:..` dependency on chipper. Vite + React. Resolves chipper imports from source via Vite alias.
 
 ```
 demo/
-├── package.json          — chipper-demo, links to parent package
-├── vite.config.ts        — Vite dev server config
+├── package.json          — chipper-demo, file:.. dep on parent
+├── vite.config.ts        — Vite dev server + alias to parent src/
 ├── index.html            — Entry HTML
 └── src/
     ├── main.tsx          — React root mount
-    └── App.tsx           — Demo page with example sentence
+    ├── App.tsx           — Demo page: sentence, state inspector, explainer
+    └── demo.css          — Demo page styles + --chip-color-month token
 ```
 
 ---

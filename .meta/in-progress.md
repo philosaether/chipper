@@ -11,7 +11,7 @@ Current work state. Update constantly, delete items when done.
   - ~~Stage 2: State initializer + reducer (SET_CHIP_VALUE)~~ — done
   - ~~Stage 3: React hooks~~ — done
   - ~~Stage 4: Interactive components~~ — done
-  - Stage 5: CSS + demo page wiring
+  - ~~Stage 5: Demo page v0.1~~ — done
 
 ## Tech Debt
 
