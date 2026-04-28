@@ -20,7 +20,7 @@ describe('core types', () => {
 
   it('builds a sentence definition', () => {
     const definition = sentence()
-      .clause('greeting', clause().required().lead('Hello').chip('name', 'freeText'))
+      .clause('greeting', clause().required().text('Hello').chip('name', 'freeText'))
       .build();
 
     expect(definition.clauses).toHaveLength(1);
@@ -31,8 +31,8 @@ describe('core types', () => {
 
   it('builds a sentence with optional clauses', () => {
     const definition = sentence()
-      .clause('action', clause().required().lead('Do').chip('what', 'freeText'))
-      .clause('when', clause().optional().lead('at').placeholder('any time').chip('time', 'timeOfDay'))
+      .clause('action', clause().required().text('Do').chip('what', 'freeText'))
+      .clause('when', clause().optional().text('at').placeholder('any time').chip('time', 'timeOfDay'))
       .build();
 
     expect(definition.clauses).toHaveLength(2);

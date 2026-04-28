@@ -22,7 +22,7 @@ const palette = extendPalette({
 
 function createStore() {
   const definition = sentence(palette)
-    .clause('when', clause().required().lead('Wake me up when').chip('month', 'month'))
+    .clause('when', clause().required().text('Wake me up when').chip('month', 'month'))
     .build();
   return initializeSentenceState(definition);
 }

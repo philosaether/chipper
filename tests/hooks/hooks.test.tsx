@@ -26,8 +26,7 @@ const palette = extendPalette({
 });
 
 const definition: SentenceDefinition = sentence(palette)
-  .clause('when', clause().required().lead('Wake me up when').chip('month', 'month'))
-  .clause('ends', clause().required().lead('ends.'))
+  .clause('when', clause().required().text('Wake me up when').chip('month', 'month').text('ends.'))
   .build();
 
 function createWrapper(def: SentenceDefinition = definition, onChange?: (state: unknown) => void) {
@@ -202,7 +201,7 @@ describe('usePopup', () => {
     });
 
     const twochipDef = sentence(secondPalette)
-      .clause('when', clause().required().lead('In').chip('month', 'month').chip('year', 'year'))
+      .clause('when', clause().required().text('In').chip('month', 'month').chip('year', 'year'))
       .build();
 
     const { result } = renderHook(() => usePopup(), {

@@ -27,7 +27,7 @@ const palette = extendPalette({
 describe('initializeSentenceState', () => {
   it('creates initial state from a sentence definition', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().lead('Wake me up when').chip('month', 'month'))
+      .clause('when', clause().required().text('Wake me up when').chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);

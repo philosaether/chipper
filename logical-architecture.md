@@ -76,16 +76,15 @@ React components. Depend on hooks for state access.
 
 ```
 components/
-├── Chipper.tsx           — Auto-rendering top-level component (skeleton — renders clause/chip structure)
-└── index.ts              — Re-exports
+├── Chipper.tsx           — Auto-render entry point: wraps SentenceProvider + Sentence
+├── Sentence.tsx          — Renders clause list from definition (no props, reads context)
+├── Clause.tsx            — Lead text + chips for one clause
+├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
+├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
+├── popups/
+│   └── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
+└── index.ts              — Re-exports all components
 ```
-
-Future files (Stage 4 of vertical slice):
-- `Sentence.tsx` — Wraps children in SentenceProvider
-- `Clause.tsx` — Lead text + chips for one clause
-- `Chip.tsx` — Trigger button + popup anchor
-- `ChipPopup.tsx` — Positioned popup container
-- `popups/EnumPopup.tsx` — Keyword list popup
 
 ### hooks/
 
@@ -140,8 +139,10 @@ tests/
 │   └── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
 ├── domains/
 │   └── enum.test.ts        — enumDomain factory: validate, display, defaults, placeholder
-└── hooks/
-    └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
+├── hooks/
+│   └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
+└── components/
+    └── components.test.tsx  — Chipper auto-render, popup interaction, selection, onChange
 ```
 
 ---

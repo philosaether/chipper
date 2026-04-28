@@ -13,6 +13,9 @@ export type {
   LiveSource,
   ComputedSource,
   ChipDefinition,
+  TextSegment,
+  ChipSegment,
+  ClauseSegment,
   ClauseDefinition,
   ContingencyConfig,
   ClauseOverrides,
@@ -61,4 +64,16 @@ export {
 } from './hooks';
 
 // Components
-export { Chipper } from './components';
+export {
+  Chipper,
+  type ChipperProps,
+  Sentence,
+  Clause,
+  type ClauseProps,
+  Chip,
+  type ChipProps,
+  ChipPopup,
+  type ChipPopupProps,
+  EnumPopup,
+  type EnumPopupProps,
+} from './components';

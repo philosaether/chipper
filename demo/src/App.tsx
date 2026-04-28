@@ -3,13 +3,13 @@ import { Chipper, sentence, clause } from 'chipper';
 const demoSentence = sentence()
   .clause(
     'greeting',
-    clause().required().lead('Every').chip('interval', 'cadence'),
+    clause().required().text('Every').chip('interval', 'cadence'),
   )
   .clause(
     'action',
     clause()
       .required()
-      .lead('create a task named')
+      .text('create a task named')
       .chip('taskName', 'freeText'),
   )
   .build();

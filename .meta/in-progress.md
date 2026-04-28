@@ -10,8 +10,13 @@ Current work state. Update constantly, delete items when done.
   - ~~Stage 1: enumDomain factory~~ — done
   - ~~Stage 2: State initializer + reducer (SET_CHIP_VALUE)~~ — done
   - ~~Stage 3: React hooks~~ — done
-  - Stage 4: Interactive components — Sentence, Clause, Chip, ChipPopup, EnumPopup
+  - ~~Stage 4: Interactive components~~ — done
   - Stage 5: CSS + demo page wiring
+
+## Tech Debt
+
+- Keyboard arrow navigation in popups (roving tabindex) — needed for AA, deferred from vertical slice
+- ~~Interleaved text/chip rendering in clauses~~ — done, segments model added to ClauseDefinition
 
 ## Next up
 
