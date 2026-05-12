@@ -102,11 +102,19 @@ hooks/
 
 ### styles/
 
+SASS-based theming engine. Compiled via `sass` CLI (not Vite) into three CSS outputs: `dist/styles.css` (batteries-included), `dist/base.css` (no theme), `dist/themes/praxis.css` (theme only). All tokens use `--chipper-` prefix.
+
 ```
 styles/
-└── chipper.css           — Default theme: CSS custom properties (design tokens), BEM classes for
-                            sentence, clause, chip trigger, popup. Semantic color system via
-                            --chip-color-{key}. Consumer overrides via custom properties.
+├── chipper.scss          — Entry: base + components + praxis theme → dist/styles.css
+├── chipper-base.scss     — Entry: base + components, no theme → dist/base.css
+├── _base.scss            — Structural only: layout, display, position. No colors or borders.
+├── _tokens.scss          — Token contract: every --chipper-* custom property with neutral fallbacks
+├── _mixins.scss          — SASS helpers: chip-colors() generates -text/-bg/-hover per hue role
+├── _components.scss      — BEM visual rules referencing tokens. All colors, borders, shadows.
+└── themes/
+    ├── _praxis.scss      — Praxis theme: surfaces, accents, 9 classification hue roles
+    └── praxis-theme.scss — Entry: standalone theme import → dist/themes/praxis.css
 ```
 
 ---

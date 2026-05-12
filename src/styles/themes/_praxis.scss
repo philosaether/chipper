@@ -43,12 +43,6 @@ $praxis-palette: (
   // Classification
   @include chip-colors($praxis-palette);
 
-  // Structural
-  --chipper-radius: 4px;
-  --chipper-radius-lg: 6px;
-  --chipper-font: inherit;
-  --chipper-font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  // Structural overrides (only tokens that differ from _tokens.scss defaults)
   --chipper-focus-ring: 0 0 0 2px rgba(115, 92, 0, 0.3);
-  --chipper-popup-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --chipper-transition: 0.15s;
 }

@@ -634,90 +634,122 @@ If a custom serializer is provided, a matching deserializer should be provided:
 
 ---
 
-## 7. Styling
+## 7. Styling and Theming
 
-### Strategy: CSS with Custom Properties
+### Strategy: SASS with CSS Custom Properties
 
-Chipper ships a CSS file with BEM-structured classes and CSS custom properties for theming. No CSS-in-JS — the styles are framework-agnostic and can be overridden without JavaScript.
+Chipper ships compiled CSS with BEM-structured classes and CSS custom properties for theming. SASS is the authoring layer; compiled CSS is the consumer-facing API. No CSS-in-JS — the styles are framework-agnostic and can be overridden without JavaScript.
 
-```css
-/* Consumer imports */
-@import 'chipper/styles.css';
+The SASS architecture separates structural layout (`_base.scss`) from visual presentation (`_components.scss`), with a token contract (`_tokens.scss`) defining every custom property a theme must provide. Themes are SASS files that set token values; they compile to standalone CSS files.
+
+```tsx
+// Batteries-included: base + components + praxis theme
+import 'chipper/styles.css';
+
+// Explicit theme selection
+import 'chipper/styles/base.css';
+import 'chipper/themes/praxis.css';
+
+// Custom theme
+import 'chipper/styles/base.css';
+import './my-custom-theme.css';
 ```
 
-### Semantic Color System
+### Token System
 
-Colors are defined as CSS custom properties, keyed by semantic role:
+All tokens use the `--chipper-` prefix. Organized by category:
 
 ```css
 :root {
-  --chip-color-interval: #8b7dc8;
-  --chip-color-day: #6b9e6b;
-  --chip-color-time: #c4956a;
-  --chip-color-priority: #6b8fc4;
-  --chip-color-tag: #9e9e9e;
-  --chip-color-due: #c4a94e;
-  --chip-color-task: #c47a7a;
-  --chip-color-event: #5ea5a5;
-  --chip-color-collate: #c4a040;
+  /* Surface */
+  --chipper-bg-primary       /* Page/container background */
+  --chipper-bg-secondary     /* Content areas */
+  --chipper-bg-tertiary      /* Hover states, metadata */
+  --chipper-bg-elevated      /* Floating elements (popups) */
+  --chipper-text-primary     /* Body text */
+  --chipper-text-secondary   /* Supporting text */
+  --chipper-text-muted       /* Placeholders, disabled */
+  --chipper-border           /* Visible borders */
+  --chipper-border-subtle    /* Ghost borders */
 
-  --chip-bg: #f5f3ef;
-  --chip-border: #d0c5af;
-  --chip-text: #1b1c1a;
-  --chip-popup-bg: #ffffff;
-  --chip-radius: 4px;
-  --chip-font: inherit;
+  /* Accent */
+  --chipper-accent           /* Primary interactive color */
+  --chipper-accent-bright    /* Button fills */
+  --chipper-accent-dim       /* Hover/pressed */
+  --chipper-accent-glow      /* Selection highlights */
+
+  /* Structural */
+  --chipper-radius           /* Border radius */
+  --chipper-radius-lg        /* Popup radius */
+  --chipper-font             /* Font family */
+  --chipper-font-mono        /* Monospace font */
+  --chipper-focus-ring       /* Focus ring box-shadow */
+  --chipper-popup-shadow     /* Popup drop shadow */
+  --chipper-transition       /* Transition duration */
 }
 ```
 
-Consumers override by setting these properties on their container:
+### Chip Color System
 
-```css
-.my-app .chipper-sentence {
-  --chip-color-interval: #6366f1;  /* indigo instead of purple */
-  --chip-bg: #f8fafc;
-}
+Each domain declares a **hue role** (e.g., `color: 'copper'`). Themes define hue roles as text/background/hover triples via a SASS mixin:
+
+```scss
+// Theme defines a palette map
+$praxis-palette: (
+  "copper": (#b87333, #fde8d4),
+  "sage":   (#2e5a30, #d4edda),
+  // ...
+);
+
+// Mixin generates three tokens per role
+@include chip-colors($praxis-palette);
+// → --chipper-color-copper-text: #b87333
+// → --chipper-color-copper-bg: #fde8d4
+// → --chipper-color-copper-hover: rgb(245, 218, 193)  (pre-computed)
 ```
 
 **The flow between CSS and TypeScript:**
 
-CSS is the source of truth for colors. The palette's `color` field on a domain is a **key**, not a hex value — it names a CSS custom property.
+The palette's `color` field on a domain is a **hue role key**, not a hex value.
 
 ```typescript
-// In TypeScript: the domain says "I'm the 'interval' color"
-cadenceDomain({ color: 'interval', ... })
+// TypeScript: the domain declares its hue role
+cadenceDomain({ color: 'copper', ... })
 ```
 
-```css
-/* In CSS: the consumer defines what 'interval' actually looks like */
-/* chipper-theme.css (shipped default) */
---chip-color-interval: #8b7dc8;
+The Chip component bridges the role to theme tokens via inline CSS variables on the wrapper element:
 
-/* my-app-chipper-theme.css (consumer override) */
-@import 'chipper/styles.css';
---chip-color-interval: #6366f1;  /* their brand purple */
+```tsx
+// Chip.tsx sets three inline vars on .chipper-chip
+style={{
+  '--chip-trigger-color-text': 'var(--chipper-color-copper-text)',
+  '--chip-trigger-color-bg': 'var(--chipper-color-copper-bg)',
+  '--chip-trigger-color-hover': 'var(--chipper-color-copper-hover)',
+}}
 ```
 
-The component renders `class="chipper-chip-trigger chipper-chip-trigger--interval"`, and the CSS rule uses `var(--chip-color-interval)` for the border/background. The TypeScript never sees hex values. The CSS never sees domain logic.
+Component CSS references these intermediate vars with fallbacks. The TypeScript never sees hex values. The CSS never sees domain logic. The theme controls every color.
 
-This matches your intuition exactly: define colors in `<site>-chipper-theme.css`, reference the semantic key in TS. The palette's `colors` map exists only if a consumer wants to define colors *programmatically* (e.g., for dynamic theming or dark mode toggling via JS), but the CSS-first path is the default and recommended approach.
-
-If a consumer defines a new domain with `color: 'velocity'`, they also need to add a `--chip-color-velocity` custom property in their CSS. Chipper logs a dev-mode warning if a color key has no matching CSS custom property.
+Consumers adding a new hue role (e.g., `color: 'velocity'`) add it to their theme's palette map. The mixin generates the tokens automatically.
 
 ### Chip Trigger States
 
 Each chip trigger has visual states:
-- **default** — subtle border in semantic color
-- **hover** — stronger border + faint background tint
-- **placeholder** — reduced opacity (value is default/empty)
-- **focused** — accent glow
-- **expanded** — popup is open
-- **invalid** — red border (only after attempted submit)
-- **readonly** — no hover/click affordance, slightly muted
+- **default** — domain-colored border + pastel background (dark text on light bg)
+- **hover** — domain hover background + border emphasis
+- **placeholder** — dashed border, domain-colored (signals "needs input")
+- **focused** — accent focus ring
+- **expanded** — accent glow ring, normal colors (popup is open)
+- **invalid** — error border (only after attempted submit)
+- **readonly** — transparent border, slightly muted (no border affords immutability)
 - **live** — subtle pulse animation while loading, normal when settled
 - **live-error** — dashed border, error color
 
-**Valid vs invalid defaults:** A chip in its default state gets the **placeholder** treatment (reduced opacity) if `domain.validate(domain.defaultValue)` returns false — meaning the user hasn't made a choice yet. If the default is valid (like "immediately" for start, or "morning" for time), the chip renders in the normal **default** state at full opacity. The domain's `validate()` function is the single source of truth for this distinction.
+**Border affords mutability:** Interactive chips show their domain-colored border at rest. Readonly chips get a transparent border. The presence or absence of a border signals whether the chip accepts input.
+
+**Placeholder vs valued:** A chip in its default state gets the **placeholder** treatment (dashed border) if `domain.validate(domain.defaultValue)` returns false — meaning the user hasn't made a choice yet. If the default is valid, the chip renders in the normal **default** state. The domain's `validate()` function is the single source of truth for this distinction.
+
+**Popup option colors:** Non-selected options show domain color (dark-on-pastel). Selected option inverts (pastel-on-dark). Hover shows domain border.
 
 ### No-Style / Headless
 
@@ -786,7 +818,15 @@ chipper/
 │   │   └── useLiveSource.ts  — Polling/fetch for live chips
 │   │
 │   └── styles/
-│       └── chipper.css       — Default theme (BEM + custom properties)
+│       ├── chipper.scss      — Entry: base + components + praxis theme
+│       ├── chipper-base.scss — Entry: base + components, no theme
+│       ├── _base.scss        — Structural layout only
+│       ├── _tokens.scss      — Token contract (custom property defaults)
+│       ├── _mixins.scss      — SASS helpers (chip-colors mixin)
+│       ├── _components.scss  — BEM visual rules referencing tokens
+│       └── themes/
+│           ├── _praxis.scss      — Praxis theme values
+│           └── praxis-theme.scss — Entry for standalone theme CSS
 │
 ├── headless.ts               — Package entry point: 'chipper/headless'
 │
@@ -807,7 +847,9 @@ chipper/
   "exports": {
     ".": "./dist/index.js",
     "./headless": "./dist/headless.js",
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./styles/base.css": "./dist/base.css",
+    "./themes/praxis.css": "./dist/themes/praxis.css"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

@@ -2,7 +2,10 @@
 Status: accepted
 Date: 2026-05-12
 Accepted: 2026-05-12
+Implemented: 2026-05-12 (feature/styling-pass)
 Assessment: ../assessments/theming-engine.md
+Divergences: chip expanded state keeps normal colors with accent glow (not inverted as initially tried); border affords mutability (interactive=visible, readonly=transparent)
+Deferred: second/third themes (terminal, taxes), demo page theme toggle chip
 ---
 
 # Chipper Theming Engine — Desired State
