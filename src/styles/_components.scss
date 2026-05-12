@@ -110,3 +110,47 @@
     font-weight: 500;
   }
 }
+
+// Keyword-or-expression popup ------------------------------------------------
+
+.chipper-koe-popup__input {
+  border: 1px solid var(--chipper-border);
+  border-radius: 0.5rem;
+  background: var(--chipper-bg-elevated);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--chipper-accent);
+    box-shadow: var(--chipper-focus-ring);
+  }
+
+  &::placeholder {
+    color: var(--chipper-text-muted);
+  }
+}
+
+.chipper-koe-popup__option {
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  font-family: var(--chipper-font);
+  font-size: inherit;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    background: var(--chip-trigger-color-bg, var(--chipper-accent-glow));
+    color: var(--chip-trigger-color-text, var(--chipper-accent));
+  }
+
+  &--selected {
+    background: var(--chip-trigger-color-text, var(--chipper-accent));
+    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    font-weight: 500;
+  }
+}

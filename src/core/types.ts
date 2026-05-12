@@ -43,6 +43,9 @@ export interface ExpressionMode<T = unknown> {
 
   /** Format a value produced by this mode for display */
   display: (value: T) => string;
+
+  /** Maximum character length for text input (omit for unlimited) */
+  maxLength?: number;
 }
 
 /**

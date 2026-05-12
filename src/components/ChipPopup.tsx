@@ -9,6 +9,7 @@
 import { useEffect, useRef } from 'react';
 import type { Domain } from '../core/types';
 import { EnumPopup } from './popups/EnumPopup';
+import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
 
 export interface ChipPopupProps {
   clauseId: string;
@@ -61,6 +62,19 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
             onClose={onClose}
           />
         );
+      case 'keyword-or-expression': {
+        const expressionMode = domain.expressionModes[0] as import('../core/types').ExpressionMode<string>;
+        return (
+          <KeywordOrExpressionPopup
+            keywords={domain.keywords as import('../core/types').Keyword<string>[]}
+            value={value as string}
+            expressionMode={expressionMode}
+            maxLength={expressionMode.maxLength}
+            onSelect={onSelect as (value: string) => void}
+            onClose={onClose}
+          />
+        );
+      }
       default:
         return <div>Unsupported domain type: {domain.type}</div>;
     }

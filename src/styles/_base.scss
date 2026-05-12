@@ -73,3 +73,35 @@
   text-align: left;
   cursor: pointer;
 }
+
+// Keyword-or-expression popup ------------------------------------------------
+
+.chipper-koe-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 12rem;
+}
+
+.chipper-koe-popup__input-row {
+  display: flex;
+}
+
+.chipper-koe-popup__input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  font-size: inherit;
+}
+
+.chipper-koe-popup__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.chipper-koe-popup__option {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}

@@ -6,3 +6,10 @@
  */
 
 export { enumDomain, type EnumDomainConfig } from './enum';
+export {
+  keywordOrExpressionDomain,
+  expressionDomain,
+  type KeywordOrExpressionDomainConfig,
+  type ExpressionDomainConfig,
+  type ExpressionConfig,
+} from './keyword-or-expression';

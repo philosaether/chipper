@@ -6,7 +6,14 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-Nothing active — theming engine merged to main, v1 feature scope assessed.
+keywordOrExpressionDomain (designs/keyword-or-expression-domain.md, feature/koe-domain):
+- [ ] Factory: keywordOrExpressionDomain + KeywordOrExpressionDomainConfig
+- [ ] Factory: expressionDomain convenience alias
+- [ ] Popup: KeywordOrExpressionPopup (keywords-first, input below)
+- [ ] ChipPopup routing for 'keyword-or-expression' type
+- [ ] Styles: chipper-koe-popup BEM block (_base + _components)
+- [ ] Tests: domain factory + popup component
+- [ ] Demo: add second chip to exercise koe archetype
 
 ## Tech Debt
 

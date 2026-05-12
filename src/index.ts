@@ -44,7 +44,15 @@ export type { SetContextAction } from './core/actions/set-context';
 export type { SetLiveValueAction } from './core/actions/set-live-value';
 
 // Domains
-export { enumDomain, type EnumDomainConfig } from './domains';
+export {
+  enumDomain,
+  type EnumDomainConfig,
+  keywordOrExpressionDomain,
+  expressionDomain,
+  type KeywordOrExpressionDomainConfig,
+  type ExpressionDomainConfig,
+  type ExpressionConfig,
+} from './domains';
 
 // Palette
 export { createPalette, extendPalette } from './palette';
@@ -76,4 +84,6 @@ export {
   type ChipPopupProps,
   EnumPopup,
   type EnumPopupProps,
+  KeywordOrExpressionPopup,
+  type KeywordOrExpressionPopupProps,
 } from './components';

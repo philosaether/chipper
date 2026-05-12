@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Chipper, sentence, clause, extendPalette, enumDomain } from 'chipper';
+import {
+  Chipper,
+  sentence,
+  clause,
+  extendPalette,
+  enumDomain,
+  keywordOrExpressionDomain,
+} from 'chipper';
 import type { SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
@@ -17,6 +24,19 @@ const demoPalette = extendPalette({
       keywords: months.map((m) => ({ label: m, value: m.toLowerCase() })),
       placeholder: 'a month',
     }),
+    alarm: keywordOrExpressionDomain({
+      color: 'slate',
+      keywords: [
+        { label: 'my alarm', value: 'my alarm' },
+        { label: 'the fire alarm', value: 'the fire alarm' },
+        { label: 'the national anthem', value: 'the national anthem' },
+      ],
+      expression: {
+        placeholder: 'something specific',
+        maxLength: 100,
+      },
+      placeholder: 'something',
+    }),
   },
 });
 
@@ -25,7 +45,9 @@ const demoSentence = sentence(demoPalette)
     .required()
     .text('Wake me up when')
     .chip('month', 'month')
-    .text('ends.'))
+    .text('ends. Play')
+    .chip('alarm', 'alarm')
+    .text('.'))
   .build();
 
 export function App() {
@@ -68,23 +90,26 @@ export function App() {
             <span className="demo-explainer__desc">
               A Chipper sentence is one complete unit of input. It reads like
               English, but every bracketed word is an interactive chip the user
-              clicks to configure. The sentence above has one chip — the month.
+              clicks to configure. The sentence above has two chips — a month
+              and what to play.
             </span>
           </div>
           <div className="demo-explainer__item">
             <span className="demo-explainer__term">Chip. </span>
             <span className="demo-explainer__desc">
-              A chip is a single configurable value. Click it, pick from its
-              options, and the sentence updates. The chip knows how to validate
-              its value, display it, and tell you when something's missing.
+              A chip is a single configurable value. Click it, pick from
+              presets or type your own, and the sentence updates. The chip
+              knows how to validate its value, display it, and tell you when
+              something's missing.
             </span>
           </div>
           <div className="demo-explainer__item">
             <span className="demo-explainer__term">Domain. </span>
             <span className="demo-explainer__desc">
               Every chip is bound to a domain that defines its value space. The
-              month chip uses an enum domain — a fixed list of keywords. Other
-              archetypes handle expressions, multi-select, composites, and more.
+              month chip uses an enum domain — a fixed list of keywords. The
+              alarm chip uses a keyword-or-expression domain — presets plus
+              freeform text input.
             </span>
           </div>
         </div>
