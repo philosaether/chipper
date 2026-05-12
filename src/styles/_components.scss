@@ -34,7 +34,7 @@
 // Chip trigger -------------------------------------------------------------
 
 .chipper-chip-trigger {
-  border: 1px solid transparent;
+  border: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
   border-radius: 0.5rem;
   background: var(--chip-trigger-color-bg, var(--chipper-bg-tertiary));
   color: var(--chip-trigger-color-text, var(--chipper-text-primary));
@@ -63,6 +63,7 @@
   }
 
   &--readonly {
+    border-color: transparent;
     opacity: 0.7;
 
     &:hover {
