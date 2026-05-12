@@ -1,0 +1,110 @@
+// Chipper component styles — visual rules referencing tokens.
+// All colors, borders, shadows, and transitions live here.
+
+.chipper-sentence {
+  font-family: var(--chipper-font);
+  color: var(--chipper-text-primary);
+}
+
+// Clause -------------------------------------------------------------------
+
+.chipper-clause__lead,
+.chipper-clause__text {
+  color: var(--chipper-text-primary);
+}
+
+.chipper-clause__toggle {
+  color: var(--chipper-text-muted);
+
+  &:hover {
+    color: var(--chipper-accent);
+  }
+}
+
+.chipper-clause__placeholder {
+  opacity: 0.3;
+  font-style: italic;
+}
+
+.chipper-clause__terminator {
+  color: var(--chipper-border);
+}
+
+// Chip trigger -------------------------------------------------------------
+
+.chipper-chip-trigger {
+  border: 1px solid var(--chipper-border-subtle);
+  border-radius: var(--chipper-radius);
+  background: var(--chipper-bg-secondary);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  transition: border-color var(--chipper-transition),
+              background-color var(--chipper-transition),
+              box-shadow var(--chipper-transition);
+
+  &:not(.chipper-chip-trigger--placeholder) {
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+    color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  }
+
+  &:hover {
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    background: var(--chip-trigger-color-hover, var(--chipper-bg-tertiary));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--chipper-focus-ring);
+  }
+
+  &--placeholder {
+    border-style: dashed;
+    color: var(--chipper-text-muted);
+    opacity: 0.7;
+  }
+
+  &--expanded {
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    box-shadow: 0 0 0 1px var(--chip-trigger-color-text, var(--chipper-accent));
+  }
+
+  &--readonly {
+    opacity: 0.7;
+
+    &:hover {
+      background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+      border-color: var(--chip-trigger-color-text, var(--chipper-border));
+      box-shadow: none;
+    }
+  }
+}
+
+// Popup --------------------------------------------------------------------
+
+.chipper-popup {
+  background: var(--chipper-bg-elevated);
+  border: 1px solid var(--chipper-border);
+  border-radius: var(--chipper-radius-lg);
+  box-shadow: var(--chipper-popup-shadow);
+}
+
+// Enum popup ---------------------------------------------------------------
+
+.chipper-enum-popup__option {
+  border-radius: var(--chipper-radius);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  font-size: inherit;
+
+  &:hover {
+    background: var(--chipper-bg-tertiary);
+  }
+
+  &--selected {
+    background: var(--chipper-accent-glow);
+    color: var(--chipper-accent);
+    font-weight: 500;
+  }
+}

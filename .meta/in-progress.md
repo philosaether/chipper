@@ -6,29 +6,33 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Vertical slice: "Wake me up when [September] ends."** — building layer by layer toward a running demo page with one enum chip
-  - ~~Stage 1: enumDomain factory~~ — done
-  - ~~Stage 2: State initializer + reducer (SET_CHIP_VALUE)~~ — done
-  - ~~Stage 3: React hooks~~ — done
-  - ~~Stage 4: Interactive components~~ — done
-  - ~~Stage 5: Demo page v0.1~~ — done
+Theming engine (designs/theming-engine.md, feature/styling-pass):
+- [x] Add sass devDependency, build script
+- [x] Create SASS file architecture (_base, _tokens, _mixins, _components)
+- [x] Define token contract (surface, accent, semantic, chip colors, structural)
+- [x] Build praxis-theme from color-scheme.md
+- [x] Refactor chipper.css → SASS partials
+- [x] Update Chip.tsx (three-var color bridge: text, bg, hover)
+- [x] Update package.json exports (styles.css, base.css, themes/praxis.css)
+- [x] Update demo page to use theme tokens
+- [x] Update demo vite alias
+- [x] Verify: 66 tests passing, 3 CSS files generated, dev server running
 
 ## Tech Debt
 
-- Keyboard arrow navigation in popups (roving tabindex) — needed for AA, deferred from vertical slice
-- ~~Interleaved text/chip rendering in clauses~~ — done, segments model added to ClauseDefinition
+- Keyboard arrow navigation in popups (roving tabindex) — needed for AA compliance, deferred from vertical slice. Deserves its own focused session.
 
 ## Next up
 
 - Remaining domain archetypes (keyword-expr, multi-select, composite, reference, alt-coordinate)
 - TOGGLE_CLAUSE, SET_CONTEXT, SET_LIVE_VALUE action handlers
 - Default chipperPalette with general-purpose domains
-- ~~Headless API (chipper/headless entry point)~~ — hooks are the headless API, exported from Stage 3
+- Demo page v0.2: multiple example sentences (simple/intermediate)
 
 ## Roadmap
 
-1. ~~Core data model + builder + palette~~ (types done, enumDomain + reducer done)
-2. React components + hooks (in progress via vertical slice)
+1. ~~Core data model + builder + palette~~ (done)
+2. ~~React components + hooks~~ (done — vertical slice)
 3. Default palette + remaining domain archetypes
 4. Demo page on philbas.com
 5. Documentation

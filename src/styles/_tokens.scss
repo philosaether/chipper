@@ -1,0 +1,37 @@
+// Chipper token contract — every custom property a theme must provide.
+// Fallback values are deliberately neutral so an incomplete theme
+// degrades visibly but not brokenly.
+
+:root {
+  // Surface
+  --chipper-bg-primary: #f5f5f5;
+  --chipper-bg-secondary: #eeeeee;
+  --chipper-bg-tertiary: #e0e0e0;
+  --chipper-bg-elevated: #ffffff;
+  --chipper-text-primary: #212121;
+  --chipper-text-secondary: #616161;
+  --chipper-text-muted: #9e9e9e;
+  --chipper-border: #bdbdbd;
+  --chipper-border-subtle: rgba(189, 189, 189, 0.4);
+
+  // Accent
+  --chipper-accent: #424242;
+  --chipper-accent-bright: #757575;
+  --chipper-accent-dim: #212121;
+  --chipper-accent-glow: #e0e0e0;
+
+  // Semantic
+  --chipper-success: #2e7d32;
+  --chipper-warning: #f57c00;
+  --chipper-error: #c62828;
+  --chipper-info: #1565c0;
+
+  // Structural
+  --chipper-radius: 4px;
+  --chipper-radius-lg: 6px;
+  --chipper-font: inherit;
+  --chipper-font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  --chipper-focus-ring: 0 0 0 2px rgba(66, 66, 66, 0.3);
+  --chipper-popup-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --chipper-transition: 0.15s;
+}

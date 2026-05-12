@@ -1,0 +1,9 @@
+// Chipper — batteries-included entry point.
+// Imports base layout, token fallbacks, component styles, and praxis theme.
+//
+// Usage: import 'chipper/styles.css'
+
+@use 'tokens';
+@use 'base';
+@use 'components';
+@use 'themes/praxis';

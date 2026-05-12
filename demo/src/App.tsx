@@ -13,7 +13,7 @@ const months = [
 const demoPalette = extendPalette({
   domains: {
     month: enumDomain({
-      color: 'month',
+      color: 'copper',
       keywords: months.map((m) => ({ label: m, value: m.toLowerCase() })),
       placeholder: 'a month',
     }),

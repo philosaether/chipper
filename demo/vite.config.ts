@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      'chipper/styles.css': resolve(__dirname, '../src/styles/chipper.css'),
+      'chipper/styles.css': resolve(__dirname, '../src/styles/chipper.scss'),
       'chipper': resolve(__dirname, '../src/index.ts'),
     },
   },

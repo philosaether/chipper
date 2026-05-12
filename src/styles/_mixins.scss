@@ -1,0 +1,28 @@
+// Chipper SASS mixins — shared patterns for themes and components.
+
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:math';
+
+/// Round RGB channels to the nearest integer for clean output.
+@function round-color($c) {
+  @return rgb(
+    math.round(color.channel($c, "red", $space: rgb)),
+    math.round(color.channel($c, "green", $space: rgb)),
+    math.round(color.channel($c, "blue", $space: rgb))
+  );
+}
+
+/// Generate chip color custom properties from a palette map.
+/// Each entry produces three tokens: -text, -bg, and -hover.
+///
+/// @param {Map} $palette - Map of role => (text-color, bg-color)
+@mixin chip-colors($palette) {
+  @each $role, $colors in $palette {
+    $text: list.nth($colors, 1);
+    $bg: list.nth($colors, 2);
+    --chipper-color-#{$role}-text: #{$text};
+    --chipper-color-#{$role}-bg: #{$bg};
+    --chipper-color-#{$role}-hover: #{round-color(color.mix($text, $bg, 12%))};
+  }
+}

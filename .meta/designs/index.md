@@ -10,3 +10,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [react-hooks.md](react-hooks.md) | accepted | React hooks: useSentence, useChip, usePopup, SentenceProvider. Stage 3 of vertical slice. |
 | [interactive-components.md](interactive-components.md) | accepted | Interactive components: Sentence, Clause, Chip, ChipPopup, EnumPopup. Stage 4 of vertical slice. |
 | [demo-page.md](demo-page.md) | accepted | Demo page v0.1: vertical slice sentence, state inspector, explainer. Stage 5 of vertical slice. |
+| [theming-engine.md](theming-engine.md) | accepted | SASS theming engine: token contract, file architecture, praxis-theme as default. |

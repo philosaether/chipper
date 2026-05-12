@@ -41,9 +41,11 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     !isInteractive && 'chipper-chip-trigger--readonly',
   ].filter(Boolean).join(' ');
 
-  // Inline CSS variable for per-domain color theming
+  // Inline CSS variables bridge domain color key to theme tokens
   const triggerStyle = {
-    '--chip-trigger-color': `var(--chip-color-${domain.color})`,
+    '--chip-trigger-color-text': `var(--chipper-color-${domain.color}-text)`,
+    '--chip-trigger-color-bg': `var(--chipper-color-${domain.color}-bg)`,
+    '--chip-trigger-color-hover': `var(--chipper-color-${domain.color}-hover)`,
   } as React.CSSProperties;
 
   return (

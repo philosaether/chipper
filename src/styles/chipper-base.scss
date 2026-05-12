@@ -1,0 +1,10 @@
+// Chipper base — layout + components, no theme.
+// Consumers provide their own theme alongside this file.
+//
+// Usage:
+//   import 'chipper/styles/base.css'
+//   import './my-custom-theme.css'
+
+@use 'tokens';
+@use 'base' as structural-base;
+@use 'components';

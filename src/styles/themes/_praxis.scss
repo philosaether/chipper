@@ -1,0 +1,54 @@
+// Praxis theme — The Alchemist's Folio.
+// Warm parchment surfaces, gold accents, nine classification hues.
+// See .meta/inbox/color-scheme.md for the full design rationale.
+
+@use '../mixins' as *;
+
+$praxis-palette: (
+  "gold":   (#8a5a00, #ffecd0),
+  "plum":   (#5c3d7a, #e8daef),
+  "copper": (#b87333, #fde8d4),
+  "sage":   (#2e5a30, #d4edda),
+  "slate":  (#2a5082, #d6e5f5),
+  "stone":  (#6b5e4f, #e8e4dc),
+  "teal":   (#2a7d75, #d6f0ee),
+  "rose":   (#994d5a, #f5dfe0),
+  "umber":  (#7d6b3a, #f5ecd6),
+);
+
+:root {
+  // Surface
+  --chipper-bg-primary: #fbf9f5;
+  --chipper-bg-secondary: #f5f3ef;
+  --chipper-bg-tertiary: #ebe8e2;
+  --chipper-bg-elevated: #ffffff;
+  --chipper-text-primary: #1b1c1a;
+  --chipper-text-secondary: #4a4a48;
+  --chipper-text-muted: #7a7976;
+  --chipper-border: #d0c5af;
+  --chipper-border-subtle: rgba(208, 197, 175, 0.4);
+
+  // Accent (gold)
+  --chipper-accent: #735c00;
+  --chipper-accent-bright: #d4af37;
+  --chipper-accent-dim: #5a4700;
+  --chipper-accent-glow: #f7e1a6;
+
+  // Semantic
+  --chipper-success: #2e7d32;
+  --chipper-warning: #f57c00;
+  --chipper-error: #8c0d27;
+  --chipper-info: #1565c0;
+
+  // Classification
+  @include chip-colors($praxis-palette);
+
+  // Structural
+  --chipper-radius: 4px;
+  --chipper-radius-lg: 6px;
+  --chipper-font: inherit;
+  --chipper-font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  --chipper-focus-ring: 0 0 0 2px rgba(115, 92, 0, 0.3);
+  --chipper-popup-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --chipper-transition: 0.15s;
+}
