@@ -36,7 +36,7 @@
 .chipper-chip-trigger {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   font-size: inherit;
   cursor: pointer;
 }
@@ -47,11 +47,9 @@
 
 .chipper-popup {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.25rem);
   left: 0;
   z-index: 100;
-  margin-top: 0.25rem;
-  padding: 0.5rem;
   display: none;
 }
 

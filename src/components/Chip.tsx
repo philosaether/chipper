@@ -41,20 +41,20 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     !isInteractive && 'chipper-chip-trigger--readonly',
   ].filter(Boolean).join(' ');
 
-  // Inline CSS variables bridge domain color key to theme tokens
-  const triggerStyle = {
+  // Inline CSS variables bridge domain color key to theme tokens.
+  // Set on the wrapper so both trigger and popup inherit them.
+  const chipStyle = {
     '--chip-trigger-color-text': `var(--chipper-color-${domain.color}-text)`,
     '--chip-trigger-color-bg': `var(--chipper-color-${domain.color}-bg)`,
     '--chip-trigger-color-hover': `var(--chipper-color-${domain.color}-hover)`,
   } as React.CSSProperties;
 
   return (
-    <span className="chipper-chip">
+    <span className="chipper-chip" style={chipStyle}>
       <button
         ref={triggerRef}
         type="button"
         className={triggerClasses}
-        style={triggerStyle}
         onClick={handleClick}
         aria-expanded={showPopup}
         aria-haspopup="listbox"
