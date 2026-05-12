@@ -58,7 +58,7 @@
   }
 
   &--expanded {
-    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    border-color: var(--chipper-accent);
     box-shadow: 0 0 0 2px var(--chipper-accent-glow);
   }
 
@@ -89,10 +89,10 @@
 }
 
 .chipper-enum-popup__option {
-  border: 1px solid var(--chipper-border-subtle);
+  border: 1px solid transparent;
   border-radius: 0.5rem;
-  background: var(--chipper-bg-secondary);
-  color: var(--chipper-text-primary);
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
   font-family: var(--chipper-font);
   font-size: inherit;
   transition: all 0.2s ease;
@@ -104,9 +104,9 @@
   }
 
   &--selected {
+    background: var(--chip-trigger-color-text, var(--chipper-accent));
+    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    background: var(--chip-trigger-color-bg, var(--chipper-accent-glow));
-    color: var(--chip-trigger-color-text, var(--chipper-accent-dim));
     font-weight: 500;
   }
 }
