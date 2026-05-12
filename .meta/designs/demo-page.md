@@ -189,7 +189,25 @@ This also demonstrates to visitors how custom color tokens work — which is its
 
 ## Open Questions
 
-None.
+### Killer app / showcase sentences
+
+The demo page needs a sentence (or set of sentences) that makes Chipper's value proposition instant — something that feels fundamentally better as an interactive sentence than as a traditional form. Best candidates exercise contingency, optional clauses, and multiple domain archetypes.
+
+**Strongest candidates:**
+
+1. **Cron/schedule builder** — "Every [2] [weeks] on [Monday, Friday] at [9:00 AM], run [deploy-staging]." Cron syntax is universally hated; the sentence version is self-documenting. Closest to Praxis, lowest risk, highest impact. Side-by-side with the cron string would be a killer demo.
+
+2. **Notification/alert rules** — "When [CPU usage] is [above] [90%] for [5 minutes], send a [Slack message] to [#ops-alerts]." Monitoring alert config is universally painful. Comparison operators change based on metric type, notification channels have different fields. Great contingency showcase.
+
+3. **Shipping rate rules** — "If the order is [over $50] and ships to [domestic], use [free shipping]. Otherwise, charge [$5.99] per [pound]." E-commerce shipping rules are deeply nested conditionals configured through painful multi-step forms.
+
+4. **Email automation rules** — "When a [new subscriber] joins [the newsletter] and has [marketing tag], wait [3 days] then send [welcome series]." Simpler version of what Mailchimp flowcharts do, but readable.
+
+5. **GitHub Actions step** — "On [push] to [main], run [npm test] in [node:18], then if [tests pass], [deploy to staging]." CI/CD YAML is another format people struggle with.
+
+**What makes a good Chipper showcase:** Structure changes based on earlier choices (contingency). Natural language is more readable than the alternative. Enough complexity that a form would need conditional fields or a wizard. Something people actually configure regularly.
+
+Decision deferred until more archetypes are built — the showcase sentence needs keyword-or-expression, composite, and contingency at minimum.
 
 ## Out of Scope
 
