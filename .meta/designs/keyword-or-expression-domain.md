@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-12
 Accepted: 2026-05-12
+Implemented: 2026-05-12 (feature/koe-domain)
+Divergences: popup option styles extracted to shared .chipper-popup-option class (used by both enum and koe popups)
+Deferred: textarea variant, numeric stepper, input validation feedback, keyboard navigation between keywords
 Assessment: ../assessments/v1-feature-scope.md
 ---
 

@@ -40,13 +40,13 @@ Domain archetype factories. Each factory takes volatile config and returns a `Do
 
 ```
 domains/
-├── create-domain.ts      — createDomain<T>(): internal base, fills defaults, passes through config
-├── enum.ts               — enumDomain(): pure enum archetype, keywords-only, derived validate/display
-└── index.ts              — Re-exports all archetype factories
+├── create-domain.ts           — createDomain<T>(): internal base, fills defaults, passes through config
+├── enum.ts                    — enumDomain(): pure enum archetype, keywords-only, derived validate/display
+├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
+└── index.ts                   — Re-exports all archetype factories
 ```
 
 Future files (one per archetype, added when needed):
-- `keyword-expr.ts` — keywordOrExpressionDomain()
 - `multi-select.ts` — multiSelectDomain()
 - `composite.ts` — compositeDomain()
 - `reference.ts` — referenceDomain()
@@ -82,7 +82,8 @@ components/
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
-│   └── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
+│   ├── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
+│   └── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains
 └── index.ts              — Re-exports all components
 ```
 

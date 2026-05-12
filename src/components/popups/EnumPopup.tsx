@@ -23,8 +23,8 @@ export function EnumPopup({ keywords, value, onSelect, onClose }: EnumPopupProps
           type="button"
           role="option"
           className={[
-            'chipper-enum-popup__option',
-            keyword.value === value && 'chipper-enum-popup__option--selected',
+            'chipper-popup-option',
+            keyword.value === value && 'chipper-popup-option--selected',
           ].filter(Boolean).join(' ')}
           aria-selected={keyword.value === value}
           onClick={() => {

@@ -82,13 +82,9 @@
   padding: 0.75rem;
 }
 
-// Enum popup ---------------------------------------------------------------
+// Shared popup option — visual styles for keyword pills across all popup types.
 
-.chipper-enum-popup {
-  gap: 0.375rem;
-}
-
-.chipper-enum-popup__option {
+.chipper-popup-option {
   border: 1px solid transparent;
   border-radius: 0.5rem;
   background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
@@ -109,6 +105,12 @@
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
     font-weight: 500;
   }
+}
+
+// Enum popup ---------------------------------------------------------------
+
+.chipper-enum-popup {
+  gap: 0.375rem;
 }
 
 // Keyword-or-expression popup ------------------------------------------------
@@ -129,28 +131,5 @@
 
   &::placeholder {
     color: var(--chipper-text-muted);
-  }
-}
-
-.chipper-koe-popup__option {
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
-  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
-  font-family: var(--chipper-font);
-  font-size: inherit;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    background: var(--chip-trigger-color-bg, var(--chipper-accent-glow));
-    color: var(--chip-trigger-color-text, var(--chipper-accent));
-  }
-
-  &--selected {
-    background: var(--chip-trigger-color-text, var(--chipper-accent));
-    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
-    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    font-weight: 500;
   }
 }

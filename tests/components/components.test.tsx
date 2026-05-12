@@ -143,7 +143,7 @@ describe('Chip popup', () => {
     fireEvent.click(screen.getByRole('button', { name: 'September' }));
     const option = screen.getByRole('option', { name: 'September' });
     expect(option.getAttribute('aria-selected')).toBe('true');
-    expect(option.className).toContain('chipper-enum-popup__option--selected');
+    expect(option.className).toContain('chipper-popup-option--selected');
   });
 });
 

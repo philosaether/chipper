@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import type { Domain } from '../core/types';
+import type { Domain, ExpressionMode, Keyword } from '../core/types';
 import { EnumPopup } from './popups/EnumPopup';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
 
@@ -63,10 +63,10 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
           />
         );
       case 'keyword-or-expression': {
-        const expressionMode = domain.expressionModes[0] as import('../core/types').ExpressionMode<string>;
+        const expressionMode = domain.expressionModes[0] as ExpressionMode<string>;
         return (
           <KeywordOrExpressionPopup
-            keywords={domain.keywords as import('../core/types').Keyword<string>[]}
+            keywords={domain.keywords as Keyword<string>[]}
             value={value as string}
             expressionMode={expressionMode}
             maxLength={expressionMode.maxLength}

@@ -52,8 +52,8 @@ export function KeywordOrExpressionPopup({
               type="button"
               role="option"
               className={[
-                'chipper-koe-popup__option',
-                keyword.value === value && 'chipper-koe-popup__option--selected',
+                'chipper-popup-option',
+                keyword.value === value && 'chipper-popup-option--selected',
               ]
                 .filter(Boolean)
                 .join(' ')}
