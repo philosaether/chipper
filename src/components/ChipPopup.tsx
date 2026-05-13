@@ -8,8 +8,11 @@
 
 import { useEffect, useRef } from 'react';
 import type { Domain, ExpressionMode, Keyword } from '../core/types';
+import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
 import { EnumPopup } from './popups/EnumPopup';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
+import { MultiSelectPopup } from './popups/MultiSelectPopup';
+import { AlternativeCoordinatePopup } from './popups/AlternativeCoordinatePopup';
 
 export interface ChipPopupProps {
   clauseId: string;
@@ -75,6 +78,25 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
           />
         );
       }
+      case 'multi-select':
+        return (
+          <MultiSelectPopup
+            options={domain.meta?.options as Keyword<string>[]}
+            keywords={domain.keywords as Keyword<string[]>[]}
+            value={value as string[]}
+            maxSelections={domain.meta?.maxSelections as number | undefined}
+            onSelect={onSelect as (value: string[]) => void}
+          />
+        );
+      case 'alternative-coordinate':
+        return (
+          <AlternativeCoordinatePopup
+            modes={domain.meta?.modes as AlternativeCoordinateMode[]}
+            value={value as string}
+            onSelect={onSelect as (value: string) => void}
+            onClose={onClose}
+          />
+        );
       default:
         return <div>Unsupported domain type: {domain.type}</div>;
     }

@@ -52,6 +52,12 @@ export {
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,
+  multiSelectDomain,
+  type MultiSelectDomainConfig,
+  alternativeCoordinateDomain,
+  type AlternativeCoordinateDomainConfig,
+  type AlternativeCoordinateMode,
+  type ModeSlot,
 } from './domains';
 
 // Palette
@@ -86,4 +92,8 @@ export {
   type EnumPopupProps,
   KeywordOrExpressionPopup,
   type KeywordOrExpressionPopupProps,
+  MultiSelectPopup,
+  type MultiSelectPopupProps,
+  AlternativeCoordinatePopup,
+  type AlternativeCoordinatePopupProps,
 } from './components';

@@ -133,3 +133,96 @@
     color: var(--chipper-text-muted);
   }
 }
+
+// Multi-select popup ---------------------------------------------------------
+
+.chipper-multi-select-popup__keywords {
+  gap: 0.375rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--chipper-border-subtle);
+  margin-bottom: 0.5rem;
+}
+
+.chipper-multi-select-popup__grid {
+  gap: 0.375rem;
+}
+
+.chipper-multi-select-popup__option {
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  font-family: var(--chipper-font);
+  font-size: inherit;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+
+  &--selected {
+    background: var(--chip-trigger-color-text, var(--chipper-accent));
+    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    font-weight: 500;
+  }
+}
+
+// Alternative-coordinate popup -----------------------------------------------
+
+.chipper-alt-coord-popup__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--chipper-border-subtle);
+  margin-bottom: 0.5rem;
+}
+
+.chipper-alt-coord-popup__tab {
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--chipper-text-muted);
+  font-family: var(--chipper-font);
+  font-size: inherit;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--chipper-text-primary);
+  }
+
+  &--active {
+    color: var(--chipper-text-primary);
+    border-bottom-color: var(--chipper-accent);
+    font-weight: 500;
+  }
+}
+
+.chipper-alt-coord-popup__slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
+}
+
+.chipper-alt-coord-popup__slot-prefix {
+  color: var(--chipper-text-muted);
+  font-style: italic;
+}
+
+.chipper-alt-coord-popup__slot-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.chipper-alt-coord-popup__expression {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--chipper-border-subtle);
+}

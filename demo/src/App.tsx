@@ -6,6 +6,8 @@ import {
   extendPalette,
   enumDomain,
   keywordOrExpressionDomain,
+  multiSelectDomain,
+  alternativeCoordinateDomain,
 } from 'chipper';
 import type { SentenceState } from 'chipper';
 import 'chipper/styles.css';
@@ -37,16 +39,86 @@ const demoPalette = extendPalette({
       },
       placeholder: 'something',
     }),
+    instruments: multiSelectDomain({
+      color: 'sage',
+      options: [
+        { label: 'guitar', value: 'guitar' },
+        { label: 'drums', value: 'drums' },
+        { label: 'bass', value: 'bass' },
+        { label: 'keys', value: 'keys' },
+        { label: 'horns', value: 'horns' },
+        { label: 'strings', value: 'strings' },
+      ],
+      keywords: [
+        { label: 'full band', value: ['guitar', 'drums', 'bass', 'keys'] },
+        { label: 'unplugged', value: ['guitar', 'strings'] },
+      ],
+      placeholder: 'instruments',
+    }),
+    day: alternativeCoordinateDomain({
+      color: 'rose',
+      modes: [
+        {
+          id: 'date',
+          label: 'Date',
+          slots: [
+            { prefix: 'the', keywords: [
+              { label: '1st', value: '1' },
+              { label: '15th', value: '15' },
+              { label: 'last day', value: 'last' },
+            ]},
+          ],
+          compose: (day) => day,
+          decompose: (v) => [v],
+          expression: {
+            placeholder: 'day of month (1-31)',
+            validate: (v) => /^([1-9]|[12]\d|3[01])$/.test(v),
+          },
+        },
+        {
+          id: 'weekday',
+          label: 'Weekday',
+          slots: [
+            { prefix: 'the', keywords: [
+              { label: 'first', value: 'first' },
+              { label: 'second', value: 'second' },
+              { label: 'third', value: 'third' },
+              { label: 'fourth', value: 'fourth' },
+              { label: 'last', value: 'last' },
+            ]},
+            { keywords: [
+              { label: 'Mon', value: 'monday' },
+              { label: 'Tue', value: 'tuesday' },
+              { label: 'Wed', value: 'wednesday' },
+              { label: 'Thu', value: 'thursday' },
+              { label: 'Fri', value: 'friday' },
+              { label: 'Sat', value: 'saturday' },
+              { label: 'Sun', value: 'sunday' },
+            ]},
+          ],
+          compose: (ordinal, day) => `${ordinal} ${day}`,
+          decompose: (v) => {
+            const parts = v.split(' ');
+            return parts.length === 2 ? parts : [undefined, undefined];
+          },
+        },
+      ],
+      placeholder: 'a day',
+    }),
   },
 });
 
 const demoSentence = sentence(demoPalette)
   .clause('when', clause()
     .required()
-    .text('Wake me up when')
+    .text('On')
+    .chip('day', 'day')
+    .text('of')
     .chip('month', 'month')
-    .text('ends. Play')
+    .text(', play')
     .chip('alarm', 'alarm')
+    .text('with')
+    .chip('instruments', 'instruments')
     .text('.'))
   .build();
 
@@ -90,8 +162,8 @@ export function App() {
             <span className="demo-explainer__desc">
               A Chipper sentence is one complete unit of input. It reads like
               English, but every bracketed word is an interactive chip the user
-              clicks to configure. The sentence above has two chips — a month
-              and what to play.
+              clicks to configure. The sentence above has four chips — each
+              using a different domain archetype.
             </span>
           </div>
           <div className="demo-explainer__item">
@@ -106,10 +178,10 @@ export function App() {
           <div className="demo-explainer__item">
             <span className="demo-explainer__term">Domain. </span>
             <span className="demo-explainer__desc">
-              Every chip is bound to a domain that defines its value space. The
-              month chip uses an enum domain — a fixed list of keywords. The
-              alarm chip uses a keyword-or-expression domain — presets plus
-              freeform text input.
+              Every chip is bound to a domain that defines its value space.
+              Month is a pure enum (fixed list). Alarm is keyword-or-expression
+              (presets + freeform). Instruments is multi-select (toggle grid).
+              Day is alternative-coordinate (tabbed modes with different DOF).
             </span>
           </div>
         </div>

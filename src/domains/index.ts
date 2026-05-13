@@ -13,3 +13,13 @@ export {
   type ExpressionDomainConfig,
   type ExpressionConfig,
 } from './keyword-or-expression';
+export {
+  multiSelectDomain,
+  type MultiSelectDomainConfig,
+} from './multi-select';
+export {
+  alternativeCoordinateDomain,
+  type AlternativeCoordinateDomainConfig,
+  type AlternativeCoordinateMode,
+  type ModeSlot,
+} from './alternative-coordinate';

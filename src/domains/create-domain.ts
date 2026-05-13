@@ -23,6 +23,7 @@ export interface BaseDomainConfig<T> {
   consumes?: string[];
   produces?: string[];
   onContextChange?: (context: SentenceContext) => Partial<Domain<T>>;
+  meta?: Record<string, unknown>;
 }
 
 /** Assemble a Domain<T> from config, filling sensible defaults. */
@@ -39,5 +40,6 @@ export function createDomain<T>(config: BaseDomainConfig<T>): Domain<T> {
     consumes: config.consumes,
     produces: config.produces,
     onContextChange: config.onContextChange,
+    meta: config.meta,
   };
 }

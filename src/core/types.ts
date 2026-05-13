@@ -85,6 +85,9 @@ export interface Domain<T = unknown> {
 
   /** Reconfigure domain based on context from ancestor clauses */
   onContextChange?: (context: SentenceContext) => Partial<Domain<T>>;
+
+  /** Archetype-specific configuration passed through to popup rendering */
+  meta?: Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------

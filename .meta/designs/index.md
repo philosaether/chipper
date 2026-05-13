@@ -12,3 +12,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [demo-page.md](demo-page.md) | accepted | Demo page v0.1: vertical slice sentence, state inspector, explainer. Stage 5 of vertical slice. |
 | [theming-engine.md](theming-engine.md) | accepted | SASS theming engine: token contract, file architecture, praxis-theme as default. |
 | [keyword-or-expression-domain.md](keyword-or-expression-domain.md) | accepted | keywordOrExpressionDomain: keywords + text input popup, second archetype. |
+| [multi-select-alt-coordinate.md](multi-select-alt-coordinate.md) | accepted | multiSelectDomain + alternativeCoordinateDomain: toggle grid and tabbed mode popups. |

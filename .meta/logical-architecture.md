@@ -43,14 +43,14 @@ domains/
 ├── create-domain.ts           — createDomain<T>(): internal base, fills defaults, passes through config
 ├── enum.ts                    — enumDomain(): pure enum archetype, keywords-only, derived validate/display
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
+├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
+├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
 └── index.ts                   — Re-exports all archetype factories
 ```
 
 Future files (one per archetype, added when needed):
-- `multi-select.ts` — multiSelectDomain()
 - `composite.ts` — compositeDomain()
 - `reference.ts` — referenceDomain()
-- `alt-coordinate.ts` — alternativeCoordinateDomain()
 
 ### palette/
 
@@ -83,7 +83,9 @@ components/
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
 │   ├── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
-│   └── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains
+│   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains
+│   ├── MultiSelectPopup.tsx — Toggle grid for multi-select domains (stays open)
+│   └── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
 └── index.ts              — Re-exports all components
 ```
 

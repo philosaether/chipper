@@ -8,3 +8,11 @@ export {
   KeywordOrExpressionPopup,
   type KeywordOrExpressionPopupProps,
 } from './popups/KeywordOrExpressionPopup';
+export {
+  MultiSelectPopup,
+  type MultiSelectPopupProps,
+} from './popups/MultiSelectPopup';
+export {
+  AlternativeCoordinatePopup,
+  type AlternativeCoordinatePopupProps,
+} from './popups/AlternativeCoordinatePopup';
