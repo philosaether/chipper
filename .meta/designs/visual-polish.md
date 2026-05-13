@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-13
 Accepted: 2026-05-13
+Implemented: 2026-05-13 (feature/visual-polish)
+Divergences: contrast values slightly lighter than proposed (within SII iteration envelope); SII fixes added post-design (KOE auto-save, numeric Enter, multiselect grid, inline prefix, slot borders)
+Deferred: none
 Assessment: assessments/visual-polish-and-layout.md
 ---
 

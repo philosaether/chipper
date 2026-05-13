@@ -42,6 +42,10 @@ export function KeywordOrExpressionPopup({
   // Track whether a keyword was clicked (skip auto-save in that case)
   const keywordSelected = useRef(false);
 
+  // Ref tracks latest inputValue for the unmount cleanup (avoids stale closure)
+  const inputValueRef = useRef(inputValue);
+  inputValueRef.current = inputValue;
+
   const handleSubmit = () => {
     const trimmed = inputValue.trim();
     if (trimmed && expressionMode.validate(trimmed)) {
@@ -54,14 +58,14 @@ export function KeywordOrExpressionPopup({
   useEffect(() => {
     return () => {
       if (keywordSelected.current) return;
-      if (expressionMode.inputType === 'number') return;
-      const trimmed = inputValue.trim();
+      if (isNumeric) return;
+      const trimmed = inputValueRef.current.trim();
       if (trimmed && trimmed !== value && expressionMode.validate(trimmed)) {
         onSelect(trimmed);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputValue]);
+  }, []);
 
   return (
     <div className="chipper-koe-popup">
@@ -105,6 +109,7 @@ export function KeywordOrExpressionPopup({
             }}
             onSubmit={() => {
               if (expressionMode.validate(inputValue)) {
+                onSelect(inputValue);
                 onClose();
               }
             }}
