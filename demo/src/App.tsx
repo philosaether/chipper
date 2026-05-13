@@ -145,8 +145,47 @@ const demoSentence = sentence(demoPalette)
     .text('.'))
   .build();
 
+const fontPanels = [
+  {
+    id: 'bookish',
+    label: 'Bookish',
+    font: '"Newsreader", Georgia, "Times New Roman", serif',
+    size: '1rem',
+  },
+  {
+    id: 'minimalist',
+    label: 'Minimalist',
+    font: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+    size: '0.9375rem',
+  },
+  {
+    id: 'government',
+    label: 'Government',
+    font: '"Times New Roman", Times, serif',
+    size: '1rem',
+  },
+  {
+    id: 'startup',
+    label: 'Startup',
+    font: '"DM Sans", "Helvetica Neue", Helvetica, sans-serif',
+    size: '1.0625rem',
+  },
+  {
+    id: 'terminal',
+    label: 'Terminal',
+    font: '"SF Mono", "Fira Code", "Fira Mono", Menlo, monospace',
+    size: '0.875rem',
+  },
+  {
+    id: 'brutalist',
+    label: 'Brutalist',
+    font: 'Arial, sans-serif',
+    size: '1.125rem',
+  },
+];
+
 export function App() {
-  const [state, setState] = useState<SentenceState | null>(null);
+  const [inspectorState, setInspectorState] = useState<SentenceState | null>(null);
 
   return (
     <div className="demo-page">
@@ -164,38 +203,48 @@ export function App() {
       </header>
 
       <section className="demo-section">
-        <div className="demo-section__label">Try it</div>
-        <div className="demo-sentence-wrapper">
-          <Chipper sentence={demoSentence} onChange={setState} />
+        <div className="demo-section__label">
+          One sentence, six typefaces
         </div>
+        <p className="demo-section__desc">
+          Chipper inherits the consumer's font. Each panel below renders
+          the same sentence in a different typographic context.
+        </p>
+
+        {fontPanels.map((panel) => (
+          <div
+            key={panel.id}
+            className="demo-font-panel"
+            style={{
+              '--panel-font': panel.font,
+              '--panel-size': panel.size,
+            } as React.CSSProperties}
+          >
+            <div className="demo-font-panel__label">{panel.label}</div>
+            <div className="demo-font-panel__sentence">
+              <Chipper sentence={demoSentence} onChange={setInspectorState} />
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="demo-section">
         <div className="demo-section__label">Sentence state</div>
         <pre className="demo-state-inspector">
-          {state ? JSON.stringify(state, null, 2) : 'Loading...'}
+          {inspectorState ? JSON.stringify(inspectorState, null, 2) : 'Interact with a panel above...'}
         </pre>
       </section>
 
       <section className="demo-section">
-        <div className="demo-section__label">What just happened?</div>
+        <div className="demo-section__label">What's happening?</div>
         <div className="demo-explainer">
           <div className="demo-explainer__item">
             <span className="demo-explainer__term">Sentence. </span>
             <span className="demo-explainer__desc">
               A Chipper sentence is one complete unit of input. It reads like
               English, but every bracketed word is an interactive chip the user
-              clicks to configure. The sentence above has four chips — each
-              using a different domain archetype.
-            </span>
-          </div>
-          <div className="demo-explainer__item">
-            <span className="demo-explainer__term">Chip. </span>
-            <span className="demo-explainer__desc">
-              A chip is a single configurable value. Click it, pick from
-              presets or type your own, and the sentence updates. The chip
-              knows how to validate its value, display it, and tell you when
-              something's missing.
+              clicks to configure. Each panel has five chips using four different
+              domain archetypes.
             </span>
           </div>
           <div className="demo-explainer__item">
@@ -205,13 +254,23 @@ export function App() {
               Month is a pure enum (fixed list). Alarm is keyword-or-expression
               (presets + freeform). Instruments is multi-select (toggle grid).
               Day is alternative-coordinate (tabbed modes with different DOF).
+              Volume is keyword-or-expression with a numeric stepper.
+            </span>
+          </div>
+          <div className="demo-explainer__item">
+            <span className="demo-explainer__term">Theme. </span>
+            <span className="demo-explainer__desc">
+              Chipper's colors come from CSS custom properties. The panels
+              above all share the same praxis theme — only the font changes.
+              Consumers can provide their own theme by overriding the
+              <code> --chipper-*</code> tokens.
             </span>
           </div>
         </div>
       </section>
 
       <footer className="demo-footer">
-        v0.1 · More examples coming soon.
+        v0.2 · chipper
       </footer>
     </div>
   );

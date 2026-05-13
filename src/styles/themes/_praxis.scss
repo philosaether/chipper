@@ -7,13 +7,13 @@
 $praxis-palette: (
   "gold":   (#8a5a00, #ffecd0),
   "plum":   (#5c3d7a, #e8daef),
-  "copper": (#b87333, #fde8d4),
+  "copper": (#8f5a28, #fde8d4),
   "sage":   (#2e5a30, #d4edda),
   "slate":  (#2a5082, #d6e5f5),
   "stone":  (#6b5e4f, #e8e4dc),
-  "teal":   (#2a7d75, #d6f0ee),
+  "teal":   (#246e67, #d6f0ee),
   "rose":   (#994d5a, #f5dfe0),
-  "umber":  (#7d6b3a, #f5ecd6),
+  "umber":  (#736130, #f5ecd6),
 );
 
 :root {
@@ -24,7 +24,7 @@ $praxis-palette: (
   --chipper-bg-elevated: #ffffff;
   --chipper-text-primary: #1b1c1a;
   --chipper-text-secondary: #4a4a48;
-  --chipper-text-muted: #7a7976;
+  --chipper-text-muted: #726f6c;
   --chipper-border: #d0c5af;
   --chipper-border-subtle: rgba(208, 197, 175, 0.4);
 

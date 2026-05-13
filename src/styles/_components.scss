@@ -80,6 +80,14 @@
   border-radius: 1rem;
   box-shadow: 0 12px 32px rgba(77, 70, 53, 0.1);
   padding: 0.75rem;
+  font-size: var(--chipper-popup-font-size);
+}
+
+// Caret colors — inherits popup background and border
+.chipper-popup::before {
+  background: var(--chipper-bg-elevated);
+  border-left: 1px solid var(--chipper-border);
+  border-top: 1px solid var(--chipper-border);
 }
 
 // Shared popup option — visual styles for keyword pills across all popup types.
@@ -146,6 +154,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   width: 2rem;
   height: 2rem;
   border: 1px solid var(--chipper-border);
@@ -219,6 +229,7 @@
   color: var(--chipper-text-muted);
   font-family: var(--chipper-font);
   font-size: inherit;
+  min-height: 1.5rem;
   padding: 0.375rem 0.75rem;
   transition: all 0.2s ease;
 

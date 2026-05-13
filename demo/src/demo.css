@@ -52,7 +52,7 @@ body {
   color: var(--chipper-text-primary);
 }
 
-/* Sentence section */
+/* Sections */
 
 .demo-section {
   margin-bottom: 2.5rem;
@@ -67,8 +67,36 @@ body {
   margin-bottom: 0.75rem;
 }
 
-.demo-sentence-wrapper {
-  font-size: 1.125rem;
+.demo-section__desc {
+  color: var(--chipper-text-secondary);
+  font-size: 0.9375rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Font panels */
+
+.demo-font-panel {
+  padding: 1.5rem;
+  border: 1px solid var(--chipper-border);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  background: var(--chipper-bg-elevated);
+}
+
+.demo-font-panel__label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--chipper-text-muted);
+  margin-bottom: 0.75rem;
+  /* Label uses system font, not the panel font */
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.demo-font-panel__sentence {
+  font-family: var(--panel-font);
+  font-size: var(--panel-size);
   line-height: 2;
 }
 
@@ -108,6 +136,14 @@ body {
 .demo-explainer__desc {
   color: var(--chipper-text-secondary);
   font-size: 0.9375rem;
+}
+
+.demo-explainer__desc code {
+  font-family: var(--chipper-font-mono);
+  font-size: 0.8125rem;
+  background: var(--chipper-bg-secondary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
 }
 
 /* Footer */

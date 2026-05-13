@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- multiSelectDomain + alternativeCoordinateDomain (feature/multi-select-alt-coordinate)
+- Visual polish pass (designs/visual-polish.md)
 
 ## Tech Debt
 
