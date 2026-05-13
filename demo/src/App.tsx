@@ -106,6 +106,26 @@ const demoPalette = extendPalette({
       ],
       placeholder: 'a day',
     }),
+    volume: keywordOrExpressionDomain({
+      color: 'gold',
+      keywords: [
+        { label: 'whisper', value: '1' },
+        { label: 'moderate', value: '5' },
+        { label: 'max', value: '10' },
+      ],
+      expression: {
+        inputType: 'number',
+        min: 1,
+        max: 10,
+        step: 1,
+        placeholder: 'volume level',
+        validate: (v) => {
+          const n = Number(v);
+          return !isNaN(n) && n >= 1 && n <= 10;
+        },
+      },
+      placeholder: 'a volume',
+    }),
   },
 });
 
@@ -118,6 +138,8 @@ const demoSentence = sentence(demoPalette)
     .chip('month', 'month')
     .text(', play')
     .chip('alarm', 'alarm')
+    .text('at')
+    .chip('volume', 'volume')
     .text('with')
     .chip('instruments', 'instruments')
     .text('.'))

@@ -99,6 +99,37 @@ describe('multiSelectDomain', () => {
     expect(domain.display(['mon', 'tue'])).toBe('Mon, Tue');
   });
 
+  it('displays keyword label when selection matches a group keyword', () => {
+    const domain = multiSelectDomain({
+      color: 'sage',
+      options: dayOptions,
+      keywords: dayKeywords,
+    });
+    expect(domain.display(['mon', 'tue', 'wed', 'thu', 'fri'])).toBe('weekdays');
+    expect(domain.display(['sat', 'sun'])).toBe('weekend');
+  });
+
+  it('displays keyword label even when user arrived by manual selection', () => {
+    const domain = multiSelectDomain({
+      color: 'sage',
+      options: dayOptions,
+      keywords: dayKeywords,
+    });
+    // Same values as 'weekdays' keyword, just in different order
+    expect(domain.display(['fri', 'thu', 'wed', 'tue', 'mon'])).toBe('weekdays');
+  });
+
+  it('prefers keyword label over count display', () => {
+    const domain = multiSelectDomain({
+      color: 'sage',
+      options: dayOptions,
+      keywords: dayKeywords,
+      countLabel: 'days',
+    });
+    // 5 items would normally show "5 days", but matches 'weekdays' keyword
+    expect(domain.display(['mon', 'tue', 'wed', 'thu', 'fri'])).toBe('weekdays');
+  });
+
   it('displays empty string for empty selection', () => {
     const domain = multiSelectDomain({ color: 'sage', options: dayOptions });
     expect(domain.display([])).toBe('');

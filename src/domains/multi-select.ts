@@ -88,8 +88,22 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     return value.every((v) => validValues.has(v));
   };
 
+  const groupKeywords = config.keywords ?? [];
+
   const display = (value: string[]): string => {
     if (value.length === 0) return '';
+
+    // Check if selection matches any group keyword (implicit matching)
+    const valueSet = new Set(value);
+    for (const keyword of groupKeywords) {
+      if (
+        keyword.value.length === value.length &&
+        keyword.value.every((v) => valueSet.has(v))
+      ) {
+        return keyword.label;
+      }
+    }
+
     if (value.length <= DISPLAY_LABEL_THRESHOLD) {
       return value.map((v) => labelByValue.get(v) ?? v).join(', ');
     }
