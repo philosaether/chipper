@@ -11,6 +11,7 @@ export interface NumericInputProps {
   max?: number;
   step?: number;
   onSelect: (value: string) => void;
+  onSubmit?: () => void;
 }
 
 export function NumericInput({
@@ -19,6 +20,7 @@ export function NumericInput({
   max,
   step = 1,
   onSelect,
+  onSubmit,
 }: NumericInputProps) {
   const numericValue = value === '' ? 0 : Number(value);
   const isValid = !isNaN(numericValue);
@@ -68,6 +70,9 @@ export function NumericInput({
         className="chipper-numeric-input__value"
         value={value}
         onChange={handleChange}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && onSubmit) onSubmit();
+        }}
         aria-label="Numeric value"
       />
       <button

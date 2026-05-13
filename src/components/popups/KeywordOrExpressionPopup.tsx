@@ -103,6 +103,11 @@ export function KeywordOrExpressionPopup({
                 onSelect(v);
               }
             }}
+            onSubmit={() => {
+              if (expressionMode.validate(inputValue)) {
+                onClose();
+              }
+            }}
           />
         ) : (
           <input
