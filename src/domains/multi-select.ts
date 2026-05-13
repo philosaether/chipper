@@ -55,6 +55,18 @@ export interface MultiSelectDomainConfig {
 /** Display threshold: labels up to this count, then "{n} selected" */
 const DISPLAY_LABEL_THRESHOLD = 3;
 
+/** Check if a selection matches a group keyword's value set (order-independent). */
+export function selectionMatchesKeyword(
+  selection: ReadonlySet<string>,
+  selectionLength: number,
+  keywordValues: readonly string[],
+): boolean {
+  return (
+    keywordValues.length === selectionLength &&
+    keywordValues.every((v) => selection.has(v))
+  );
+}
+
 /**
  * Create a multi-select domain.
  *
@@ -96,10 +108,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     // Check if selection matches any group keyword (implicit matching)
     const valueSet = new Set(value);
     for (const keyword of groupKeywords) {
-      if (
-        keyword.value.length === value.length &&
-        keyword.value.every((v) => valueSet.has(v))
-      ) {
+      if (selectionMatchesKeyword(valueSet, value.length, keyword.value)) {
         return keyword.label;
       }
     }

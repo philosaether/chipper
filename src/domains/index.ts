@@ -15,6 +15,7 @@ export {
 } from './keyword-or-expression';
 export {
   multiSelectDomain,
+  selectionMatchesKeyword,
   type MultiSelectDomainConfig,
 } from './multi-select';
 export {

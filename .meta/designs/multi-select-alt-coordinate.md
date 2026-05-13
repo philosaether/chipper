@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-13
 Accepted: 2026-05-13
+Implemented: 2026-05-13 (feature/multi-select-alt-coordinate)
+Divergences: added countLabel, implicit keyword matching display, numeric expression mode + NumericInput component (post-design)
+Deferred: allowCreate (backend persistence entanglement)
 Assessment: assessments/remaining-domain-archetypes.md
 ---
 

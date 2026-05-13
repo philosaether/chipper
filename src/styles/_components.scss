@@ -197,29 +197,10 @@
   gap: 0.375rem;
 }
 
-.chipper-multi-select-popup__option {
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
-  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
-  font-family: var(--chipper-font);
-  font-size: inherit;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-  }
-
-  &:disabled {
-    opacity: 0.4;
-  }
-
-  &--selected {
-    background: var(--chip-trigger-color-text, var(--chipper-accent));
-    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
-    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    font-weight: 500;
-  }
+// Toggle options reuse .chipper-popup-option styles.
+// Disabled state for max-selection enforcement:
+.chipper-multi-select-popup__grid .chipper-popup-option:disabled {
+  opacity: 0.4;
 }
 
 // Alternative-coordinate popup -----------------------------------------------

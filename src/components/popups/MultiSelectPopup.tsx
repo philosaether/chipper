@@ -7,6 +7,7 @@
  */
 
 import type { Keyword } from '../../core/types';
+import { selectionMatchesKeyword } from '../../domains/multi-select';
 
 export interface MultiSelectPopupProps {
   options: Keyword<string>[];
@@ -43,9 +44,7 @@ export function MultiSelectPopup({
       {keywords.length > 0 && (
         <div className="chipper-multi-select-popup__keywords">
           {keywords.map((keyword) => {
-            const isMatch =
-              keyword.value.length === value.length &&
-              keyword.value.every((v) => selectedSet.has(v));
+            const isMatch = selectionMatchesKeyword(selectedSet, value.length, keyword.value);
             return (
               <button
                 key={keyword.label}
@@ -76,8 +75,8 @@ export function MultiSelectPopup({
               type="button"
               role="option"
               className={[
-                'chipper-multi-select-popup__option',
-                isSelected && 'chipper-multi-select-popup__option--selected',
+                'chipper-popup-option',
+                isSelected && 'chipper-popup-option--selected',
               ].filter(Boolean).join(' ')}
               aria-selected={isSelected}
               disabled={isDisabled}

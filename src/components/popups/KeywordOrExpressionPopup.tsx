@@ -78,7 +78,9 @@ export function KeywordOrExpressionPopup({
             step={expressionMode.step}
             onSelect={(v) => {
               setInputValue(v);
-              onSelect(v);
+              if (expressionMode.validate(v)) {
+                onSelect(v);
+              }
             }}
           />
         ) : (

@@ -172,7 +172,7 @@ export function alternativeCoordinateDomain(
     // Check single-slot keyword match first (fast path)
     if (allSingleSlotValues.has(value)) return true;
 
-    // Check each mode's custom validate or multi-slot decompose
+    // Check each mode: custom validate, multi-slot decompose, expression
     for (const mode of modes) {
       if (mode.validate) {
         if (mode.validate(value)) return true;
@@ -182,10 +182,6 @@ export function alternativeCoordinateDomain(
         const parts = mode.decompose(value);
         if (parts.every((p) => p !== undefined)) return true;
       }
-    }
-
-    // Check expression modes
-    for (const mode of modes) {
       if (mode.expression?.validate) {
         if (mode.expression.validate(value)) return true;
       }
@@ -199,16 +195,12 @@ export function alternativeCoordinateDomain(
     const label = labelByValue.get(value);
     if (label !== undefined) return label;
 
-    // Check each mode's custom display
+    // Check each mode's custom display and expression display
     for (const mode of modes) {
       if (mode.display) {
         const result = mode.display(value);
         if (result !== value) return result;
       }
-    }
-
-    // Check expression displays
-    for (const mode of modes) {
       if (mode.expression?.display) {
         const result = mode.expression.display(value);
         if (result !== value) return result;
