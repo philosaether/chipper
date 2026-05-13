@@ -101,9 +101,11 @@ function buildLabelByValue(modes: AlternativeCoordinateMode[]): Map<string, stri
   const labelByValue = new Map<string, string>();
   for (const mode of modes) {
     if (mode.slots.length === 1) {
-      for (const keyword of mode.slots[0]!.keywords) {
+      const slot = mode.slots[0]!;
+      const prefix = slot.prefix ? `${slot.prefix} ` : '';
+      for (const keyword of slot.keywords) {
         if (!labelByValue.has(keyword.value)) {
-          labelByValue.set(keyword.value, keyword.label);
+          labelByValue.set(keyword.value, `${prefix}${keyword.label}`);
         }
       }
     }

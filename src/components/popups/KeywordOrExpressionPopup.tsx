@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import type { ExpressionMode, Keyword } from '../../core/types';
+import { NumericInput } from './NumericInput';
 
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
@@ -69,18 +70,31 @@ export function KeywordOrExpressionPopup({
         </div>
       )}
       <div className="chipper-koe-popup__input-row">
-        <input
-          type="text"
-          className="chipper-koe-popup__input"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSubmit();
-          }}
-          placeholder={expressionMode.label}
-          maxLength={maxLength}
-          autoFocus={keywords.length === 0}
-        />
+        {expressionMode.inputType === 'number' ? (
+          <NumericInput
+            value={inputValue || value}
+            min={expressionMode.min}
+            max={expressionMode.max}
+            step={expressionMode.step}
+            onSelect={(v) => {
+              setInputValue(v);
+              onSelect(v);
+            }}
+          />
+        ) : (
+          <input
+            type="text"
+            className="chipper-koe-popup__input"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSubmit();
+            }}
+            placeholder={expressionMode.label}
+            maxLength={maxLength}
+            autoFocus={keywords.length === 0}
+          />
+        )}
       </div>
     </div>
   );

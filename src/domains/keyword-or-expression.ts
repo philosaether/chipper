@@ -15,11 +15,23 @@ import { createDomain } from './create-domain';
 
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
+  /** Input type — 'text' (default) or 'number' (stepper UI) */
+  inputType?: 'text' | 'number';
+
   /** Placeholder text for the input field */
   placeholder?: string;
 
-  /** Maximum character length (omit for unlimited) */
+  /** Maximum character length (omit for unlimited, text only) */
   maxLength?: number;
+
+  /** Minimum value (number inputs only) */
+  min?: number;
+
+  /** Maximum value (number inputs only) */
+  max?: number;
+
+  /** Step increment for +/- buttons (number inputs only, default 1) */
+  step?: number;
 
   /** Validate typed input (beyond non-empty). Return true if valid. */
   validate?: (value: string) => boolean;
@@ -93,13 +105,19 @@ export function keywordOrExpressionDomain(
   const display = (value: string): string =>
     labelByValue.get(value) ?? expressionDisplay(value);
 
+  const inputType = config.expression.inputType ?? 'text';
+
   const expressionMode: ExpressionMode<string> = {
-    id: 'text',
+    id: inputType,
     label: config.expression.placeholder ?? 'Type a value',
     degreesOfFreedom: 1,
     validate: expressionValidate,
     display: expressionDisplay,
     maxLength: config.expression.maxLength,
+    inputType,
+    min: config.expression.min,
+    max: config.expression.max,
+    step: config.expression.step,
   };
 
   return createDomain<string>({

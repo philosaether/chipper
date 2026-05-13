@@ -16,3 +16,4 @@ export {
   AlternativeCoordinatePopup,
   type AlternativeCoordinatePopupProps,
 } from './popups/AlternativeCoordinatePopup';
+export { NumericInput, type NumericInputProps } from './popups/NumericInput';

@@ -54,6 +54,7 @@ const demoPalette = extendPalette({
         { label: 'unplugged', value: ['guitar', 'strings'] },
       ],
       placeholder: 'instruments',
+      countLabel: 'instruments',
     }),
     day: alternativeCoordinateDomain({
       color: 'rose',

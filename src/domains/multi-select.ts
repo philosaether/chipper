@@ -29,6 +29,13 @@ export interface MultiSelectDomainConfig {
   /** Max selections (omit for unlimited) */
   maxSelections?: number;
 
+  /**
+   * Label used when count display kicks in (4+ selections).
+   * E.g., "days" → "4 days", "instruments" → "5 instruments".
+   * Defaults to "selected".
+   */
+  countLabel?: string;
+
   /** Default value — empty array if omitted (invalid → placeholder) */
   defaultValue?: string[];
 
@@ -73,6 +80,8 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
   const labelByValue = new Map(config.options.map((o) => [o.value, o.label]));
   const maxSelections = config.maxSelections;
 
+  const countLabel = config.countLabel ?? 'selected';
+
   const validate = (value: string[]): boolean => {
     if (value.length === 0) return false;
     if (maxSelections !== undefined && value.length > maxSelections) return false;
@@ -84,7 +93,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     if (value.length <= DISPLAY_LABEL_THRESHOLD) {
       return value.map((v) => labelByValue.get(v) ?? v).join(', ');
     }
-    return `${value.length} selected`;
+    return `${value.length} ${countLabel}`;
   };
 
   return createDomain<string[]>({

@@ -93,6 +93,12 @@ describe('multiSelectDomain', () => {
     expect(domain.display(['mon', 'tue', 'wed', 'thu', 'fri'])).toBe('5 selected');
   });
 
+  it('uses custom countLabel for 4+ selections', () => {
+    const domain = multiSelectDomain({ color: 'sage', options: dayOptions, countLabel: 'days' });
+    expect(domain.display(['mon', 'tue', 'wed', 'thu'])).toBe('4 days');
+    expect(domain.display(['mon', 'tue'])).toBe('Mon, Tue');
+  });
+
   it('displays empty string for empty selection', () => {
     const domain = multiSelectDomain({ color: 'sage', options: dayOptions });
     expect(domain.display([])).toBe('');

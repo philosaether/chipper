@@ -46,6 +46,18 @@ export interface ExpressionMode<T = unknown> {
 
   /** Maximum character length for text input (omit for unlimited) */
   maxLength?: number;
+
+  /** Input type — 'text' (default) or 'number' (stepper UI) */
+  inputType?: 'text' | 'number';
+
+  /** Minimum value (number inputs only) */
+  min?: number;
+
+  /** Maximum value (number inputs only) */
+  max?: number;
+
+  /** Step increment for +/- buttons (number inputs only, default 1) */
+  step?: number;
 }
 
 /**

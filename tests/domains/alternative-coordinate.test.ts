@@ -135,14 +135,14 @@ describe('alternativeCoordinateDomain', () => {
 
   // -- display --
 
-  it('displays single-slot keyword labels', () => {
+  it('displays single-slot keyword labels with prefix', () => {
     const domain = alternativeCoordinateDomain({
       color: 'sage',
       modes: [dateMode, weekdayMode],
     });
-    expect(domain.display('1')).toBe('1st');
-    expect(domain.display('15')).toBe('15th');
-    expect(domain.display('last')).toBe('last day');
+    expect(domain.display('1')).toBe('the 1st');
+    expect(domain.display('15')).toBe('the 15th');
+    expect(domain.display('last')).toBe('the last day');
   });
 
   it('displays multi-slot values via mode display function', () => {

@@ -134,6 +134,56 @@
   }
 }
 
+// Numeric input --------------------------------------------------------------
+
+.chipper-numeric-input {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chipper-numeric-input__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--chipper-border);
+  border-radius: 0.5rem;
+  background: var(--chipper-bg-secondary);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  font-size: 1.1em;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--chipper-accent);
+    color: var(--chipper-accent);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+  }
+}
+
+.chipper-numeric-input__value {
+  width: 3rem;
+  text-align: center;
+  border: 1px solid var(--chipper-border);
+  border-radius: 0.5rem;
+  background: var(--chipper-bg-elevated);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font-mono, var(--chipper-font));
+  font-size: inherit;
+  padding: 0.25rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--chipper-accent);
+    box-shadow: var(--chipper-focus-ring);
+  }
+}
+
 // Multi-select popup ---------------------------------------------------------
 
 .chipper-multi-select-popup__keywords {
