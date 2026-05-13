@@ -129,12 +129,12 @@ export function AlternativeCoordinatePopup({
       <div className="chipper-alt-coord-popup__content">
         {activeMode.slots.map((slot, slotIndex) => (
           <div key={slotIndex} className="chipper-alt-coord-popup__slot">
-            {slot.prefix && (
-              <span className="chipper-alt-coord-popup__slot-prefix">
-                {slot.prefix}
-              </span>
-            )}
             <div className="chipper-alt-coord-popup__slot-keywords">
+              {slot.prefix && (
+                <span className="chipper-alt-coord-popup__slot-prefix">
+                  {slot.prefix}
+                </span>
+              )}
               {slot.keywords.map((keyword) => {
                 const isSelected = slotSelections[slotIndex] === keyword.value;
                 return (

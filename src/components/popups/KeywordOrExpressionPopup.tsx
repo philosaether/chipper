@@ -1,12 +1,13 @@
 /**
- * KeywordOrExpressionPopup — keyword pills + text input.
+ * KeywordOrExpressionPopup — keyword pills + text/numeric input.
  *
  * Keywords on top (high-value shortcuts), input field below.
  * Expression-only domains render just the input.
- * Keyword click selects and closes. Enter submits typed value.
+ * Text: keyword click or Enter submits. Valid input auto-saves on close.
+ * Numeric: stepper buttons submit immediately. Manual entry validates.
  */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ExpressionMode, Keyword } from '../../core/types';
 import { NumericInput } from './NumericInput';
 
@@ -31,9 +32,15 @@ export function KeywordOrExpressionPopup({
   onSelect,
   onClose,
 }: KeywordOrExpressionPopupProps) {
+  const isNumeric = expressionMode.inputType === 'number';
   const [inputValue, setInputValue] = useState(
-    isKeywordValue(value, keywords) ? '' : value,
+    // Numeric inputs always initialize with the current value (for the stepper).
+    // Text inputs start empty when the current value is a keyword.
+    isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
   );
+
+  // Track whether a keyword was clicked (skip auto-save in that case)
+  const keywordSelected = useRef(false);
 
   const handleSubmit = () => {
     const trimmed = inputValue.trim();
@@ -42,6 +49,19 @@ export function KeywordOrExpressionPopup({
       onClose();
     }
   };
+
+  // Auto-save valid text expression on unmount (outside-click close)
+  useEffect(() => {
+    return () => {
+      if (keywordSelected.current) return;
+      if (expressionMode.inputType === 'number') return;
+      const trimmed = inputValue.trim();
+      if (trimmed && trimmed !== value && expressionMode.validate(trimmed)) {
+        onSelect(trimmed);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
 
   return (
     <div className="chipper-koe-popup">
@@ -60,6 +80,7 @@ export function KeywordOrExpressionPopup({
                 .join(' ')}
               aria-selected={keyword.value === value}
               onClick={() => {
+                keywordSelected.current = true;
                 onSelect(keyword.value);
                 onClose();
               }}
@@ -72,7 +93,7 @@ export function KeywordOrExpressionPopup({
       <div className="chipper-koe-popup__input-row">
         {expressionMode.inputType === 'number' ? (
           <NumericInput
-            value={inputValue || value}
+            value={inputValue}
             min={expressionMode.min}
             max={expressionMode.max}
             step={expressionMode.step}
