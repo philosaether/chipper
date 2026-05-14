@@ -6,12 +6,13 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- Visual polish pass (designs/visual-polish.md)
+- **Reference domain** (feature/reference-domain) — fifth archetype. Factory, ReferencePopup (tree nav + search), display cache, demo genre tree.
 
 ## Tech Debt
 
 - Keyboard arrow navigation in popups (roving tabindex) — AA compliance
 - Screen reader support (aria-live, aria-invalid, role=option)
+- `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
 
 ## v1.0 Feature Inventory
 
@@ -21,8 +22,8 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [x] keywordOrExpressionDomain + expressionDomain alias (done 2026-05-12)
 - [x] multiSelectDomain — toggle grid, group keywords (done 2026-05-13, allowCreate deferred)
 - [x] alternativeCoordinateDomain — tabbed modes with slots model (done 2026-05-13)
-- [ ] compositeDomain — child chips as clause siblings, keyword collapse
-- [ ] referenceDomain — async value space, navigation/search popup
+- [ ] compositeDomain — coordination pattern via TOGGLE_CLAUSE + contingent clauses (needs engine work)
+- [x] referenceDomain — navigation/search popup, display cache (done 2026-05-14)
 
 ### Core Engine
 - [ ] TOGGLE_CLAUSE action handler (high unlock value)
@@ -36,7 +37,8 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [ ] Live mode (external data fetching + SET_LIVE_VALUE)
 
 ### Expression Modes (new — not in current designs, needed for forms)
-- [ ] Numeric expression mode — number input, min/max, step, currency formatting
+- [x] Numeric expression mode — stepper UI with inputType: 'number' (done 2026-05-13, slider deferred)
+- [ ] Slider expression mode — continuous/float values (future inputType: 'slider')
 - [ ] Masked input expression mode — pattern-constrained text (SSN, EIN, ZIP)
 
 ### UI Polish
@@ -50,7 +52,8 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [ ] Clause composition helpers — every(), whenever(), dueIn()
 
 ### Demo & Docs
-- [ ] Demo page v0.2 — multiple example sentences, complexity toggle
+- [x] Demo page v0.2 — multi-font panels, 6 typefaces (done 2026-05-13)
+- [ ] Demo page v0.3 — multiple example sentences, complexity toggle
 - [ ] Theme toggle on demo — Chipper sentence that switches page theme
 - [ ] Additional themes — "taxes" (institutional) + one fun theme
 - [ ] Killer app demo — TBD (see demo-page.md open questions for candidates)
@@ -66,9 +69,10 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 2. ~~React components + hooks~~ (done — vertical slice)
 3. ~~Theming engine + praxis-theme~~ (done)
 4. ~~keywordOrExpressionDomain + expressionDomain~~ (done)
-5. Remaining domain archetypes + core engine features
-6. Demo page v0.2 + killer app showcase
-7. Additional themes
-8. Documentation + publicity article
-9. npm publish
-10. Embed in Praxis as React island
+5. ~~multiSelect + altCoordinate + numeric stepper + visual polish~~ (done)
+6. Remaining domain archetypes (composite, reference) + core engine features
+7. Demo page v0.3 + killer app showcase
+8. Additional themes
+9. Documentation + publicity article
+10. npm publish
+11. Embed in Praxis as React island

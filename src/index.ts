@@ -58,6 +58,10 @@ export {
   type AlternativeCoordinateDomainConfig,
   type AlternativeCoordinateMode,
   type ModeSlot,
+  referenceDomain,
+  type ReferenceDomainConfig,
+  type ReferenceSource,
+  type ReferenceItem,
 } from './domains';
 
 // Palette
@@ -96,4 +100,6 @@ export {
   type MultiSelectPopupProps,
   AlternativeCoordinatePopup,
   type AlternativeCoordinatePopupProps,
+  ReferencePopup,
+  type ReferencePopupProps,
 } from './components';

@@ -96,6 +96,7 @@ Where these resonate with a Praxis concept, the mapping is noted. Where common s
 | **teal** | `#2a7d75` | `#d6f0ee` | Event chip | System triggers, automation. Distinct from human-facing concerns — the machinery behind the curtain. |
 | **rose** | `#994d5a` | `#f5dfe0` | Task chip | **Red \| Urge.** "A burst of forward motion. Grabs attention, motivates action." Creating a new task is the moment of commitment — not yet refined, but real. Softened to rose because `$error` already owns true red. |
 | **umber** | `#7d6b3a` | `#f5ecd6` | Collate chip | Aggregation, gathering. Earthy and collecting, like a bundle of sheaves. |
+| **indigo** | `#3d4a8c` | `#dfe3f5` | Reference chip | **Blue \| Reflection** (deeper). Navigation into structured data — priority trees, entity references. Darker and cooler than slate, distinguishing external data from internal initiative. WCAG AA: 5.68:1 on pastel, 7.19:1 on white. |
 
 ### What changed from current
 
@@ -136,6 +137,7 @@ $palette: (
   stone:  (#6b5e4f, #e8e4dc),
   teal:   (#2a7d75, #d6f0ee),
   umber:  (#7d6b3a, #f5ecd6),
+  indigo: (#3d4a8c, #dfe3f5),
 );
 
 // Badge aliases — priority type → hue role

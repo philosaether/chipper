@@ -9,10 +9,12 @@
 import { useEffect, useRef } from 'react';
 import type { Domain, ExpressionMode, Keyword } from '../core/types';
 import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
+import type { ReferenceSource } from '../domains/reference';
 import { EnumPopup } from './popups/EnumPopup';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
 import { MultiSelectPopup } from './popups/MultiSelectPopup';
 import { AlternativeCoordinatePopup } from './popups/AlternativeCoordinatePopup';
+import { ReferencePopup } from './popups/ReferencePopup';
 
 export interface ChipPopupProps {
   clauseId: string;
@@ -96,6 +98,17 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
             value={value as string}
             onSelect={onSelect as (value: string) => void}
             onClose={onClose}
+          />
+        );
+      case 'reference':
+        return (
+          <ReferencePopup
+            source={domain.meta?.source as ReferenceSource}
+            keywords={domain.keywords as Keyword<string>[]}
+            value={value as string}
+            onSelect={onSelect as (value: string) => void}
+            onClose={onClose}
+            displayCache={domain.meta?.displayCache as Map<string, string>}
           />
         );
       default:
