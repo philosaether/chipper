@@ -15,3 +15,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [multi-select-alt-coordinate.md](multi-select-alt-coordinate.md) | accepted | multiSelectDomain + alternativeCoordinateDomain: toggle grid and tabbed mode popups. |
 | [visual-polish.md](visual-polish.md) | accepted | Visual polish: popup density, font-size token, WCAG contrast, caret, multi-font demo. |
 | [reference-domain.md](reference-domain.md) | accepted | Reference domain: async/hierarchical data source, navigation/search popup. |
+| [contingency-engine.md](contingency-engine.md) | accepted | Contingency engine: clause presence/activation, tree-scoped context, domain reconfiguration, cascade. |

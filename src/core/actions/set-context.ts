@@ -1,11 +1,14 @@
 /**
- * SET_CONTEXT action — updates scoped context from a clause's productions.
+ * SET_CONTEXT action — updates scoped context and evaluates contingent clauses.
  *
- * Stub — handler not yet implemented.
+ * Delegates to the contingency engine's evaluateContingency function
+ * for presence evaluation, domain reconfiguration, and cascade.
+ * See contingency-engine.md §3.
  */
 
 import type { SentenceContext } from '../types';
 import type { SentenceStore } from '../store';
+import { evaluateContingency } from '../context-resolution';
 
 /** Update scoped context values for a clause. */
 export interface SetContextAction {
@@ -14,10 +17,10 @@ export interface SetContextAction {
   values: SentenceContext;
 }
 
-/** Handle SET_CONTEXT. Stub — returns store unchanged. */
+/** Handle SET_CONTEXT: evaluate contingency and cascade. */
 export function handleSetContext(
   store: SentenceStore,
-  _action: SetContextAction,
+  action: SetContextAction,
 ): SentenceStore {
-  return store;
+  return evaluateContingency(store, action.clauseId, action.values);
 }

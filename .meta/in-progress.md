@@ -6,13 +6,16 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Reference domain** (feature/reference-domain) — fifth archetype. Factory, ReferencePopup (tree nav + search), display cache, demo genre tree.
+- **Contingency engine** (feature/contingency-engine) — clause presence/activation separation, tree-scoped context, domain reconfiguration, cascade. Enables composite domain pattern + optional clauses.
 
 ## Tech Debt
 
 - Keyboard arrow navigation in popups (roving tabindex) — AA compliance
 - Screen reader support (aria-live, aria-invalid, role=option)
 - `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
+- Sentence layout for contingent clauses — flex-direction: column puts each clause on its own line. Contingent clauses without toggles may need to flow inline with their parent clause. Needs design decision.
+- KOE mode-switching keywords — a keyword that flips the chip into expression mode (e.g., "custom interval" → numeric stepper with default value). Needs design: Keyword.displayLabel (trigger text distinct from popup label), mode-switch behavior on selection, fallback display function access. Crosses domain factory, popup, and builder.
+- Clause definition index — `definition.clauses.find()` and `.filter()` called repeatedly in reducer and context resolution. Precompute `Map<clauseId, ClauseDefinition>` and `Map<superclauseId, ClauseDefinition[]>` on the store for O(1) lookups. Not urgent at sentence scale (5-15 clauses).
 
 ## v1.0 Feature Inventory
 
@@ -26,9 +29,9 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [x] referenceDomain — navigation/search popup, display cache (done 2026-05-14)
 
 ### Core Engine
-- [ ] TOGGLE_CLAUSE action handler (high unlock value)
-- [ ] SET_CONTEXT + context propagation through contingency tree
-- [ ] Contingency system — clause presence/config based on context
+- [x] TOGGLE_CLAUSE action handler (done 2026-05-14)
+- [x] SET_CONTEXT + context propagation through contingency tree (done 2026-05-14)
+- [x] Contingency system — clause presence/config based on context (done 2026-05-14)
 - [ ] Serialization/deserialization — save and restore sentence state
 
 ### Chip Modes
@@ -57,7 +60,7 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [ ] Theme toggle on demo — Chipper sentence that switches page theme
 - [ ] Additional themes — "taxes" (institutional) + one fun theme
 - [ ] Killer app demo — TBD (see demo-page.md open questions for candidates)
-- [ ] Documentation
+- [ ] Documentation — include contingency engine examples and sugar for common patterns (cadence, period-dependent clauses). Lambda-based `present`/`configure` is powerful but needs clear cookbook-style docs.
 - [ ] Publicity article
 
 ### Integration

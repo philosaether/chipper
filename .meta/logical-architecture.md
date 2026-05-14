@@ -25,12 +25,15 @@ core/
 ├── state.ts              — Runtime state types: ChipState, ClauseState, SentenceState, ContextScope
 ├── store.ts              — SentenceStore (state + resolved domains), ResolvedDomains type
 ├── initialize.ts         — initializeSentenceState: resolve domains from palette, create initial state,
-│                           derive validity. Also exports computeDisplayValue (shared with actions).
+│                           derive validity, run initial context pass. Also exports computeDisplayValue
+│                           and buildContextFromChips (shared with actions and context-resolution).
+├── context-resolution.ts — Contingency engine: resolveContext (tree walk), evaluateContingency
+│                           (presence, domain reconfiguration, cascade), runInitialContextPass.
 ├── reducer.ts            — sentenceReducer: pure switch over SentenceAction union. Delegates to action handlers.
 └── actions/
-    ├── set-chip-value.ts — SET_CHIP_VALUE: update value, validate, display, cascade validity
-    ├── toggle-clause.ts  — TOGGLE_CLAUSE: (stub) activate/deactivate optional clause
-    ├── set-context.ts    — SET_CONTEXT: (stub) propagate scoped context to contingent descendants
+    ├── set-chip-value.ts — SET_CHIP_VALUE: update value, validate, display, cascade validity, trigger context propagation
+    ├── toggle-clause.ts  — TOGGLE_CLAUSE: flip user-controlled activation on optional clauses
+    ├── set-context.ts    — SET_CONTEXT: delegate to evaluateContingency for presence + reconfiguration
     └── set-live-value.ts — SET_LIVE_VALUE: (stub) update live chip from external source
 ```
 
