@@ -8,8 +8,9 @@ import {
   keywordOrExpressionDomain,
   multiSelectDomain,
   alternativeCoordinateDomain,
+  referenceDomain,
 } from 'chipper';
-import type { SentenceState } from 'chipper';
+import type { ReferenceItem, SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
 
@@ -18,6 +19,77 @@ const months = [
   'May', 'June', 'July', 'August',
   'September', 'October', 'November', 'December',
 ];
+
+// Genre tree for reference domain demo
+interface GenreNode {
+  id: string;
+  label: string;
+  selectable?: boolean;
+  children?: GenreNode[];
+}
+
+const genreTree: GenreNode[] = [
+  {
+    id: 'rock', label: 'Rock', children: [
+      { id: 'classic-rock', label: 'Classic Rock' },
+      { id: 'punk', label: 'Punk' },
+      { id: 'alternative', label: 'Alternative' },
+    ],
+  },
+  {
+    id: 'jazz', label: 'Jazz', children: [
+      { id: 'bebop', label: 'Bebop' },
+      { id: 'fusion', label: 'Fusion' },
+      { id: 'smooth-jazz', label: 'Smooth Jazz' },
+    ],
+  },
+  {
+    id: 'electronic', label: 'Electronic', selectable: false, children: [
+      { id: 'house', label: 'House' },
+      { id: 'techno', label: 'Techno' },
+      { id: 'ambient', label: 'Ambient' },
+      { id: 'dubstep', label: "Dubstep"},
+    ],
+  },
+  {
+    id: 'classical', label: 'Classical', children: [
+      { id: 'baroque', label: 'Baroque' },
+      { id: 'romantic', label: 'Romantic' },
+      { id: 'modern', label: 'Modern' },
+    ],
+  },
+];
+
+function flattenGenreTree(nodes: GenreNode[]): GenreNode[] {
+  const result: GenreNode[] = [];
+  for (const node of nodes) {
+    result.push(node);
+    if (node.children) result.push(...flattenGenreTree(node.children));
+  }
+  return result;
+}
+
+const allGenres = flattenGenreTree(genreTree);
+
+function genreToReferenceItem(node: GenreNode): ReferenceItem {
+  return {
+    id: node.id,
+    label: node.label,
+    hasChildren: (node.children?.length ?? 0) > 0,
+    selectable: node.selectable,
+  };
+}
+
+function findGenrePath(id: string, nodes: GenreNode[], path: string[] = []): string[] | null {
+  for (const node of nodes) {
+    if (node.id === id) return [...path, node.label];
+    if (node.children) {
+      const found = findGenrePath(id, node.children, [...path, node.label]);
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
 const demoPalette = extendPalette({
   domains: {
@@ -106,6 +178,28 @@ const demoPalette = extendPalette({
       ],
       placeholder: 'a day',
     }),
+    genre: referenceDomain({
+      color: 'indigo',
+      source: {
+        getItems: (path) => {
+          let nodes = genreTree;
+          for (const item of path) {
+            const found = nodes.find((n) => n.id === item.id);
+            nodes = found?.children ?? [];
+          }
+          return nodes.map(genreToReferenceItem);
+        },
+        search: (query) =>
+          allGenres
+            .filter((g) => g.label.toLowerCase().includes(query.toLowerCase()))
+            .map(genreToReferenceItem),
+        resolveDisplay: (id) => {
+          const path = findGenrePath(id, genreTree);
+          return path ? path.join(' › ') : id;
+        },
+      },
+      placeholder: 'a genre',
+    }),
     volume: keywordOrExpressionDomain({
       color: 'gold',
       keywords: [
@@ -138,6 +232,8 @@ const demoSentence = sentence(demoPalette)
     .chip('month', 'month')
     .text(', play')
     .chip('alarm', 'alarm')
+    .text('from')
+    .chip('genre', 'genre')
     .text('at')
     .chip('volume', 'volume')
     .text('with')
@@ -243,7 +339,7 @@ export function App() {
             <span className="demo-explainer__desc">
               A Chipper sentence is one complete unit of input. It reads like
               English, but every bracketed word is an interactive chip the user
-              clicks to configure. Each panel has five chips using four different
+              clicks to configure. Each panel has six chips using five different
               domain archetypes.
             </span>
           </div>
@@ -252,7 +348,8 @@ export function App() {
             <span className="demo-explainer__desc">
               Every chip is bound to a domain that defines its value space.
               Month is a pure enum (fixed list). Alarm is keyword-or-expression
-              (presets + freeform). Instruments is multi-select (toggle grid).
+              (presets + freeform). Genre is a reference domain (hierarchical
+              tree with search). Instruments is multi-select (toggle grid).
               Day is alternative-coordinate (tabbed modes with different DOF).
               Volume is keyword-or-expression with a numeric stepper.
             </span>

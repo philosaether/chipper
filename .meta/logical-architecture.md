@@ -45,6 +45,7 @@ domains/
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
 ├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
 ├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
+├── reference.ts               — referenceDomain(): external data, navigation/search popup, display cache
 └── index.ts                   — Re-exports all archetype factories
 ```
 
@@ -85,7 +86,8 @@ components/
 │   ├── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
 │   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains
 │   ├── MultiSelectPopup.tsx — Toggle grid for multi-select domains (stays open)
-│   └── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
+│   ├── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
+│   └── ReferencePopup.tsx — Tree navigation + search for reference domains
 └── index.ts              — Re-exports all components
 ```
 

@@ -273,3 +273,124 @@
   padding-top: 0.5rem;
   border-top: 1px solid var(--chipper-border-subtle);
 }
+
+// Reference popup --------------------------------------------------------------
+
+.chipper-reference-popup__keywords {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--chipper-border-subtle);
+}
+
+.chipper-reference-popup__breadcrumb {
+  color: var(--chipper-text-muted);
+  font-size: 0.8125em;
+  padding-bottom: 0.375rem;
+  border-bottom: 1px solid var(--chipper-border-subtle);
+}
+
+.chipper-reference-popup__breadcrumb-segment {
+  color: var(--chipper-accent);
+  font-family: var(--chipper-font);
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--chipper-accent-bright, var(--chipper-accent));
+    text-decoration: underline;
+  }
+}
+
+.chipper-reference-popup__breadcrumb-separator {
+  color: var(--chipper-text-muted);
+}
+
+.chipper-reference-popup__breadcrumb-current {
+  color: var(--chipper-text-primary);
+  font-weight: 500;
+}
+
+.chipper-reference-popup__item-label {
+  border-radius: 0.375rem;
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--chip-trigger-color-bg, var(--chipper-bg-tertiary));
+    color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  }
+
+  &--selected {
+    background: var(--chip-trigger-color-text, var(--chipper-accent));
+    color: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+    font-weight: 500;
+  }
+
+  &--inert {
+    color: var(--chipper-text-muted);
+    cursor: default;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.chipper-reference-popup__item--non-selectable {
+  border-radius: 0.375rem;
+  font-family: var(--chipper-font);
+  color: var(--chipper-text-muted);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--chipper-bg-tertiary);
+    color: var(--chipper-text-primary);
+  }
+}
+
+.chipper-reference-popup__item-drill {
+  color: var(--chipper-text-muted);
+  font-family: var(--chipper-font);
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--chipper-accent);
+  }
+}
+
+.chipper-reference-popup__search {
+  border: 1px solid var(--chipper-border);
+  border-radius: 0.5rem;
+  background: var(--chipper-bg-elevated);
+  color: var(--chipper-text-primary);
+  font-family: var(--chipper-font);
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--chipper-accent);
+    box-shadow: var(--chipper-focus-ring);
+  }
+
+  &::placeholder {
+    color: var(--chipper-text-muted);
+  }
+}
+
+.chipper-reference-popup__loading {
+  color: var(--chipper-text-muted);
+  font-style: italic;
+}
+
+.chipper-reference-popup__empty {
+  color: var(--chipper-text-muted);
+}
+
+.chipper-reference-popup__retry {
+  color: var(--chipper-accent);
+  font-family: var(--chipper-font);
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--chipper-accent-bright, var(--chipper-accent));
+  }
+}

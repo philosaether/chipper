@@ -24,3 +24,9 @@ export {
   type AlternativeCoordinateMode,
   type ModeSlot,
 } from './alternative-coordinate';
+export {
+  referenceDomain,
+  type ReferenceDomainConfig,
+  type ReferenceSource,
+  type ReferenceItem,
+} from './reference';
