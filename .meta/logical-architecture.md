@@ -51,7 +51,6 @@ domains/
 
 Future files (one per archetype, added when needed):
 - `composite.ts` — compositeDomain()
-- `reference.ts` — referenceDomain()
 
 ### palette/
 

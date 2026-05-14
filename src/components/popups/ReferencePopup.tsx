@@ -41,10 +41,13 @@ export function ReferencePopup({
   const [searchLoading, setSearchLoading] = useState(false);
 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fetchGenerationRef = useRef(0);
 
-  // Fetch items at a path, handling sync and async sources
+  // Fetch items at a path, handling sync and async sources.
+  // Generation counter discards stale async responses from prior navigations.
   const fetchItems = useCallback(
     (fetchPath: ReferenceItem[]) => {
+      const generation = ++fetchGenerationRef.current;
       setLoading(true);
       setError(null);
       try {
@@ -52,10 +55,12 @@ export function ReferencePopup({
         if (result instanceof Promise) {
           result
             .then((fetched) => {
+              if (generation !== fetchGenerationRef.current) return;
               setItems(fetched);
               setLoading(false);
             })
             .catch((err: unknown) => {
+              if (generation !== fetchGenerationRef.current) return;
               setError(err instanceof Error ? err.message : 'Failed to load items');
               setLoading(false);
             });

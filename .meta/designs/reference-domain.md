@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-14
 Accepted: 2026-05-14
+Implemented: 2026-05-14 (feature/reference-domain)
+Divergences: useReferenceDisplay hook deferred (tech debt); extra BEM classes added for styling
+Deferred: eager display resolution on mount (useReferenceDisplay hook)
 Assessment: assessments/reference-domain.md
 ---
 

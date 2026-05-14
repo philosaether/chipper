@@ -12,6 +12,7 @@ Current work state. Update constantly, delete items when done.
 
 - Keyboard arrow navigation in popups (roving tabindex) — AA compliance
 - Screen reader support (aria-live, aria-invalid, role=option)
+- `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
 
 ## v1.0 Feature Inventory
 
