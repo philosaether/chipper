@@ -208,7 +208,7 @@ export function ReferencePopup({
           {path.map((item, index) => (
             <span key={item.id}>
               <span className="chipper-reference-popup__breadcrumb-separator">
-                {' › '}
+                {'›'}
               </span>
               {index < path.length - 1 ? (
                 <button

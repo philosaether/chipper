@@ -301,6 +301,7 @@
 
 .chipper-reference-popup__breadcrumb-separator {
   color: var(--chipper-text-muted);
+  padding: 0 0.375rem;
 }
 
 .chipper-reference-popup__breadcrumb-current {
@@ -310,13 +311,13 @@
 
 .chipper-reference-popup__item-label {
   border-radius: 0.375rem;
-  color: var(--chipper-text-primary);
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
   font-family: var(--chipper-font);
   transition: all 0.15s ease;
 
   &:hover {
-    background: var(--chip-trigger-color-bg, var(--chipper-bg-tertiary));
-    color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+    border: 1px solid var(--chip-trigger-color-text, var(--chipper-accent));
   }
 
   &--selected {
@@ -326,11 +327,12 @@
   }
 
   &--inert {
+    background: transparent;
     color: var(--chipper-text-muted);
     cursor: default;
 
     &:hover {
-      background: transparent;
+      border: none;
     }
   }
 }
