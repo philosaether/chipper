@@ -7,18 +7,11 @@ import {
   enumDomain,
   keywordOrExpressionDomain,
   multiSelectDomain,
-  alternativeCoordinateDomain,
   referenceDomain,
 } from 'chipper';
 import type { ReferenceItem, SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
-
-const months = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December',
-];
 
 // Genre tree for reference domain demo
 interface GenreNode {
@@ -100,12 +93,55 @@ function findGenrePath(id: string, nodes: GenreNode[], path: string[] = []): str
   return null;
 }
 
+// Cadence collapse keywords — selecting these hides the detail clause
+const cadenceCollapseKeywords = ['daily', 'weekday', 'weekend day'];
+
 const demoPalette = extendPalette({
   domains: {
-    month: enumDomain({
+    cadence: keywordOrExpressionDomain({
       color: 'copper',
-      keywords: months.map((m) => ({ label: m, value: m.toLowerCase() })),
-      placeholder: 'a month',
+      keywords: [
+        { label: 'daily', value: 'daily' },
+        { label: 'weekday', value: 'weekday' },
+        { label: 'weekend day', value: 'weekend day' },
+      ],
+      expression: {
+        inputType: 'number',
+        min: 1,
+        max: 52,
+        step: 1,
+        placeholder: 'every N...',
+        validate: (v) => /^\d+$/.test(v) && Number(v) >= 1,
+      },
+      defaultValue: 'weekday',
+      placeholder: 'how often',
+    }),
+    period: enumDomain({
+      color: 'copper',
+      keywords: [
+        { label: 'days', value: 'days' },
+        { label: 'weeks', value: 'weeks' },
+        { label: 'months', value: 'months' },
+      ],
+      placeholder: 'period',
+    }),
+    daySet: multiSelectDomain({
+      color: 'sage',
+      options: [
+        { label: 'Mon', value: 'mon' },
+        { label: 'Tue', value: 'tue' },
+        { label: 'Wed', value: 'wed' },
+        { label: 'Thu', value: 'thu' },
+        { label: 'Fri', value: 'fri' },
+        { label: 'Sat', value: 'sat' },
+        { label: 'Sun', value: 'sun' },
+      ],
+      keywords: [
+        { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] },
+        { label: 'weekends', value: ['sat', 'sun'] },
+      ],
+      placeholder: 'which days',
+      countLabel: 'days',
     }),
     alarm: keywordOrExpressionDomain({
       color: 'slate',
@@ -136,56 +172,6 @@ const demoPalette = extendPalette({
       ],
       placeholder: 'instruments',
       countLabel: 'instruments',
-    }),
-    day: alternativeCoordinateDomain({
-      color: 'rose',
-      modes: [
-        {
-          id: 'date',
-          label: 'Date',
-          slots: [
-            { prefix: 'the', keywords: [
-              { label: '1st', value: '1' },
-              { label: '15th', value: '15' },
-              { label: 'last day', value: 'last' },
-            ]},
-          ],
-          compose: (day) => day,
-          decompose: (v) => [v],
-          expression: {
-            placeholder: 'day of month (1-31)',
-            validate: (v) => /^([1-9]|[12]\d|3[01])$/.test(v),
-          },
-        },
-        {
-          id: 'weekday',
-          label: 'Weekday',
-          slots: [
-            { prefix: 'the', keywords: [
-              { label: 'first', value: 'first' },
-              { label: 'second', value: 'second' },
-              { label: 'third', value: 'third' },
-              { label: 'fourth', value: 'fourth' },
-              { label: 'last', value: 'last' },
-            ]},
-            { keywords: [
-              { label: 'Mon', value: 'monday' },
-              { label: 'Tue', value: 'tuesday' },
-              { label: 'Wed', value: 'wednesday' },
-              { label: 'Thu', value: 'thursday' },
-              { label: 'Fri', value: 'friday' },
-              { label: 'Sat', value: 'saturday' },
-              { label: 'Sun', value: 'sunday' },
-            ]},
-          ],
-          compose: (ordinal, day) => `${ordinal} ${day}`,
-          decompose: (v) => {
-            const parts = v.split(' ');
-            return parts.length === 2 ? parts : [undefined, undefined];
-          },
-        },
-      ],
-      placeholder: 'a day',
     }),
     genre: referenceDomain({
       color: 'indigo',
@@ -233,12 +219,23 @@ const demoPalette = extendPalette({
 });
 
 const demoSentence = sentence(demoPalette)
-  .clause('when', clause()
+  .clause('cadence', clause()
     .required()
-    .text('On')
-    .chip('day', 'day')
-    .text('of')
-    .chip('month', 'month')
+    .text('Every')
+    .chip('cadence', 'cadence')
+    .produces({ cadence: 'cadence' })
+  )
+  .clause('cadence-detail', clause()
+    .required()
+    .contingentOn('cadence', {
+      present: (ctx) => !cadenceCollapseKeywords.includes(ctx.cadence as string),
+    })
+    .chip('period', 'period')
+    .text('on')
+    .chip('daySet', 'daySet')
+  )
+  .clause('action', clause()
+    .required()
     .text(', play')
     .chip('alarm', 'alarm')
     .text('from')
@@ -356,10 +353,10 @@ export function App() {
             <span className="demo-explainer__term">Domain. </span>
             <span className="demo-explainer__desc">
               Every chip is bound to a domain that defines its value space.
-              Month is a pure enum (fixed list). Alarm is keyword-or-expression
-              (presets + freeform). Genre is a reference domain (hierarchical
-              tree with search). Instruments is multi-select (toggle grid).
-              Day is alternative-coordinate (tabbed modes with different DOF).
+              Cadence is keyword-or-expression (presets collapse the detail
+              clause; numeric input expands it via the contingency engine).
+              Genre is a reference domain (hierarchical tree with search).
+              Instruments and days are multi-select (toggle grid).
               Volume is keyword-or-expression with a numeric stepper.
             </span>
           </div>
