@@ -15,6 +15,7 @@ Current work state. Update constantly, delete items when done.
 - `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
 - Sentence layout for contingent clauses — flex-direction: column puts each clause on its own line. Contingent clauses without toggles may need to flow inline with their parent clause. Needs design decision.
 - KOE mode-switching keywords — a keyword that flips the chip into expression mode (e.g., "custom interval" → numeric stepper with default value). Needs design: Keyword.displayLabel (trigger text distinct from popup label), mode-switch behavior on selection, fallback display function access. Crosses domain factory, popup, and builder.
+- Clause definition index — `definition.clauses.find()` and `.filter()` called repeatedly in reducer and context resolution. Precompute `Map<clauseId, ClauseDefinition>` and `Map<superclauseId, ClauseDefinition[]>` on the store for O(1) lookups. Not urgent at sentence scale (5-15 clauses).
 
 ## v1.0 Feature Inventory
 

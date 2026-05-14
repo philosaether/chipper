@@ -129,7 +129,7 @@ export function evaluateContingency(
     }
 
     // Revalidate chips whose domains changed
-    revalidateClauseChips(contingentDef, store, newDomains, newClauses);
+    newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses);
 
     // Cascade: newly-present clause that produces context → recurse
     if (shouldBePresent && contingentDef.contextProductions && newClauses[contingentDef.id]?.present) {
@@ -150,7 +150,9 @@ export function evaluateContingency(
     // Latent clause: remove context scope and cascade latency
     if (!shouldBePresent) {
       newContexts = newContexts.filter((s) => s.clauseId !== contingentDef.id);
-      newClauses = cascadeLatency(contingentDef.id, definition, newClauses, newContexts);
+      const cascaded = cascadeLatency(contingentDef.id, definition, newClauses, newContexts);
+      newClauses = cascaded.clauses;
+      newContexts = cascaded.contexts;
     }
   }
 
@@ -168,17 +170,19 @@ export function evaluateContingency(
 
 /**
  * Revalidate chips in a clause whose domains may have changed.
- * Mutates newClauses in place for efficiency within the evaluation loop.
+ * Returns a new clauses record — does not mutate the input.
  */
 function revalidateClauseChips(
   contingentDef: ClauseDefinition,
   store: SentenceStore,
   newDomains: Record<string, import('./types').Domain>,
-  newClauses: Record<string, ClauseState>,
-): void {
+  clauses: Record<string, ClauseState>,
+): Record<string, ClauseState> {
+  let result = clauses;
+
   for (const chipDef of contingentDef.chips) {
     if (newDomains[chipDef.id] !== store.domains[chipDef.id]) {
-      const clause = newClauses[contingentDef.id];
+      const clause = result[contingentDef.id];
       const chipState = clause?.chips[chipDef.id];
       if (clause && chipState) {
         const domain = newDomains[chipDef.id]!;
@@ -189,44 +193,49 @@ function revalidateClauseChips(
           displayValue: computeDisplayValue(domain, chipState.value, isValid),
         };
         const newChips = { ...clause.chips, [chipDef.id]: newChipState };
-        newClauses[contingentDef.id] = {
-          ...clause,
-          chips: newChips,
-          valid: computeClauseValidity(newChips),
+        result = {
+          ...result,
+          [contingentDef.id]: {
+            ...clause,
+            chips: newChips,
+            valid: computeClauseValidity(newChips),
+          },
         };
       }
     }
   }
+
+  return result;
 }
 
 /**
  * Cascade latency: when a clause becomes latent, its contingent
  * descendants also become latent and their context scopes are removed.
+ * Returns new clauses and contexts — does not mutate inputs.
  */
 function cascadeLatency(
   latentClauseId: string,
   definition: SentenceDefinition,
   clauses: Record<string, ClauseState>,
   contexts: ContextScope[],
-): Record<string, ClauseState> {
+): { clauses: Record<string, ClauseState>; contexts: ContextScope[] } {
   let newClauses = clauses;
+  let newContexts = contexts;
 
   for (const child of definition.clauses) {
     if (child.contingency?.superclauseId !== latentClauseId) continue;
     const childState = newClauses[child.id];
     if (childState?.present) {
       newClauses = { ...newClauses, [child.id]: { ...childState, present: false } };
-      // Remove child's context scope
-      const scopeIndex = contexts.findIndex((s) => s.clauseId === child.id);
-      if (scopeIndex >= 0) {
-        contexts.splice(scopeIndex, 1);
-      }
+      newContexts = newContexts.filter((s) => s.clauseId !== child.id);
       // Recurse into grandchildren
-      newClauses = cascadeLatency(child.id, definition, newClauses, contexts);
+      const cascaded = cascadeLatency(child.id, definition, newClauses, newContexts);
+      newClauses = cascaded.clauses;
+      newContexts = cascaded.contexts;
     }
   }
 
-  return newClauses;
+  return { clauses: newClauses, contexts: newContexts };
 }
 
 /**

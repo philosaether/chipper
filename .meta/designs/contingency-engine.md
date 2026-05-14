@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-14
 Accepted: 2026-05-14
+Implemented: 2026-05-14 (feature/contingency-engine)
+Divergences: none
+Deferred: context-resolution.test.ts (isolated unit tests — covered indirectly via contingency.test.ts)
 Assessment: assessments/archive/2026-05-14-composite-domain.md
 ---
 
