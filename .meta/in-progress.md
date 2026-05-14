@@ -13,6 +13,8 @@ Current work state. Update constantly, delete items when done.
 - Keyboard arrow navigation in popups (roving tabindex) — AA compliance
 - Screen reader support (aria-live, aria-invalid, role=option)
 - `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
+- Sentence layout for contingent clauses — flex-direction: column puts each clause on its own line. Contingent clauses without toggles may need to flow inline with their parent clause. Needs design decision.
+- KOE mode-switching keywords — a keyword that flips the chip into expression mode (e.g., "custom interval" → numeric stepper with default value). Needs design: Keyword.displayLabel (trigger text distinct from popup label), mode-switch behavior on selection, fallback display function access. Crosses domain factory, popup, and builder.
 
 ## v1.0 Feature Inventory
 
