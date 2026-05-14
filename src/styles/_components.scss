@@ -309,6 +309,7 @@
   font-weight: 500;
 }
 
+// Selectable item labels — domain-colored pills matching other popup archetypes
 .chipper-reference-popup__item-label {
   border-radius: 0.375rem;
   background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
@@ -317,7 +318,7 @@
   transition: all 0.15s ease;
 
   &:hover {
-    border: 1px solid var(--chip-trigger-color-text, var(--chipper-accent));
+    border-color: var(--chip-trigger-color-text, var(--chipper-accent));
   }
 
   &--selected {
@@ -332,11 +333,25 @@
     cursor: default;
 
     &:hover {
-      border: none;
+      border-color: transparent;
     }
   }
 }
 
+// Drill button on selectable items — subtle box on hover
+.chipper-reference-popup__item-drill {
+  color: var(--chipper-text-muted);
+  font-family: var(--chipper-font);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: var(--chipper-accent);
+    background: var(--chipper-bg-tertiary);
+  }
+}
+
+// Non-selectable row — no colored background, whole-row hover
 .chipper-reference-popup__item--non-selectable {
   border-radius: 0.375rem;
   font-family: var(--chipper-font);
@@ -347,15 +362,12 @@
     background: var(--chipper-bg-tertiary);
     color: var(--chipper-text-primary);
   }
-}
 
-.chipper-reference-popup__item-drill {
-  color: var(--chipper-text-muted);
-  font-family: var(--chipper-font);
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: var(--chipper-accent);
+  // Override: label inside non-selectable row has no colored background
+  .chipper-reference-popup__item-label {
+    background: transparent;
+    color: inherit;
+    border-color: transparent;
   }
 }
 
