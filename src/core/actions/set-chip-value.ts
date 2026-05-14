@@ -1,10 +1,14 @@
 /**
  * SET_CHIP_VALUE action — updates a chip's value, revalidates, recomputes display.
+ *
+ * When the chip's clause produces context, triggers context propagation
+ * to evaluate contingent clauses. See contingency-engine.md §4.
  */
 
 import type { ChipState, ClauseState } from '../state';
 import type { SentenceStore } from '../store';
-import { computeClauseValidity, computeDisplayValue, computeSentenceValidity } from '../initialize';
+import { buildContextFromChips, computeClauseValidity, computeDisplayValue, computeSentenceValidity } from '../initialize';
+import { evaluateContingency } from '../context-resolution';
 
 /** Set a chip's value. */
 export interface SetChipValueAction {
@@ -14,7 +18,7 @@ export interface SetChipValueAction {
   value: unknown;
 }
 
-/** Handle SET_CHIP_VALUE: update chip, cascade validity to clause and sentence. */
+/** Handle SET_CHIP_VALUE: update chip, cascade validity, propagate context. */
 export function handleSetChipValue(
   store: SentenceStore,
   action: SetChipValueAction,
@@ -47,7 +51,7 @@ export function handleSetChipValue(
     [clauseId]: newClause,
   };
 
-  return {
+  const updatedStore: SentenceStore = {
     ...store,
     state: {
       ...store.state,
@@ -55,4 +59,13 @@ export function handleSetChipValue(
       valid: computeSentenceValidity(newClauses),
     },
   };
+
+  // Check if this clause produces context — if so, propagate
+  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
+  if (clauseDef?.contextProductions) {
+    const contextValues = buildContextFromChips(clauseDef.contextProductions, newClause);
+    return evaluateContingency(updatedStore, clauseId, contextValues);
+  }
+
+  return updatedStore;
 }

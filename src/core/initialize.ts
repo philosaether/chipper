@@ -2,12 +2,14 @@
  * State initialization — creates a SentenceStore from a SentenceDefinition.
  *
  * Resolves each chip's domain from the palette, creates initial ChipState
- * with defaultValue, and derives clause/sentence validity.
+ * with defaultValue, and derives clause/sentence validity. Runs an initial
+ * context evaluation pass so contingent clauses start in the correct state.
  */
 
-import type { Domain, Palette, SentenceDefinition } from './types';
+import type { Domain, Palette, SentenceContext, SentenceDefinition } from './types';
 import type { ChipState, ClauseState, SentenceState } from './state';
 import type { ResolvedDomains, SentenceStore } from './store';
+import { runInitialContextPass } from './context-resolution';
 
 /**
  * Resolve a domain name from a palette. Throws if not found —
@@ -37,16 +39,34 @@ export function computeClauseValidity(chips: Record<string, ChipState>): boolean
   return Object.values(chips).every((c) => c.valid);
 }
 
-/** Derive sentence validity: all active clauses must be valid. */
+/** Derive sentence validity: all present+active clauses must be valid. */
 export function computeSentenceValidity(clauses: Record<string, ClauseState>): boolean {
-  return Object.values(clauses).every((c) => !c.active || c.valid);
+  return Object.values(clauses).every((c) => !(c.present && c.active) || c.valid);
+}
+
+/**
+ * Build context values from a clause's chips using its contextProductions mapping.
+ */
+export function buildContextFromChips(
+  contextProductions: Record<string, string>,
+  clauseState: ClauseState,
+): SentenceContext {
+  const values: SentenceContext = {};
+  for (const [contextKey, sourceChipId] of Object.entries(contextProductions)) {
+    const chipState = clauseState.chips[sourceChipId];
+    if (chipState) {
+      values[contextKey] = chipState.value;
+    }
+  }
+  return values;
 }
 
 /**
  * Create a SentenceStore from a sentence definition.
  *
  * Resolves domains from the palette, initializes chip state with
- * default values, and derives clause/sentence validity.
+ * default values, and derives clause/sentence validity. Runs an
+ * initial context pass so contingent clauses reflect default values.
  */
 export function initializeSentenceState(definition: SentenceDefinition): SentenceStore {
   const domains: ResolvedDomains = {};
@@ -69,6 +89,7 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
     }
 
     clauses[clauseDef.id] = {
+      present: !clauseDef.contingency,
       active: clauseDef.necessity === 'required',
       chips,
       valid: computeClauseValidity(chips),
@@ -81,5 +102,8 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
     valid: computeSentenceValidity(clauses),
   };
 
-  return { state, domains };
+  const store: SentenceStore = { state, domains, definition };
+
+  // Run initial context pass so contingent clauses reflect default chip values
+  return runInitialContextPass(store);
 }

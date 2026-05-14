@@ -31,7 +31,10 @@ export interface ChipState<T = unknown> {
 
 /** State of a single clause. */
 export interface ClauseState {
-  /** Whether this clause is currently active (contributing to sentence value) */
+  /** Whether the clause is rendered. Engine-controlled via contingency. */
+  present: boolean;
+
+  /** Whether the clause contributes to sentence value. User-controlled for optional clauses. */
   active: boolean;
 
   /** State of each chip in this clause, keyed by chip ID */

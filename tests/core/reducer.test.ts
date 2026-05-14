@@ -152,26 +152,77 @@ describe('sentenceReducer — SET_CHIP_VALUE', () => {
   });
 });
 
-describe('sentenceReducer — stub actions', () => {
-  it('TOGGLE_CLAUSE returns store unchanged', () => {
+describe('sentenceReducer — TOGGLE_CLAUSE', () => {
+  it('toggles a required clause active to inactive', () => {
     const store = createStore();
+    expect(store.state.clauses['when']!.active).toBe(true);
+
     const next = sentenceReducer(store, {
       type: 'TOGGLE_CLAUSE',
       clauseId: 'when',
     });
 
-    expect(next).toBe(store);
+    expect(next.state.clauses['when']!.active).toBe(false);
   });
 
-  it('SET_CONTEXT returns store unchanged', () => {
+  it('toggles back to active on second dispatch', () => {
+    const store = createStore();
+    const toggled = sentenceReducer(store, {
+      type: 'TOGGLE_CLAUSE',
+      clauseId: 'when',
+    });
+    const restored = sentenceReducer(toggled, {
+      type: 'TOGGLE_CLAUSE',
+      clauseId: 'when',
+    });
+
+    expect(restored.state.clauses['when']!.active).toBe(true);
+  });
+
+  it('recomputes sentence validity after toggle', () => {
+    const store = createStore();
+    // Clause has invalid chip (default empty string) → sentence invalid
+    expect(store.state.valid).toBe(false);
+
+    // Deactivate the clause → sentence becomes valid (inactive clause doesn't count)
+    const next = sentenceReducer(store, {
+      type: 'TOGGLE_CLAUSE',
+      clauseId: 'when',
+    });
+
+    expect(next.state.valid).toBe(true);
+  });
+});
+
+describe('sentenceReducer — SET_CONTEXT', () => {
+  it('adds a context scope for the clause', () => {
     const store = createStore();
     const next = sentenceReducer(store, {
       type: 'SET_CONTEXT',
       clauseId: 'when',
-      values: {},
+      values: { month: 'september' },
     });
 
-    expect(next).toBe(store);
+    expect(next.state.contexts).toHaveLength(1);
+    expect(next.state.contexts[0]!.clauseId).toBe('when');
+    expect(next.state.contexts[0]!.values).toEqual({ month: 'september' });
+  });
+
+  it('updates existing context scope on repeated dispatch', () => {
+    const store = createStore();
+    const first = sentenceReducer(store, {
+      type: 'SET_CONTEXT',
+      clauseId: 'when',
+      values: { month: 'september' },
+    });
+    const second = sentenceReducer(first, {
+      type: 'SET_CONTEXT',
+      clauseId: 'when',
+      values: { month: 'october' },
+    });
+
+    expect(second.state.contexts).toHaveLength(1);
+    expect(second.state.contexts[0]!.values).toEqual({ month: 'october' });
   });
 
   it('SET_LIVE_VALUE returns store unchanged', () => {

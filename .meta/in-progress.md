@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Reference domain** (feature/reference-domain) — fifth archetype. Factory, ReferencePopup (tree nav + search), display cache, demo genre tree.
+- **Contingency engine** (feature/contingency-engine) — clause presence/activation separation, tree-scoped context, domain reconfiguration, cascade. Enables composite domain pattern + optional clauses.
 
 ## Tech Debt
 
@@ -26,9 +26,9 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [x] referenceDomain — navigation/search popup, display cache (done 2026-05-14)
 
 ### Core Engine
-- [ ] TOGGLE_CLAUSE action handler (high unlock value)
-- [ ] SET_CONTEXT + context propagation through contingency tree
-- [ ] Contingency system — clause presence/config based on context
+- [x] TOGGLE_CLAUSE action handler (done 2026-05-14)
+- [x] SET_CONTEXT + context propagation through contingency tree (done 2026-05-14)
+- [x] Contingency system — clause presence/config based on context (done 2026-05-14)
 - [ ] Serialization/deserialization — save and restore sentence state
 
 ### Chip Modes
@@ -57,7 +57,7 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [ ] Theme toggle on demo — Chipper sentence that switches page theme
 - [ ] Additional themes — "taxes" (institutional) + one fun theme
 - [ ] Killer app demo — TBD (see demo-page.md open questions for candidates)
-- [ ] Documentation
+- [ ] Documentation — include contingency engine examples and sugar for common patterns (cadence, period-dependent clauses). Lambda-based `present`/`configure` is powerful but needs clear cookbook-style docs.
 - [ ] Publicity article
 
 ### Integration

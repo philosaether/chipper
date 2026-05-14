@@ -6,14 +6,16 @@
  * so the reducer can call validate/display without re-resolving from the palette.
  */
 
-import type { Domain } from './types';
+import type { Domain, SentenceDefinition } from './types';
 import type { SentenceState } from './state';
 
 /** Resolved domains keyed by chip ID. */
 export type ResolvedDomains = Record<string, Domain>;
 
-/** Combined state + domains for a sentence instance. */
+/** Combined state + domains + definition for a sentence instance. */
 export interface SentenceStore {
   state: SentenceState;
   domains: ResolvedDomains;
+  /** Static sentence definition — stored for reducer access to contingency config. */
+  definition: SentenceDefinition;
 }
