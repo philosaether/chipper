@@ -48,7 +48,16 @@ const genreTree: GenreNode[] = [
       { id: 'house', label: 'House' },
       { id: 'techno', label: 'Techno' },
       { id: 'ambient', label: 'Ambient' },
-      { id: 'dubstep', label: "Dubstep"},
+      { id: 'dubstep', label: 'Dubstep', children: [
+        {id: 'skrillex', label: 'Skrillex'},
+        {id: 'royksopp', label: 'Röyksopp', children: [
+          {id: 'moment', label: 'Only This Moment', children: [
+            {id: 'good-part', label: 'The good part', children: [
+              {id: 'chills', label: 'Like the *really* good part'}
+            ]}
+          ]}
+        ]}
+      ]},
     ],
   },
   {
