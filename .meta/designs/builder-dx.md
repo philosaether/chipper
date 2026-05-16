@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-16
 Accepted: 2026-05-16
+Implemented: 2026-05-16 (feature/vertical-slice-2)
+Divergences: none — deprecated alias dropped per pre-v1 policy
+Deferred: none
 Assessment: ../assessments/grab-bag-scope.md
 ---
 
