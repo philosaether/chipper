@@ -2,14 +2,15 @@ import { useState } from 'react';
 import {
   Chipper,
   sentence,
-  clause,
+  builder,
+  line,
   extendPalette,
   enumDomain,
   keywordOrExpressionDomain,
   multiSelectDomain,
   referenceDomain,
 } from 'chipper';
-import type { ReferenceItem, SentenceState } from 'chipper';
+import type { ReferenceItem, SentenceState, ClauseBuilder } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
 
@@ -17,59 +18,73 @@ import './demo.css';
 //  CHIPPER CONFIG
 //
 
-const myPalette = extendPalette({
-  domains: {
-    intent: keywordOrExpressionDomain({
-      color: 'rose',
+const praxisPalette = extendPalette({
+  chips: {
+    cadenceType: keywordOrExpressionDomain({
+      color: 'copper',
       keywords: [
-        { value: 'wake', label: 'Wake me up' },
-        { value: 'take', label: 'Take me' },
-        { value: 'bring', label: 'Bring me' },
+        { value: 'daily', label: 'day' },
+        { value: 'weekly', label: 'week on...', display: 'week' },
+        { value: 'weekday' },
+        { value: 'weekend', label: 'weekend day' },
+        { value: 'custom', label: 'custom interval', display: '2'}
       ],
-      defaultValue: 'wake',
+      default: 'weekly'
     }),
-    condition: keywordOrExpressionDomain({
-      color: 'indigo',
+    cadencePeriod: keywordOrExpressionDomain({
+      color: 'copper',
       keywords: [
-        { value: 'september', label: 'when September ends' },
-        { value: 'inside', label: 'inside' },
-        { value: 'go', label: 'before you go-go' }
-      ],
-      placeholder: 'eventually',
+        { value: 'day', label: 'days' },
+        { value: 'week', label: 'weeks' },
+        { value: 'month', label: 'months' },
+        { value: 'quarter', label: 'quarters' },
+        { value: 'year', label: 'years' },
+      ]
     }),
-    destination: keywordOrExpressionDomain({
-      color: 'slate',
-      keywords: [
-        { value: 'church', label: 'to church' },
-        { value: 'you', label: 'with you' },
-        { value: 'love', label: 'a higher love' },
+    dayOfWeek: multiSelectDomain({
+      color: 'sage',
+      options: [
+        { label: 'Mon', value: 'mon' },
+        { label: 'Tue', value: 'tue' },
+        { label: 'Wed', value: 'wed' },
+        { label: 'Thu', value: 'thu' },
+        { label: 'Fri', value: 'fri' },
+        { label: 'Sat', value: 'sat' },
+        { label: 'Sun', value: 'sun' },
       ],
-      defaultValue: 'you',
-      expression: {
-        placeholder: 'what I need',
-        maxLength: 100,
-      },
-    })
+      keywords: [
+        { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] }
+      ],
+      placeholder: 'one or more days',
+      countLabel: 'days',
+    }),
   }
 })
 
-const demoSentence = sentence(myPalette)
-  .clause('request', clause()
-    .chip('intent', 'intent')
-    .produces({intent: 'intent'})
+const demoSentence = sentence(praxisPalette)
+  .clause('cadenceType', builder()
+    .text('Every')
+    .chip('cadenceType')
+    .produces('cadenceType')
   )
-  .clause('condition', clause()
-    .chip('condition', 'condition')
-    .contingentOn('request', {
-      present: (ctx) => { return ctx.intent === 'wake' }
+  .clause('cadencePeriod', builder()
+    .chip('cadencePeriod')
+    .produces('cadencePeriod')
+    .contingentOn('cadenceType', {
+      present: (ctx) => ctx.cadenceType === 'custom'
     })
   )
-  .clause('destination', clause()
-    .chip('destination', 'destination')
-    .contingentOn('request', {
-      present: (ctx) => { return ['bring', 'take'].includes(ctx.intent as string) }
+  .clause('dayOfWeek', builder()
+    .text('on')
+    .chip('dayOfWeek')
+    .contingentOn('cadenceType', {
+      present: (ctx) => {
+        if(ctx.cadenceType === 'weekly') return true
+        if(ctx.cadenceType === 'custom' ) return ['week', 'month'].includes(ctx.cadencePeriod as string)
+      }
     })
-  ).build()
+  )
+  .build()
 
 
 //
