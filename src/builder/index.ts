@@ -101,7 +101,12 @@ export function builder(): ClauseBuilder {
       placeholderText = text;
       return clauseBuilder;
     },
-    chip(id: string, domainName?: string, options?: ChipOptions) {
+    chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions) {
+      // Detect .chip('id', { present: ... }) footgun — second arg is options, not domain name
+      if (typeof domainName === 'object' && domainName !== null) {
+        options = domainName;
+        domainName = undefined;
+      }
       const chipDef = chip(id, domainName, options);
       chips.push(chipDef);
       segments.push({ type: 'chip', chipId: id, present: options?.present });
