@@ -9,7 +9,7 @@
 
 import { useMemo } from 'react';
 import { useSentence } from '../hooks/useSentence';
-import { resolveContext } from '../core/context-resolution';
+import { buildClauseContext } from '../core/context-resolution';
 import { Chip } from './Chip';
 
 export interface ClauseProps {
@@ -52,17 +52,9 @@ export function Clause({ clauseId }: ClauseProps) {
   );
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const resolvedContext = useMemo(() => {
-    if (!hasTextPredicates) return {};
-    const ancestorCtx = resolveContext(clauseId, definition, state.contexts);
-    // Include own chip values
-    if (clauseDef.contextProductions && clauseState) {
-      for (const [key, srcChipId] of Object.entries(clauseDef.contextProductions)) {
-        const cs = clauseState.chips[srcChipId];
-        if (cs) ancestorCtx[key] = cs.value;
-      }
-    }
-    return ancestorCtx;
-  }, [hasTextPredicates, clauseId, definition, state.contexts, clauseDef.contextProductions, clauseState]);
+    if (!hasTextPredicates || !clauseState) return {};
+    return buildClauseContext(clauseId, clauseDef, clauseState.chips, definition, state.contexts);
+  }, [hasTextPredicates, clauseId, clauseDef, clauseState, definition, state.contexts]);
 
   // Active clause: render segments with optional × toggle
   return (
@@ -89,7 +81,7 @@ export function Clause({ clauseId }: ClauseProps) {
           );
         }
         // Chip: check visibleChips from clause state
-        if (clauseState?.visibleChips && !clauseState.visibleChips.has(segment.chipId)) {
+        if (clauseState?.visibleChips && !clauseState.visibleChips.includes(segment.chipId)) {
           return null;
         }
         return (

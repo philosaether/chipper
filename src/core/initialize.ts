@@ -37,10 +37,10 @@ export function computeDisplayValue(domain: Domain, value: unknown, isValid: boo
 /** Derive clause validity: all visible chips must be valid. */
 export function computeClauseValidity(
   chips: Record<string, ChipState>,
-  visibleChips?: Set<string>,
+  visibleChips?: string[],
 ): boolean {
   for (const [chipId, chipState] of Object.entries(chips)) {
-    if (visibleChips && !visibleChips.has(chipId)) continue;
+    if (visibleChips && !visibleChips.includes(chipId)) continue;
     if (!chipState.valid) return false;
   }
   return true;
@@ -64,7 +64,7 @@ export function buildContextFromChips(
 ): SentenceContext {
   const values: SentenceContext = {};
   for (const [contextKey, sourceChipId] of Object.entries(contextProductions)) {
-    if (clauseState.visibleChips && !clauseState.visibleChips.has(sourceChipId)) continue;
+    if (clauseState.visibleChips && !clauseState.visibleChips.includes(sourceChipId)) continue;
     const chipState = clauseState.chips[sourceChipId];
     if (chipState) {
       values[contextKey] = chipState.value;
@@ -80,19 +80,19 @@ export function buildContextFromChips(
 export function evaluateVisibleChips(
   segments: import('./types').ClauseSegment[],
   context: SentenceContext,
-): Set<string> | undefined {
+): string[] | undefined {
   let hasPredicates = false;
-  const visible = new Set<string>();
+  const visible: string[] = [];
 
   for (const segment of segments) {
     if (segment.type === 'chip') {
       if (segment.present) {
         hasPredicates = true;
         if (segment.present(context)) {
-          visible.add(segment.chipId);
+          visible.push(segment.chipId);
         }
       } else {
-        visible.add(segment.chipId);
+        visible.push(segment.chipId);
       }
     }
   }

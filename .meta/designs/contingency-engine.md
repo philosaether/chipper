@@ -6,6 +6,7 @@ Implemented: 2026-05-14 (feature/contingency-engine)
 Divergences: none
 Deferred: context-resolution.test.ts (isolated unit tests — covered indirectly via contingency.test.ts)
 Assessment: assessments/archive/2026-05-14-composite-domain.md
+Extended-by: chip-contingency.md (segment-level present predicates, visible-only context production)
 ---
 
 # Contingency Engine — Desired State

@@ -15,6 +15,27 @@ import type { SentenceStore } from './store';
 import { computeClauseValidity, computeDisplayValue, computeSentenceValidity, buildContextFromChips, evaluateVisibleChips } from './initialize';
 
 /**
+ * Build a clause's full context by merging ancestor context with its own productions.
+ * Used for evaluating segment predicates (both chip and text visibility).
+ */
+export function buildClauseContext(
+  clauseId: string,
+  clauseDef: ClauseDefinition,
+  clauseChips: Record<string, ChipState>,
+  definition: SentenceDefinition,
+  contexts: ContextScope[],
+): SentenceContext {
+  const ctx = resolveContext(clauseId, definition, contexts);
+  if (clauseDef.contextProductions) {
+    for (const [key, srcChipId] of Object.entries(clauseDef.contextProductions)) {
+      const cs = clauseChips[srcChipId];
+      if (cs) ctx[key] = cs.value;
+    }
+  }
+  return ctx;
+}
+
+/**
  * Resolve the full context visible to a clause by walking up the contingency chain.
  * Nearest ancestor's values win — keys already resolved are not overwritten.
  */
@@ -133,17 +154,12 @@ export function evaluateContingency(
 
     // Re-evaluate segment visibility for the contingent clause
     if (shouldBePresent) {
-      const segmentContext = resolveContext(contingentDef.id, definition, newContexts);
-      // Include own chip values in context for segment predicates
       const clauseForVisibility = newClauses[contingentDef.id];
-      if (clauseForVisibility && contingentDef.contextProductions) {
-        for (const [key, srcChipId] of Object.entries(contingentDef.contextProductions)) {
-          const cs = clauseForVisibility.chips[srcChipId];
-          if (cs) segmentContext[key] = cs.value;
-        }
-      }
-      const visibleChips = evaluateVisibleChips(contingentDef.segments, segmentContext);
       if (clauseForVisibility) {
+        const segmentContext = buildClauseContext(
+          contingentDef.id, contingentDef, clauseForVisibility.chips, definition, newContexts,
+        );
+        const visibleChips = evaluateVisibleChips(contingentDef.segments, segmentContext);
         newClauses = {
           ...newClauses,
           [contingentDef.id]: {
@@ -222,7 +238,7 @@ function revalidateClauseChips(
           [contingentDef.id]: {
             ...clause,
             chips: newChips,
-            valid: computeClauseValidity(newChips),
+            valid: computeClauseValidity(newChips, clause.visibleChips),
           },
         };
       }

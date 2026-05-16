@@ -137,23 +137,28 @@ produces both context keys.
 
 ### 3a. Segment presence evaluation
 
-New function in `context-resolution.ts`:
+New function in `initialize.ts`:
 
 ```typescript
-function evaluateSegmentPresence(
+function evaluateVisibleChips(
   segments: ClauseSegment[],
   context: SentenceContext,
-): Set<string> {
-  // Returns the set of visible chipIds.
+): string[] | undefined {
+  // Returns visible chipIds as an array, or undefined if no predicates exist.
   // Text segments don't need tracking — they're evaluated at render time.
-  const visibleChips = new Set<string>();
+  let hasPredicates = false;
+  const visible: string[] = [];
   for (const segment of segments) {
     if (segment.type === 'chip') {
-      const visible = segment.present ? segment.present(context) : true;
-      if (visible) visibleChips.add(segment.chipId);
+      if (segment.present) {
+        hasPredicates = true;
+        if (segment.present(context)) visible.push(segment.chipId);
+      } else {
+        visible.push(segment.chipId);
+      }
     }
   }
-  return visibleChips;
+  return hasPredicates ? visible : undefined;
 }
 ```
 
@@ -162,24 +167,10 @@ function evaluateSegmentPresence(
 When a clause produces context, only visible chips contribute values.
 A hidden chip's value should not propagate — it's conceptually absent.
 
-Update `buildContextFromChips` to accept visible chip set:
-
-```typescript
-function buildContextFromChips(
-  contextProductions: Record<string, string>,
-  clauseState: ClauseState,
-  visibleChips?: Set<string>,
-): SentenceContext {
-  const context: SentenceContext = {};
-  for (const [contextKey, chipId] of Object.entries(contextProductions)) {
-    if (visibleChips && !visibleChips.has(chipId)) continue;
-    const chipState = clauseState.chips[chipId];
-    if (chipState) {
-      context[contextKey] = chipState.value;
-    }
-  }
-  return context;
-}
+Updated `buildContextFromChips` to filter by `clauseState.visibleChips`
+internally — no extra parameter needed. Also extracted `buildClauseContext`
+in `context-resolution.ts` to merge ancestor context with own chip values
+(used by segment predicate evaluation in reducer and component).
 ```
 
 ### 3c. SET_CHIP_VALUE triggers segment re-evaluation
@@ -205,7 +196,7 @@ interface ClauseState {
   chips: Record<string, ChipState>;
   valid: boolean;
   /** Chips currently visible (undefined = all visible, for backwards compat) */
-  visibleChips?: Set<string>;
+  visibleChips?: string[];
 }
 ```
 

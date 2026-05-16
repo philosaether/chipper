@@ -74,8 +74,8 @@ describe('chip-level contingency — segment visibility', () => {
     // cadenceType defaults to 'weekly' → cadencePeriod should be hidden
     const cadenceClause = store.state.clauses['cadence']!;
     expect(cadenceClause.visibleChips).toBeDefined();
-    expect(cadenceClause.visibleChips!.has('cadenceType')).toBe(true);
-    expect(cadenceClause.visibleChips!.has('cadencePeriod')).toBe(false);
+    expect(cadenceClause.visibleChips!.includes('cadenceType')).toBe(true);
+    expect(cadenceClause.visibleChips!.includes('cadencePeriod')).toBe(false);
   });
 
   it('shows chip when present predicate returns true', () => {
@@ -91,8 +91,8 @@ describe('chip-level contingency — segment visibility', () => {
     });
 
     const cadenceClause = store.state.clauses['cadence']!;
-    expect(cadenceClause.visibleChips!.has('cadenceType')).toBe(true);
-    expect(cadenceClause.visibleChips!.has('cadencePeriod')).toBe(true);
+    expect(cadenceClause.visibleChips!.includes('cadenceType')).toBe(true);
+    expect(cadenceClause.visibleChips!.includes('cadencePeriod')).toBe(true);
   });
 
   it('hidden chip does not produce context', () => {
@@ -160,7 +160,7 @@ describe('chip-level contingency — segment visibility', () => {
       chipId: 'cadenceType',
       value: 'custom',
     });
-    expect(store.state.clauses['cadence']!.visibleChips!.has('cadencePeriod')).toBe(true);
+    expect(store.state.clauses['cadence']!.visibleChips!.includes('cadencePeriod')).toBe(true);
     expect(store.state.clauses['dayOfWeek']!.present).toBe(true);
   });
 

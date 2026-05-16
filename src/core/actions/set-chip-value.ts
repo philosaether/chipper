@@ -8,7 +8,7 @@
 import type { ChipState, ClauseState } from '../state';
 import type { SentenceStore } from '../store';
 import { buildContextFromChips, computeClauseValidity, computeDisplayValue, computeSentenceValidity, evaluateVisibleChips } from '../initialize';
-import { evaluateContingency, resolveContext } from '../context-resolution';
+import { evaluateContingency, buildClauseContext } from '../context-resolution';
 
 /** Set a chip's value. */
 export interface SetChipValueAction {
@@ -47,24 +47,16 @@ export function handleSetChipValue(
 
   const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
 
-  // Re-evaluate segment visibility: build the clause's full context
-  // (ancestor context + own chip values) and run segment predicates.
+  // Re-evaluate segment visibility when the clause has chip-level predicates
   let visibleChips = clause.visibleChips;
   if (clauseDef) {
     const hasSegmentPredicates = clauseDef.segments.some(
       (s) => s.type === 'chip' && s.present,
     );
     if (hasSegmentPredicates) {
-      const ancestorContext = resolveContext(clauseId, store.definition, store.state.contexts);
-      // Build own context from updated chips
-      const ownContext: Record<string, unknown> = {};
-      if (clauseDef.contextProductions) {
-        for (const [key, srcChipId] of Object.entries(clauseDef.contextProductions)) {
-          const cs = newChips[srcChipId];
-          if (cs) ownContext[key] = cs.value;
-        }
-      }
-      const fullContext = { ...ancestorContext, ...ownContext };
+      const fullContext = buildClauseContext(
+        clauseId, clauseDef, newChips, store.definition, store.state.contexts,
+      );
       visibleChips = evaluateVisibleChips(clauseDef.segments, fullContext);
     }
   }
