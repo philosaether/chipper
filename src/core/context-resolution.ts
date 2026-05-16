@@ -12,7 +12,7 @@
 import type { SentenceContext, SentenceDefinition, ClauseDefinition } from './types';
 import type { ChipState, ClauseState, ContextScope } from './state';
 import type { SentenceStore } from './store';
-import { computeClauseValidity, computeDisplayValue, computeSentenceValidity, buildContextFromChips } from './initialize';
+import { computeClauseValidity, computeDisplayValue, computeSentenceValidity, buildContextFromChips, evaluateVisibleChips } from './initialize';
 
 /**
  * Resolve the full context visible to a clause by walking up the contingency chain.
@@ -130,6 +130,30 @@ export function evaluateContingency(
 
     // Revalidate chips whose domains changed
     newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses);
+
+    // Re-evaluate segment visibility for the contingent clause
+    if (shouldBePresent) {
+      const segmentContext = resolveContext(contingentDef.id, definition, newContexts);
+      // Include own chip values in context for segment predicates
+      const clauseForVisibility = newClauses[contingentDef.id];
+      if (clauseForVisibility && contingentDef.contextProductions) {
+        for (const [key, srcChipId] of Object.entries(contingentDef.contextProductions)) {
+          const cs = clauseForVisibility.chips[srcChipId];
+          if (cs) segmentContext[key] = cs.value;
+        }
+      }
+      const visibleChips = evaluateVisibleChips(contingentDef.segments, segmentContext);
+      if (clauseForVisibility) {
+        newClauses = {
+          ...newClauses,
+          [contingentDef.id]: {
+            ...clauseForVisibility,
+            visibleChips,
+            valid: computeClauseValidity(clauseForVisibility.chips, visibleChips),
+          },
+        };
+      }
+    }
 
     // Cascade: newly-present clause that produces context → recurse
     if (shouldBePresent && contingentDef.contextProductions && newClauses[contingentDef.id]?.present) {

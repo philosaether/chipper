@@ -34,9 +34,16 @@ export function computeDisplayValue(domain: Domain, value: unknown, isValid: boo
   return domain.placeholder ?? domain.display(value);
 }
 
-/** Derive clause validity: all chips must be valid. */
-export function computeClauseValidity(chips: Record<string, ChipState>): boolean {
-  return Object.values(chips).every((c) => c.valid);
+/** Derive clause validity: all visible chips must be valid. */
+export function computeClauseValidity(
+  chips: Record<string, ChipState>,
+  visibleChips?: Set<string>,
+): boolean {
+  for (const [chipId, chipState] of Object.entries(chips)) {
+    if (visibleChips && !visibleChips.has(chipId)) continue;
+    if (!chipState.valid) return false;
+  }
+  return true;
 }
 
 /** Derive sentence validity: all present+active clauses must be valid. */
@@ -47,18 +54,50 @@ export function computeSentenceValidity(clauses: Record<string, ClauseState>): b
 /**
  * Build context values from a clause's chips using its contextProductions mapping.
  */
+/**
+ * Build context values from a clause's chips using its contextProductions mapping.
+ * Hidden chips (not in visibleChips) are excluded from context production.
+ */
 export function buildContextFromChips(
   contextProductions: Record<string, string>,
   clauseState: ClauseState,
 ): SentenceContext {
   const values: SentenceContext = {};
   for (const [contextKey, sourceChipId] of Object.entries(contextProductions)) {
+    if (clauseState.visibleChips && !clauseState.visibleChips.has(sourceChipId)) continue;
     const chipState = clauseState.chips[sourceChipId];
     if (chipState) {
       values[contextKey] = chipState.value;
     }
   }
   return values;
+}
+
+/**
+ * Evaluate which chips in a clause are visible based on segment presence predicates.
+ * Returns undefined if all chips are unconditionally visible (no predicates).
+ */
+export function evaluateVisibleChips(
+  segments: import('./types').ClauseSegment[],
+  context: SentenceContext,
+): Set<string> | undefined {
+  let hasPredicates = false;
+  const visible = new Set<string>();
+
+  for (const segment of segments) {
+    if (segment.type === 'chip') {
+      if (segment.present) {
+        hasPredicates = true;
+        if (segment.present(context)) {
+          visible.add(segment.chipId);
+        }
+      } else {
+        visible.add(segment.chipId);
+      }
+    }
+  }
+
+  return hasPredicates ? visible : undefined;
 }
 
 /**
@@ -88,11 +127,17 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
       };
     }
 
+    // Evaluate initial segment visibility — needs context from ancestor productions,
+    // but at init time there's no context yet. Use empty context; the initial context
+    // pass (runInitialContextPass) will re-evaluate after defaults propagate.
+    const visibleChips = evaluateVisibleChips(clauseDef.segments, {});
+
     clauses[clauseDef.id] = {
       present: !clauseDef.contingency,
       active: clauseDef.necessity === 'required',
       chips,
-      valid: computeClauseValidity(chips),
+      valid: computeClauseValidity(chips, visibleChips),
+      visibleChips,
     };
   }
 

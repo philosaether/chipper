@@ -17,3 +17,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [reference-domain.md](reference-domain.md) | accepted | Reference domain: async/hierarchical data source, navigation/search popup. |
 | [contingency-engine.md](contingency-engine.md) | accepted | Contingency engine: clause presence/activation, tree-scoped context, domain reconfiguration, cascade. |
 | [builder-dx.md](builder-dx.md) | accepted | Builder DX: rename clause→builder, chip/produces shorthands, keyword displayLabel, default, palette rename, expression helpers. |
+| [chip-contingency.md](chip-contingency.md) | accepted | Chip-level contingency: segment visibility within a clause based on context, visible-only context production. |

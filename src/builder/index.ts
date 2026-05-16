@@ -15,6 +15,7 @@ import type {
   LineDefinition,
   Palette,
   RepeatingClauseConfig,
+  SentenceContext,
   SentenceDefinition,
 } from '../core/types';
 import type { SentenceState } from '../core/state';
@@ -43,13 +44,22 @@ export function chip(
 // Clause builder
 // ---------------------------------------------------------------------------
 
+export interface ChipOptions {
+  mode?: ChipMode;
+  present?: (context: SentenceContext) => boolean;
+}
+
+export interface TextOptions {
+  present?: (context: SentenceContext) => boolean;
+}
+
 export interface ClauseBuilder {
   required(): ClauseBuilder;
   optional(): ClauseBuilder;
-  text(text: string): ClauseBuilder;
+  text(text: string, options?: TextOptions): ClauseBuilder;
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
-  chip(id: string, domainName?: string, options?: { mode?: ChipMode }): ClauseBuilder;
+  chip(id: string, domainName?: string, options?: ChipOptions): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
@@ -78,8 +88,8 @@ export function builder(): ClauseBuilder {
       necessity = 'optional';
       return clauseBuilder;
     },
-    text(value: string) {
-      segments.push({ type: 'text', value });
+    text(value: string, options?: TextOptions) {
+      segments.push({ type: 'text', value, present: options?.present });
       return clauseBuilder;
     },
     leads(_first: string, _rest: string) {
@@ -91,10 +101,10 @@ export function builder(): ClauseBuilder {
       placeholderText = text;
       return clauseBuilder;
     },
-    chip(id: string, domainName?: string, options?: { mode?: ChipMode }) {
+    chip(id: string, domainName?: string, options?: ChipOptions) {
       const chipDef = chip(id, domainName, options);
       chips.push(chipDef);
-      segments.push({ type: 'chip', chipId: id });
+      segments.push({ type: 'chip', chipId: id, present: options?.present });
       return clauseBuilder;
     },
     contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>) {

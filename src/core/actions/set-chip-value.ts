@@ -7,8 +7,8 @@
 
 import type { ChipState, ClauseState } from '../state';
 import type { SentenceStore } from '../store';
-import { buildContextFromChips, computeClauseValidity, computeDisplayValue, computeSentenceValidity } from '../initialize';
-import { evaluateContingency } from '../context-resolution';
+import { buildContextFromChips, computeClauseValidity, computeDisplayValue, computeSentenceValidity, evaluateVisibleChips } from '../initialize';
+import { evaluateContingency, resolveContext } from '../context-resolution';
 
 /** Set a chip's value. */
 export interface SetChipValueAction {
@@ -45,7 +45,36 @@ export function handleSetChipValue(
 
   const newChips = { ...clause.chips, [chipId]: newChipState };
 
-  const newClause: ClauseState = { ...clause, chips: newChips, valid: computeClauseValidity(newChips) };
+  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
+
+  // Re-evaluate segment visibility: build the clause's full context
+  // (ancestor context + own chip values) and run segment predicates.
+  let visibleChips = clause.visibleChips;
+  if (clauseDef) {
+    const hasSegmentPredicates = clauseDef.segments.some(
+      (s) => s.type === 'chip' && s.present,
+    );
+    if (hasSegmentPredicates) {
+      const ancestorContext = resolveContext(clauseId, store.definition, store.state.contexts);
+      // Build own context from updated chips
+      const ownContext: Record<string, unknown> = {};
+      if (clauseDef.contextProductions) {
+        for (const [key, srcChipId] of Object.entries(clauseDef.contextProductions)) {
+          const cs = newChips[srcChipId];
+          if (cs) ownContext[key] = cs.value;
+        }
+      }
+      const fullContext = { ...ancestorContext, ...ownContext };
+      visibleChips = evaluateVisibleChips(clauseDef.segments, fullContext);
+    }
+  }
+
+  const newClause: ClauseState = {
+    ...clause,
+    chips: newChips,
+    valid: computeClauseValidity(newChips, visibleChips),
+    visibleChips,
+  };
   const newClauses: Record<string, ClauseState> = {
     ...store.state.clauses,
     [clauseId]: newClause,
@@ -61,7 +90,6 @@ export function handleSetChipValue(
   };
 
   // Check if this clause produces context — if so, propagate
-  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
   if (clauseDef?.contextProductions) {
     const contextValues = buildContextFromChips(clauseDef.contextProductions, newClause);
     return evaluateContingency(updatedStore, clauseId, contextValues);

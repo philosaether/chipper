@@ -42,6 +42,9 @@ export interface ClauseState {
 
   /** Whether all chips in this clause are valid (derived) */
   valid: boolean;
+
+  /** Chips currently visible (undefined = all visible, for clauses without segment contingency) */
+  visibleChips?: Set<string>;
 }
 
 /** Context scope — one node in the contingency-scoped context tree. */

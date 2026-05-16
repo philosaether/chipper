@@ -183,12 +183,16 @@ export interface ClauseOverrides {
 export interface TextSegment {
   type: 'text';
   value: string;
+  /** When should this text be visible? Omit = always visible. */
+  present?: (context: SentenceContext) => boolean;
 }
 
 /** A chip reference within a clause. */
 export interface ChipSegment {
   type: 'chip';
   chipId: string;
+  /** When should this chip be visible? Omit = always visible. */
+  present?: (context: SentenceContext) => boolean;
 }
 
 /** One piece of a clause's rendering order. */

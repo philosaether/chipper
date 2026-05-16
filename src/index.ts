@@ -73,7 +73,7 @@ export { createPalette, extendPalette, type PaletteConfig } from './palette';
 
 // Builder
 export { sentence, builder, chip, repeating } from './builder';
-export type { ClauseBuilder } from './builder';
+export type { ClauseBuilder, ChipOptions, TextOptions } from './builder';
 
 // Hooks
 export {

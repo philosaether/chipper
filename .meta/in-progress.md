@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Builder DX improvements** (designs/builder-dx.md) — 7 items: rename clause→builder, chip ID shorthand, produces shorthand, keyword displayLabel, default rename, palette rename, expression helpers.
+- **Chip-level contingency** (designs/chip-contingency.md) — segment visibility within a clause based on context, visible-only context production.
 
 ## Next Session
 
