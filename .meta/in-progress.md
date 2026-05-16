@@ -6,12 +6,13 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Chip-level contingency** (designs/chip-contingency.md) — segment visibility within a clause based on context, visible-only context production.
+Nothing active — chip-level contingency and builder DX both merged to main.
 
 ## Next Session
 
-- **KOE mode-switching keywords** — the cadence demo exposed that "custom interval" needs to flip the chip into expression mode, set a default, and change popup behavior on next open. Needs a design loop (`/draft`). Also entangled with Keyword.displayLabel (trigger text distinct from popup label) and consumer access to the default display function. Phil's builder experiments are in `.meta/inbox/builder-notes.md`.
-- **Sentence layout for contingent clauses** — flex-direction: column puts each clause on its own line. Contingent clauses need to flow inline with their parent. Needs design decision before the cadence demo looks right.
+- **Demo sentence v0.3** — continue the cadence sentence with chip-level contingency. App.tsx has a WIP sentence that needs the `contingentOn('cadence', ...)` fix (clause ID, not chip ID). Test the full flow: cadenceType → cadencePeriod visibility → dayOfWeek contingency.
+- **KOE mode-switching keywords** — "custom interval" needs to flip the chip into expression mode. Partially addressed by chip-level contingency (cadencePeriod appears/disappears), but the KOE popup behavior when switching modes is still undesigned. May need `/draft`.
+- **Builder DX wishlist** — remaining items in `.meta/inbox/devex-wishlist.md`: palette rename, clause definition ergonomics, `.chip()` positional arg footgun, architecture doc refresh, contingency at clause/chip/text level (partially done).
 
 ## Tech Debt
 
@@ -19,6 +20,7 @@ Current work state. Update constantly, delete items when done.
 - Screen reader support (aria-live, aria-invalid, role=option)
 - `useReferenceDisplay` hook — eager display resolution on chip mount for saved reference values. Without it, restored references show raw IDs until popup interaction. Needed before async consumer workflows ship.
 - Clause definition index — `definition.clauses.find()` and `.filter()` called repeatedly in reducer and context resolution. Precompute `Map<clauseId, ClauseDefinition>` and `Map<superclauseId, ClauseDefinition[]>` on the store for O(1) lookups. Not urgent at sentence scale (5-15 clauses).
+- Architecture doc refresh — chipper-architecture.md §3 and §4 are stale (still show `clause()`, `domains:`, no mention of lines, `displayLabel`, `default`, expression helpers, chip-level contingency).
 
 ## v1.0 Feature Inventory
 
@@ -35,7 +37,19 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [x] TOGGLE_CLAUSE action handler (done 2026-05-14)
 - [x] SET_CONTEXT + context propagation through contingency tree (done 2026-05-14)
 - [x] Contingency system — clause presence/config based on context (done 2026-05-14)
+- [x] Chip-level contingency — segment visibility, visible-only context production (done 2026-05-16)
+- [x] Line grouping — LineDefinition, .line() builder method, chipper-line DOM layer (done 2026-05-16)
 - [ ] Serialization/deserialization — save and restore sentence state
+
+### Builder DX
+- [x] Rename clause() → builder() (done 2026-05-16)
+- [x] Chip ID as implicit domain name (done 2026-05-16)
+- [x] produces() string shorthand (done 2026-05-16)
+- [x] Keyword displayLabel + shared normalizer (done 2026-05-16)
+- [x] defaultValue → default + first-keyword fallback (done 2026-05-16)
+- [x] extendPalette({ chips, patterns }) consumer-facing rename (done 2026-05-16)
+- [x] textExpression() / numericExpression() helpers (done 2026-05-16)
+- [x] Keywords-only KOE domains — expression config optional (done 2026-05-16)
 
 ### Chip Modes
 - [ ] Readonly mode
@@ -77,8 +91,9 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 4. ~~keywordOrExpressionDomain + expressionDomain~~ (done)
 5. ~~multiSelect + altCoordinate + numeric stepper + visual polish~~ (done)
 6. ~~Domain archetypes (composite, reference) + core engine features~~ (done)
-7. KOE mode-switching + sentence layout + demo page v0.3
-8. Additional themes
-9. Documentation + publicity article
-10. npm publish
-11. Embed in Praxis as React island
+7. ~~Builder DX + chip-level contingency + line grouping~~ (done)
+8. KOE mode-switching + demo page v0.3
+9. Additional themes
+10. Documentation + publicity article
+11. npm publish
+12. Embed in Praxis as React island
