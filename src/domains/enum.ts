@@ -67,7 +67,7 @@ export function enumDomain(config: EnumDomainConfig): Domain<string> {
 
   const defaultValue = config.default
     ?? config.defaultValue
-    ?? (keywords.length > 0 ? keywords[0]!.value : '');
+    ?? (config.placeholder ? '' : (keywords.length > 0 ? keywords[0]!.value : ''));
 
   return createDomain<string>({
     type: 'enum',

@@ -16,12 +16,6 @@ const palette = extendPalette({
       keywords: monthKeywords,
       placeholder: 'a month',
     }),
-    monthNoDefault: enumDomain({
-      color: 'month',
-      keywords: monthKeywords,
-      default: '',
-      placeholder: 'a month',
-    }),
     monthWithDefault: enumDomain({
       color: 'month',
       keywords: monthKeywords,
@@ -53,7 +47,8 @@ describe('initializeSentenceState', () => {
     expect(store.domains['month'].type).toBe('enum');
   });
 
-  it('initializes chip with first keyword as default', () => {
+  it('initializes chip with empty default when placeholder is set', () => {
+    // month domain has placeholder: 'a month' → default is '' (user must choose)
     const definition = sentence(palette)
       .clause('when', builder().required().chip('month', 'month'))
       .build();
@@ -61,13 +56,13 @@ describe('initializeSentenceState', () => {
     const store = initializeSentenceState(definition);
     const chipState = store.state.clauses['when'].chips['month'];
 
-    expect(chipState.value).toBe('january');
+    expect(chipState.value).toBe('');
     expect(chipState.dirty).toBe(false);
   });
 
   it('uses placeholder for display when default is invalid', () => {
     const definition = sentence(palette)
-      .clause('when', builder().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -111,7 +106,7 @@ describe('initializeSentenceState', () => {
 
   it('derives clause validity from chip validity', () => {
     const definition = sentence(palette)
-      .clause('when', builder().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -122,7 +117,7 @@ describe('initializeSentenceState', () => {
 
   it('derives sentence validity from active clause validity', () => {
     const definition = sentence(palette)
-      .clause('when', builder().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
