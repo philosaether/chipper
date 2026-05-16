@@ -16,10 +16,11 @@ import { monthKeywords } from '../fixtures/month-keywords';
 import type { SentenceDefinition } from '../../src/core/types';
 
 const palette = extendPalette({
-  domains: {
+  chips: {
     month: enumDomain({
       color: 'month',
       keywords: monthKeywords,
+      default: '',
       placeholder: 'a month',
     }),
   },
@@ -187,10 +188,11 @@ describe('usePopup', () => {
 
   it('opening a different chip closes the previous one (singleton)', () => {
     const secondPalette = extendPalette({
-      domains: {
+      chips: {
         month: enumDomain({
           color: 'month',
           keywords: monthKeywords,
+          default: '',
           placeholder: 'a month',
         }),
         year: enumDomain({

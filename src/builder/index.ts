@@ -3,7 +3,7 @@
  *
  * The builder is how consumers define sentences — composing clauses
  * from palette domains with contingency relationships and behavior.
- * See chipper-architecture.md §4.
+ * See chipper-architecture.md §4, builder-dx.md.
  */
 
 import type {
@@ -29,12 +29,12 @@ import { chipperPalette } from '../palette';
  */
 export function chip(
   id: string,
-  domainName: string,
+  domainName?: string,
   options?: { mode?: ChipMode },
 ): ChipDefinition {
   return {
     id,
-    domainName,
+    domainName: domainName ?? id,
     mode: options?.mode ?? { type: 'interactive' },
   };
 }
@@ -43,15 +43,15 @@ export function chip(
 // Clause builder
 // ---------------------------------------------------------------------------
 
-interface ClauseBuilder {
+export interface ClauseBuilder {
   required(): ClauseBuilder;
   optional(): ClauseBuilder;
   text(text: string): ClauseBuilder;
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
-  chip(id: string, domainName: string, options?: { mode?: ChipMode }): ClauseBuilder;
+  chip(id: string, domainName?: string, options?: { mode?: ChipMode }): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>): ClauseBuilder;
-  produces(mapping: Record<string, string>): ClauseBuilder;
+  produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
 }
 
@@ -61,7 +61,7 @@ interface ClauseBuilder {
  * Segments are built in call order: .text(), .chip(), .text()
  * all push to the segment list. Text and chips interleave freely.
  */
-export function clause(): ClauseBuilder {
+export function builder(): ClauseBuilder {
   const segments: ClauseSegment[] = [];
   const chips: ChipDefinition[] = [];
   let necessity: ClauseDefinition['necessity'] = 'required';
@@ -69,41 +69,45 @@ export function clause(): ClauseBuilder {
   let contingency: ClauseDefinition['contingency'];
   let contextProductions: ClauseDefinition['contextProductions'];
 
-  const builder: ClauseBuilder = {
+  const clauseBuilder: ClauseBuilder = {
     required() {
       necessity = 'required';
-      return builder;
+      return clauseBuilder;
     },
     optional() {
       necessity = 'optional';
-      return builder;
+      return clauseBuilder;
     },
     text(value: string) {
       segments.push({ type: 'text', value });
-      return builder;
+      return clauseBuilder;
     },
     leads(_first: string, _rest: string) {
       // Used by repeating clauses — first/rest lead text
       segments.push({ type: 'text', value: _first });
-      return builder;
+      return clauseBuilder;
     },
     placeholder(text: string) {
       placeholderText = text;
-      return builder;
+      return clauseBuilder;
     },
-    chip(id: string, domainName: string, options?: { mode?: ChipMode }) {
+    chip(id: string, domainName?: string, options?: { mode?: ChipMode }) {
       const chipDef = chip(id, domainName, options);
       chips.push(chipDef);
       segments.push({ type: 'chip', chipId: id });
-      return builder;
+      return clauseBuilder;
     },
     contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>) {
       contingency = { superclauseId, ...config };
-      return builder;
+      return clauseBuilder;
     },
-    produces(mapping: Record<string, string>) {
-      contextProductions = mapping;
-      return builder;
+    produces(chipIdOrMapping: string | Record<string, string>) {
+      if (typeof chipIdOrMapping === 'string') {
+        contextProductions = { [chipIdOrMapping]: chipIdOrMapping };
+      } else {
+        contextProductions = chipIdOrMapping;
+      }
+      return clauseBuilder;
     },
     _build(id: string): ClauseDefinition {
       return {
@@ -118,8 +122,11 @@ export function clause(): ClauseBuilder {
     },
   };
 
-  return builder;
+  return clauseBuilder;
 }
+
+/** @deprecated Use builder() instead */
+export const clause = builder;
 
 // ---------------------------------------------------------------------------
 // Repeating clause helper
@@ -183,12 +190,12 @@ export function sentence(palette?: Palette): SentenceBuilder {
     }
   }
 
-  const builder: SentenceBuilder = {
+  const sentenceBuilder: SentenceBuilder = {
     clause(id: string, clauseBuilder: ClauseBuilder) {
       ensureCurrentLine();
       clauseDefinitions.push(clauseBuilder._build(id));
       lineDefinitions[currentLineIndex]!.clauseIds.push(id);
-      return builder;
+      return sentenceBuilder;
     },
     clauses(clauseBuilders: ClauseBuilder[]) {
       ensureCurrentLine();
@@ -197,22 +204,33 @@ export function sentence(palette?: Palette): SentenceBuilder {
         clauseDefinitions.push(cb._build(id));
         lineDefinitions[currentLineIndex]!.clauseIds.push(id);
       }
-      return builder;
+      return sentenceBuilder;
     },
     line(options?: LineOptions) {
       lineDefinitions.push({ clauseIds: [], indent: options?.indent });
       currentLineIndex = lineDefinitions.length - 1;
-      return builder;
+      return sentenceBuilder;
     },
     serializer(fn) {
       serializerFn = fn;
-      return builder;
+      return sentenceBuilder;
     },
     deserializer(fn) {
       deserializerFn = fn;
-      return builder;
+      return sentenceBuilder;
     },
     build(): SentenceDefinition {
+      // Validate: no duplicate chip IDs
+      const seenChipIds = new Set<string>();
+      for (const clauseDef of clauseDefinitions) {
+        for (const chipDef of clauseDef.chips) {
+          if (seenChipIds.has(chipDef.id)) {
+            throw new Error(`Duplicate chip ID "${chipDef.id}" in sentence definition`);
+          }
+          seenChipIds.add(chipDef.id);
+        }
+      }
+
       return {
         clauses: clauseDefinitions,
         lines: lineDefinitions.length > 0 ? lineDefinitions : undefined,
@@ -223,5 +241,5 @@ export function sentence(palette?: Palette): SentenceBuilder {
     },
   };
 
-  return builder;
+  return sentenceBuilder;
 }

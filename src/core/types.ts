@@ -17,6 +17,9 @@ export interface Keyword<T = unknown> {
   /** Display label shown in the popup */
   label: string;
 
+  /** Display text shown in the chip trigger (defaults to label) */
+  displayLabel?: string;
+
   /** The value this keyword represents */
   value: T;
 

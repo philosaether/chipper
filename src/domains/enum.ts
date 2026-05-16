@@ -8,6 +8,7 @@
 
 import type { Domain, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
+import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
 
 /** Configuration for an enum domain. */
 export interface EnumDomainConfig {
@@ -15,12 +16,12 @@ export interface EnumDomainConfig {
   color: string;
 
   /** The complete set of allowed values */
-  keywords: Keyword<string>[];
+  keywords: KeywordConfig<string>[] | Keyword<string>[];
 
-  /**
-   * Default value. If omitted, defaults to empty string (invalid → placeholder).
-   * If provided, should be a value from the keyword list.
-   */
+  /** Default value. When omitted, uses first keyword's value or '' if no keywords. */
+  default?: string;
+
+  /** @deprecated Use `default` instead */
   defaultValue?: string;
 
   /** Text shown in the chip trigger when the value is invalid */
@@ -44,30 +45,38 @@ export interface EnumDomainConfig {
  * const priority = enumDomain({
  *   color: 'priority',
  *   keywords: [
- *     { label: 'low', value: 'low' },
- *     { label: 'medium', value: 'medium' },
- *     { label: 'high', value: 'high' },
+ *     { value: 'low' },
+ *     { value: 'medium' },
+ *     { value: 'high' },
  *   ],
  *   placeholder: 'a priority level',
  * });
  * ```
  */
 export function enumDomain(config: EnumDomainConfig): Domain<string> {
+  const keywords: Keyword<string>[] = normalizeKeywords(
+    config.keywords as KeywordConfig<string>[],
+  );
+
   const validValues = new Set<string>();
-  const labelByValue = new Map<string, string>();
-  for (const k of config.keywords) {
+  const displayByValue = new Map<string, string>();
+  for (const k of keywords) {
     validValues.add(k.value);
-    labelByValue.set(k.value, k.label);
+    displayByValue.set(k.value, k.displayLabel ?? k.label);
   }
+
+  const defaultValue = config.default
+    ?? config.defaultValue
+    ?? (keywords.length > 0 ? keywords[0]!.value : '');
 
   return createDomain<string>({
     type: 'enum',
     color: config.color,
-    keywords: config.keywords,
-    defaultValue: config.defaultValue ?? '',
+    keywords,
+    defaultValue,
     placeholder: config.placeholder,
     validate: (value) => validValues.has(value),
-    display: (value) => labelByValue.get(value) ?? String(value),
+    display: (value) => displayByValue.get(value) ?? String(value),
     consumes: config.consumes,
     produces: config.produces,
     onContextChange: config.onContextChange,

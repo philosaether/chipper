@@ -10,16 +10,22 @@ import { enumDomain } from '../../src/domains/enum';
 import { monthKeywords } from '../fixtures/month-keywords';
 
 const palette = extendPalette({
-  domains: {
+  chips: {
     month: enumDomain({
       color: 'month',
       keywords: monthKeywords,
       placeholder: 'a month',
     }),
+    monthNoDefault: enumDomain({
+      color: 'month',
+      keywords: monthKeywords,
+      default: '',
+      placeholder: 'a month',
+    }),
     monthWithDefault: enumDomain({
       color: 'month',
       keywords: monthKeywords,
-      defaultValue: 'september',
+      default: 'september',
     }),
   },
 });
@@ -47,7 +53,7 @@ describe('initializeSentenceState', () => {
     expect(store.domains['month'].type).toBe('enum');
   });
 
-  it('initializes chip with domain defaultValue', () => {
+  it('initializes chip with first keyword as default', () => {
     const definition = sentence(palette)
       .clause('when', clause().required().chip('month', 'month'))
       .build();
@@ -55,13 +61,13 @@ describe('initializeSentenceState', () => {
     const store = initializeSentenceState(definition);
     const chipState = store.state.clauses['when'].chips['month'];
 
-    expect(chipState.value).toBe('');
+    expect(chipState.value).toBe('january');
     expect(chipState.dirty).toBe(false);
   });
 
   it('uses placeholder for display when default is invalid', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', clause().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -105,18 +111,18 @@ describe('initializeSentenceState', () => {
 
   it('derives clause validity from chip validity', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', clause().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
 
-    // month has invalid default → clause invalid
+    // monthNoDefault has invalid default '' → clause invalid
     expect(store.state.clauses['when'].valid).toBe(false);
   });
 
   it('derives sentence validity from active clause validity', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', clause().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);

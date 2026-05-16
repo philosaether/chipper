@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-Nothing active — reference domain and contingency engine both merged to main.
+- **Builder DX improvements** (designs/builder-dx.md) — 7 items: rename clause→builder, chip ID shorthand, produces shorthand, keyword displayLabel, default rename, palette rename, expression helpers.
 
 ## Next Session
 

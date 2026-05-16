@@ -12,10 +12,11 @@ import { monthKeywords } from '../fixtures/month-keywords';
 import type { SentenceDefinition } from '../../src/core/types';
 
 const palette = extendPalette({
-  domains: {
+  chips: {
     month: enumDomain({
       color: 'month',
       keywords: monthKeywords,
+      default: '',
       placeholder: 'a month',
     }),
   },

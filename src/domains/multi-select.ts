@@ -10,6 +10,7 @@
 
 import type { Domain, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
+import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
 
 /** Configuration for a multi-select domain. */
 export interface MultiSelectDomainConfig {
@@ -17,14 +18,14 @@ export interface MultiSelectDomainConfig {
   color: string;
 
   /** Available options (rendered as toggle pills in the popup) */
-  options: Keyword<string>[];
+  options: KeywordConfig<string>[] | Keyword<string>[];
 
   /**
    * Group keywords — shortcuts that set multiple options at once.
    * Selecting a keyword replaces the current selection entirely.
    * E.g., { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] }
    */
-  keywords?: Keyword<string[]>[];
+  keywords?: KeywordConfig<string[]>[] | Keyword<string[]>[];
 
   /** Max selections (omit for unlimited) */
   maxSelections?: number;
@@ -37,6 +38,9 @@ export interface MultiSelectDomainConfig {
   countLabel?: string;
 
   /** Default value — empty array if omitted (invalid → placeholder) */
+  default?: string[];
+
+  /** @deprecated Use `default` instead */
   defaultValue?: string[];
 
   /** Text shown in chip trigger when no options are selected */
@@ -88,8 +92,13 @@ export function selectionMatchesKeyword(
  * ```
  */
 export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<string[]> {
-  const validValues = new Set(config.options.map((o) => o.value));
-  const labelByValue = new Map(config.options.map((o) => [o.value, o.label]));
+  const options = normalizeKeywords(config.options as KeywordConfig<string>[]);
+  const groupKeywords = config.keywords
+    ? normalizeKeywords(config.keywords as KeywordConfig<string[]>[])
+    : [];
+
+  const validValues = new Set(options.map((o) => o.value));
+  const displayByValue = new Map(options.map((o) => [o.value, o.displayLabel ?? o.label]));
   const maxSelections = config.maxSelections;
 
   const countLabel = config.countLabel ?? 'selected';
@@ -100,8 +109,6 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     return value.every((v) => validValues.has(v));
   };
 
-  const groupKeywords = config.keywords ?? [];
-
   const display = (value: string[]): string => {
     if (value.length === 0) return '';
 
@@ -109,21 +116,23 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     const valueSet = new Set(value);
     for (const keyword of groupKeywords) {
       if (selectionMatchesKeyword(valueSet, value.length, keyword.value)) {
-        return keyword.label;
+        return keyword.displayLabel ?? keyword.label;
       }
     }
 
     if (value.length <= DISPLAY_LABEL_THRESHOLD) {
-      return value.map((v) => labelByValue.get(v) ?? v).join(', ');
+      return value.map((v) => displayByValue.get(v) ?? v).join(', ');
     }
     return `${value.length} ${countLabel}`;
   };
 
+  const defaultValue = config.default ?? config.defaultValue ?? [];
+
   return createDomain<string[]>({
     type: 'multi-select',
     color: config.color,
-    keywords: config.keywords ?? [],
-    defaultValue: config.defaultValue ?? [],
+    keywords: groupKeywords,
+    defaultValue,
     placeholder: config.placeholder,
     validate,
     display,
@@ -131,7 +140,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     produces: config.produces,
     onContextChange: config.onContextChange,
     meta: {
-      options: config.options,
+      options,
       maxSelections: config.maxSelections,
     },
   });

@@ -9,10 +9,13 @@ export { enumDomain, type EnumDomainConfig } from './enum';
 export {
   keywordOrExpressionDomain,
   expressionDomain,
+  textExpression,
+  numericExpression,
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,
 } from './keyword-or-expression';
+export { type KeywordConfig } from './normalize-keywords';
 export {
   multiSelectDomain,
   selectionMatchesKeyword,

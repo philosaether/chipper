@@ -19,7 +19,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.type).toBe('keyword-or-expression');
   });
@@ -28,7 +28,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.validate('09:00')).toBe(true);
     expect(domain.validate('17:00')).toBe(true);
@@ -38,7 +38,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.validate('14:30')).toBe(true);
     expect(domain.validate('any text')).toBe(true);
@@ -48,7 +48,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.validate('')).toBe(false);
   });
@@ -57,7 +57,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.display('09:00')).toBe('morning');
     expect(domain.display('17:00')).toBe('evening');
@@ -67,7 +67,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.display('14:30')).toBe('14:30');
   });
@@ -99,21 +99,31 @@ describe('keywordOrExpressionDomain', () => {
     expect(domain.display('09:00')).toBe('morning');
   });
 
-  it('defaults to empty string when no defaultValue provided', () => {
+  it('defaults to first keyword when keywords provided', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
-      expression: {},
+      keywords: timeKeywords,
+      expression: { inputType: 'text' },
+    });
+    expect(domain.defaultValue).toBe('09:00');
+    expect(domain.validate(domain.defaultValue)).toBe(true);
+  });
+
+  it('defaults to empty string when no keywords and no default', () => {
+    const domain = keywordOrExpressionDomain({
+      color: 'copper',
+      expression: { inputType: 'text' },
     });
     expect(domain.defaultValue).toBe('');
     expect(domain.validate(domain.defaultValue)).toBe(false);
   });
 
-  it('accepts explicit defaultValue', () => {
+  it('accepts explicit default', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: {},
-      defaultValue: '09:00',
+      expression: { inputType: 'text' },
+      default: '09:00',
     });
     expect(domain.defaultValue).toBe('09:00');
     expect(domain.validate(domain.defaultValue)).toBe(true);
@@ -122,7 +132,7 @@ describe('keywordOrExpressionDomain', () => {
   it('keywords are optional (expression-only)', () => {
     const domain = keywordOrExpressionDomain({
       color: 'rose',
-      expression: { placeholder: 'task name' },
+      expression: { inputType: 'text', placeholder: 'task name' },
     });
     expect(domain.keywords).toEqual([]);
     expect(domain.validate('My Task')).toBe(true);
@@ -133,7 +143,7 @@ describe('keywordOrExpressionDomain', () => {
     const domain = keywordOrExpressionDomain({
       color: 'copper',
       keywords: timeKeywords,
-      expression: { placeholder: 'HH:MM' },
+      expression: { inputType: 'text', placeholder: 'HH:MM' },
     });
     expect(domain.expressionModes).toHaveLength(1);
     expect(domain.expressionModes[0].id).toBe('text');
@@ -145,7 +155,7 @@ describe('keywordOrExpressionDomain', () => {
     const display = (v: string) => v.toUpperCase();
     const domain = keywordOrExpressionDomain({
       color: 'copper',
-      expression: { validate, display },
+      expression: { inputType: 'text', validate, display },
     });
     const mode = domain.expressionModes[0];
     expect(mode.validate('ab')).toBe(false);
@@ -156,7 +166,7 @@ describe('keywordOrExpressionDomain', () => {
   it('stores maxLength on expression mode', () => {
     const domain = keywordOrExpressionDomain({
       color: 'rose',
-      expression: { maxLength: 200 },
+      expression: { inputType: 'text', maxLength: 200 },
     });
     expect(domain.expressionModes[0].maxLength).toBe(200);
   });
@@ -165,7 +175,7 @@ describe('keywordOrExpressionDomain', () => {
     const onChange = () => ({ keywords: [] });
     const domain = keywordOrExpressionDomain({
       color: 'copper',
-      expression: {},
+      expression: { inputType: 'text' },
       consumes: ['period'],
       produces: ['time'],
       onContextChange: onChange,
@@ -180,7 +190,7 @@ describe('expressionDomain', () => {
   it('creates a keyword-or-expression domain with no keywords', () => {
     const domain = expressionDomain({
       color: 'rose',
-      expression: { placeholder: 'task name' },
+      expression: { inputType: 'text', placeholder: 'task name' },
     });
     expect(domain.type).toBe('keyword-or-expression');
     expect(domain.keywords).toEqual([]);
@@ -189,7 +199,7 @@ describe('expressionDomain', () => {
   it('validates non-empty input', () => {
     const domain = expressionDomain({
       color: 'rose',
-      expression: {},
+      expression: { inputType: 'text' },
     });
     expect(domain.validate('hello')).toBe(true);
     expect(domain.validate('')).toBe(false);
@@ -209,7 +219,7 @@ describe('expressionDomain', () => {
   it('stores placeholder', () => {
     const domain = expressionDomain({
       color: 'rose',
-      expression: {},
+      expression: { inputType: 'text' },
       placeholder: 'a new task',
     });
     expect(domain.placeholder).toBe('a new task');

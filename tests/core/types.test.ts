@@ -13,7 +13,7 @@ describe('core types', () => {
   });
 
   it('extends the default palette', () => {
-    const extended = extendPalette({ domains: {} });
+    const extended = extendPalette({ chips: {} });
     expect(extended).toBeDefined();
     expect(extended.domains).toEqual({});
   });

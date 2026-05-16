@@ -11,10 +11,11 @@ import { enumDomain } from '../../src/domains/enum';
 import { monthKeywords } from '../fixtures/month-keywords';
 
 const palette = extendPalette({
-  domains: {
+  chips: {
     month: enumDomain({
       color: 'month',
       keywords: monthKeywords,
+      default: '',
       placeholder: 'a month',
     }),
   },

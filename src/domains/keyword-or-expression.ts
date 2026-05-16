@@ -12,11 +12,12 @@
 
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
+import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
 
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
-  /** Input type — 'text' (default) or 'number' (stepper UI) */
-  inputType?: 'text' | 'number';
+  /** Input type — 'text' or 'number' (stepper UI). Required. */
+  inputType: 'text' | 'number';
 
   /** Placeholder text for the input field */
   placeholder?: string;
@@ -40,18 +41,45 @@ export interface ExpressionConfig {
   display?: (value: string) => string;
 }
 
+/**
+ * Create a text expression config.
+ * Sugar for { inputType: 'text', ...options }.
+ */
+export function textExpression(
+  options?: Omit<ExpressionConfig, 'inputType'>,
+): ExpressionConfig {
+  return { inputType: 'text', ...options };
+}
+
+/**
+ * Create a numeric expression config.
+ * Sugar for { inputType: 'number', ...options } with sensible defaults.
+ */
+export function numericExpression(
+  options?: Omit<ExpressionConfig, 'inputType'>,
+): ExpressionConfig {
+  return {
+    inputType: 'number',
+    validate: (v) => { const n = Number(v); return !isNaN(n) && isFinite(n); },
+    ...options,
+  };
+}
+
 /** Configuration for a keyword-or-expression domain. */
 export interface KeywordOrExpressionDomainConfig {
   /** Semantic color key */
   color: string;
 
   /** Preset values shown as keyword pills in the popup */
-  keywords?: Keyword<string>[];
+  keywords?: KeywordConfig<string>[] | Keyword<string>[];
 
   /** Expression mode configuration. Omit for keywords-only domains. */
   expression?: ExpressionConfig;
 
-  /** Default value. Empty string if omitted (invalid → placeholder). */
+  /** Default value. When omitted, uses first keyword's value or '' if no keywords. */
+  default?: string;
+
+  /** @deprecated Use `default` instead */
   defaultValue?: string;
 
   /** Text shown in chip trigger when value is invalid */
@@ -75,14 +103,14 @@ export interface KeywordOrExpressionDomainConfig {
  * const timeOfDay = keywordOrExpressionDomain({
  *   color: 'copper',
  *   keywords: [
- *     { label: 'morning', value: '09:00' },
- *     { label: 'afternoon', value: '12:00' },
- *     { label: 'evening', value: '17:00' },
+ *     { value: '09:00', label: 'morning' },
+ *     { value: '12:00', label: 'afternoon' },
+ *     { value: '17:00', label: 'evening' },
  *   ],
- *   expression: {
+ *   expression: textExpression({
  *     placeholder: 'a specific time (HH:MM)',
  *     validate: (v) => /^\d{2}:\d{2}$/.test(v),
- *   },
+ *   }),
  *   placeholder: 'a time',
  * });
  * ```
@@ -90,10 +118,14 @@ export interface KeywordOrExpressionDomainConfig {
 export function keywordOrExpressionDomain(
   config: KeywordOrExpressionDomainConfig,
 ): Domain<string> {
-  const keywords = config.keywords ?? [];
+  const rawKeywords = config.keywords ?? [];
+  const keywords: Keyword<string>[] = isNormalizedKeywords(rawKeywords)
+    ? rawKeywords
+    : normalizeKeywords(rawKeywords as KeywordConfig<string>[]);
+
   const validKeywordValues = new Set<string>(keywords.map((k) => k.value));
-  const labelByValue = new Map<string, string>(
-    keywords.map((k) => [k.value, k.label]),
+  const displayByValue = new Map<string, string>(
+    keywords.map((k) => [k.value, k.displayLabel ?? k.label]),
   );
 
   const expression = config.expression;
@@ -105,32 +137,35 @@ export function keywordOrExpressionDomain(
     : (value: string): boolean => validKeywordValues.has(value);
 
   const display = (value: string): string =>
-    labelByValue.get(value) ?? expressionDisplay(value);
+    displayByValue.get(value) ?? expressionDisplay(value);
 
   const expressionModes: ExpressionMode<string>[] = [];
 
   if (expression) {
-    const inputType = expression.inputType ?? 'text';
     expressionModes.push({
-      id: inputType,
+      id: expression.inputType,
       label: expression.placeholder ?? 'Type a value',
       degreesOfFreedom: 1,
       validate: expressionValidate,
       display: expressionDisplay,
       maxLength: expression.maxLength,
-      inputType,
+      inputType: expression.inputType,
       min: expression.min,
       max: expression.max,
       step: expression.step,
     });
   }
 
+  const defaultValue = config.default
+    ?? config.defaultValue
+    ?? (keywords.length > 0 ? keywords[0]!.value : '');
+
   return createDomain<string>({
     type: 'keyword-or-expression',
     color: config.color,
     keywords,
     expressionModes,
-    defaultValue: config.defaultValue ?? '',
+    defaultValue,
     placeholder: config.placeholder,
     validate,
     display,
@@ -138,6 +173,17 @@ export function keywordOrExpressionDomain(
     produces: config.produces,
     onContextChange: config.onContextChange,
   });
+}
+
+/** Check if keywords are already normalized (have `label` as a required string). */
+function isNormalizedKeywords<T>(
+  keywords: KeywordConfig<T>[] | Keyword<T>[],
+): keywords is Keyword<T>[] {
+  if (keywords.length === 0) return true;
+  // If the first entry has `label` as a non-undefined string, assume normalized.
+  // KeywordConfig makes label optional; Keyword makes it required.
+  return typeof (keywords[0] as Keyword<T>).label === 'string'
+    && !('display' in keywords[0]!);
 }
 
 /** Configuration for an expression-only domain (no keywords). */
@@ -149,6 +195,9 @@ export interface ExpressionDomainConfig {
   expression: ExpressionConfig;
 
   /** Default value. Empty string if omitted (invalid → placeholder). */
+  default?: string;
+
+  /** @deprecated Use `default` instead */
   defaultValue?: string;
 
   /** Text shown in chip trigger when value is invalid */
@@ -174,10 +223,10 @@ export interface ExpressionDomainConfig {
  * ```typescript
  * const taskName = expressionDomain({
  *   color: 'rose',
- *   expression: {
+ *   expression: textExpression({
  *     placeholder: 'task name',
  *     maxLength: 200,
- *   },
+ *   }),
  *   placeholder: 'a new task',
  * });
  * ```

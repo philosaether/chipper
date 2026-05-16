@@ -14,7 +14,7 @@ import { keywordOrExpressionDomain } from '../../src/domains/keyword-or-expressi
 // --- Palette: cadence-like pattern with two levels of contingency ---
 
 const palette = extendPalette({
-  domains: {
+  chips: {
     cadence: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [
@@ -28,6 +28,7 @@ const palette = extendPalette({
         placeholder: 'interval count',
         validate: (v) => /^\d+$/.test(v) && Number(v) >= 1,
       },
+      default: '',
       placeholder: 'how often',
     }),
     period: enumDomain({
@@ -93,7 +94,7 @@ describe('contingency engine — clause presence', () => {
   it('contingent clauses start latent when default value is a collapse keyword', () => {
     // Build a sentence where the parent chip defaults to a collapse keyword
     const collapsedPalette = extendPalette({
-      domains: {
+      chips: {
         ...palette.domains,
         cadence: keywordOrExpressionDomain({
           color: 'copper',
@@ -335,7 +336,7 @@ describe('contingency engine — context scopes', () => {
 describe('contingency engine — domain reconfiguration', () => {
   it('configure() applies chip overrides when clause becomes present', () => {
     const reconfigPalette = extendPalette({
-      domains: {
+      chips: {
         mode: enumDomain({
           color: 'copper',
           keywords: [

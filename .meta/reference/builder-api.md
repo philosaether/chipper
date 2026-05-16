@@ -9,17 +9,82 @@ Quick reference for assembling sentence definitions.
 ### `sentence(palette?)`
 Returns a `SentenceBuilder`. Entry point for defining a sentence. Uses `chipperPalette` if no palette provided.
 
-### `clause()`
+### `builder()`
 Returns a `ClauseBuilder`. Defines a single clause (a fragment of the sentence containing text and chips).
 
-### `chip(id, domainName, options?)`
+### `clause()`
+**Deprecated** — alias for `builder()`. Use `builder()` instead.
+
+### `chip(id, domainName?, options?)`
 Returns a `ChipDefinition` directly. Standalone alternative to `ClauseBuilder.chip()` — useful when you need a chip definition outside the builder chain (rare).
+- `domainName` — defaults to `id` when omitted
 - `options.mode` — `ChipMode`, defaults to `{ type: 'interactive' }`
 
 ### `repeating(clauseBuilder, options)`
-Returns a `RepeatingClauseConfig` for clause groups that can be added/removed by the user (e.g., "when [X], and [Y], and [Z]").
+Returns a `RepeatingClauseConfig` for clause groups that can be added/removed by the user.
 - `options.min` — minimum instances (default 0)
 - `options.max` — maximum instances (default 5)
+
+---
+
+## Palette
+
+### `extendPalette(config)` / `extendPalette(base, config)`
+Extend a palette (or `chipperPalette` by default) with additional chip domains and clause patterns.
+
+```typescript
+const myPalette = extendPalette({
+  chips: {
+    cadence: keywordOrExpressionDomain({ ... }),
+    priority: enumDomain({ ... }),
+  },
+  patterns: {
+    // clause templates (not yet wired up)
+  },
+});
+```
+
+---
+
+## Domain factories
+
+### `enumDomain(config)`
+Keywords-only domain. All values must match a keyword.
+- `color` — semantic color key
+- `keywords` — `[{ value, label?, display?, partial? }]`. `label` defaults to `value`, `display` defaults to `label`.
+- `default` — default value. Defaults to first keyword's value.
+- `placeholder` — chip text when value is invalid
+
+### `keywordOrExpressionDomain(config)`
+Keywords plus optional freeform expression input.
+- `color`, `keywords`, `default`, `placeholder` — same as enum
+- `expression` — `ExpressionConfig` (omit for keywords-only)
+
+### `multiSelectDomain(config)`
+Toggle grid of options with group keyword shortcuts.
+- `color`, `default`, `placeholder` — same pattern
+- `options` — `[{ value, label?, display? }]` individual toggle items
+- `keywords` — group shortcuts with `string[]` values
+- `maxSelections` — optional cap
+- `countLabel` — label for "N selected" display (default "selected")
+
+### `referenceDomain(config)`
+Hierarchical navigation/search popup.
+- `color`, `default`, `placeholder` — same pattern
+- `source` — `{ getItems, search, resolveDisplay }`
+
+### `alternativeCoordinateDomain(config)`
+Tabbed popup with multiple input modes.
+
+---
+
+## Expression helpers
+
+### `textExpression(options?)`
+Sugar for `{ inputType: 'text', ...options }`. Returns `ExpressionConfig`.
+
+### `numericExpression(options?)`
+Sugar for `{ inputType: 'number', ...options }` with numeric validation default. Returns `ExpressionConfig`.
 
 ---
 
@@ -28,57 +93,51 @@ Returns a `RepeatingClauseConfig` for clause groups that can be added/removed by
 All return `SentenceBuilder` for chaining (except `build()`).
 
 ### `.clause(id, clauseBuilder)`
-Add a clause to the sentence. `id` is a unique string used to reference this clause in state, contingency, and context production.
+Add a clause to the sentence. `id` is unique within the sentence.
 
 ### `.clauses(clauseBuilders[])`
-Add multiple clauses at once (from composition helpers). Auto-generates IDs (`_composed_0`, `_composed_1`, ...).
+Add multiple clauses at once (from composition helpers). Auto-generates IDs.
 
 ### `.line(options?)`
-Start a new visual line. Clauses added after `.line()` go on this line. The first line is implicit — you don't need `.line()` before the first clause unless you need to set options on it.
-- `options.indent` — `boolean`. Indents the line (for subordinate/contingent clauses).
+Start a new visual line. Clauses added after `.line()` go on this line. The first line is implicit.
+- `options.indent` — `boolean`. Indents the line.
 
-### `.serializer(fn)`
-Custom serializer: `(state: SentenceState) => Record<string, unknown>`. Not yet implemented in engine.
-
-### `.deserializer(fn)`
-Custom deserializer: `(data: Record<string, unknown>) => Record<string, unknown>`. Not yet implemented in engine.
+### `.serializer(fn)` / `.deserializer(fn)`
+Custom serialization (not yet implemented in engine).
 
 ### `.build()`
-Returns the final `SentenceDefinition`.
+Returns the final `SentenceDefinition`. Validates no duplicate chip IDs.
 
 ---
 
 ## ClauseBuilder methods
 
-All return `ClauseBuilder` for chaining. Segments (`.text()`, `.chip()`) are rendered in call order.
+All return `ClauseBuilder` for chaining. Segments (`.text()`, `.chip()`) render in call order.
 
 ### `.text(value)`
-Add a text span. Use for lead text, conjunctions, trailing punctuation — anything that isn't a chip.
+Add a text span.
 
-### `.chip(id, domainName, options?)`
-Add a chip. `id` must be unique within the sentence. `domainName` resolves against the palette.
-- `options.mode` — `ChipMode`, defaults to `{ type: 'interactive' }`
+### `.chip(id, domainName?)`
+Add a chip. `domainName` defaults to `id` (common case: chip ID matches palette domain name).
 
-### `.required()`
-Mark clause as required (default). Always visible, cannot be toggled off.
-
-### `.optional()`
-Mark clause as optional. User can toggle it on/off. Shows placeholder text when dormant.
+### `.required()` / `.optional()`
+Set clause necessity. Default is required.
 
 ### `.placeholder(text)`
-Text shown when an optional clause is dormant (collapsed). Falls back to the clause ID if not set.
+Text shown when an optional clause is dormant.
 
 ### `.contingentOn(superclauseId, config)`
-Make this clause contingent on another clause. The engine controls presence based on context.
-- `config.present` — `(context: SentenceContext) => boolean`. When should this clause appear? Receives context from ancestor producers. Omit to always be present when superclause is present.
-- `config.configure` — `(context: SentenceContext) => ClauseOverrides`. Reconfigure chips based on context (e.g., swap keywords, change validation).
+Make this clause contingent on another clause.
+- `config.present` — `(context) => boolean`. When should this clause appear?
+- `config.configure` — `(context) => ClauseOverrides`. Reconfigure chips based on context.
 
-### `.produces(mapping)`
-Declare context keys this clause produces. `mapping` is `Record<string, string>` where keys are context key names and values are chip IDs whose values populate them.
-- Example: `.produces({ cadence: 'cadence' })` — context key "cadence" gets its value from the chip with ID "cadence".
+### `.produces(chipIdOrMapping)`
+Declare context keys this clause produces.
+- String form: `.produces('cadence')` → `{ cadence: 'cadence' }`
+- Object form: `.produces({ period: 'cadence' })` → explicit mapping
 
 ### `.leads(first, rest)`
-Set lead text for repeating clause instances. `first` is shown on the first instance, `rest` on subsequent ones. Currently only stores `first` (rest support pending with repeating clauses).
+Lead text for repeating clause instances.
 
 ---
 
@@ -86,22 +145,22 @@ Set lead text for repeating clause instances. `first` is shown on the first inst
 
 ```typescript
 const mySentence = sentence(myPalette)
-  .clause('trigger', clause()
+  .clause('trigger', builder()
     .text('Every')
-    .chip('cadence', 'cadence')
-    .produces({ cadence: 'cadence' })
+    .chip('cadence')
+    .produces('cadence')
   )
   .line({ indent: true })
-  .clause('detail', clause()
+  .clause('detail', builder()
     .contingentOn('trigger', {
       present: (ctx) => !['daily', 'weekday'].includes(ctx.cadence as string),
     })
-    .chip('period', 'period')
+    .chip('period')
     .text('on')
     .chip('days', 'daySet')
   )
   .line()
-  .clause('action', clause()
+  .clause('action', builder()
     .text('do')
     .chip('task', 'taskName')
   )

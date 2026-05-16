@@ -50,9 +50,12 @@ export {
   type EnumDomainConfig,
   keywordOrExpressionDomain,
   expressionDomain,
+  textExpression,
+  numericExpression,
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,
+  type KeywordConfig,
   multiSelectDomain,
   type MultiSelectDomainConfig,
   alternativeCoordinateDomain,
@@ -66,10 +69,11 @@ export {
 } from './domains';
 
 // Palette
-export { createPalette, extendPalette } from './palette';
+export { createPalette, extendPalette, type PaletteConfig } from './palette';
 
 // Builder
-export { sentence, clause, chip, repeating } from './builder';
+export { sentence, builder, clause, chip, repeating } from './builder';
+export type { ClauseBuilder } from './builder';
 
 // Hooks
 export {

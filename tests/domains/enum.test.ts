@@ -15,7 +15,8 @@ describe('enumDomain', () => {
   it('passes through color and keywords', () => {
     const domain = enumDomain({ color: 'month', keywords: months });
     expect(domain.color).toBe('month');
-    expect(domain.keywords).toBe(months);
+    expect(domain.keywords.length).toBe(months.length);
+    expect(domain.keywords.map(k => k.value)).toEqual(months.map(k => k.value));
   });
 
   it('validates values in the keyword list', () => {
@@ -41,14 +42,14 @@ describe('enumDomain', () => {
     expect(domain.display('smarch')).toBe('smarch');
   });
 
-  it('defaults to empty string when no defaultValue provided', () => {
+  it('defaults to first keyword when no default provided', () => {
     const domain = enumDomain({ color: 'month', keywords: months });
-    expect(domain.defaultValue).toBe('');
-    expect(domain.validate(domain.defaultValue)).toBe(false);
+    expect(domain.defaultValue).toBe('january');
+    expect(domain.validate(domain.defaultValue)).toBe(true);
   });
 
-  it('accepts an explicit defaultValue', () => {
-    const domain = enumDomain({ color: 'month', keywords: months, defaultValue: 'september' });
+  it('accepts an explicit default', () => {
+    const domain = enumDomain({ color: 'month', keywords: months, default: 'september' });
     expect(domain.defaultValue).toBe('september');
     expect(domain.validate(domain.defaultValue)).toBe(true);
   });

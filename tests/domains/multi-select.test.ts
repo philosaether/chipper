@@ -33,7 +33,9 @@ describe('multiSelectDomain', () => {
 
   it('stores options in meta', () => {
     const domain = multiSelectDomain({ color: 'sage', options: dayOptions });
-    expect(domain.meta?.options).toBe(dayOptions);
+    const opts = domain.meta?.options as { value: string }[];
+    expect(opts.length).toBe(dayOptions.length);
+    expect(opts.map(o => o.value)).toEqual(dayOptions.map(o => o.value));
   });
 
   it('stores group keywords on domain.keywords', () => {
@@ -42,7 +44,8 @@ describe('multiSelectDomain', () => {
       options: dayOptions,
       keywords: dayKeywords,
     });
-    expect(domain.keywords).toBe(dayKeywords);
+    expect(domain.keywords.length).toBe(dayKeywords.length);
+    expect(domain.keywords.map(k => k.value)).toEqual(dayKeywords.map(k => k.value));
   });
 
   it('defaults to empty keywords when none provided', () => {
