@@ -9,7 +9,7 @@ import { SentenceProvider } from '../../src/hooks/SentenceProvider';
 import { useSentence } from '../../src/hooks/useSentence';
 import { useChip } from '../../src/hooks/useChip';
 import { usePopup } from '../../src/hooks/usePopup';
-import { sentence, clause } from '../../src/builder';
+import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
 import { enumDomain } from '../../src/domains/enum';
 import { monthKeywords } from '../fixtures/month-keywords';
@@ -27,7 +27,7 @@ const palette = extendPalette({
 });
 
 const definition: SentenceDefinition = sentence(palette)
-  .clause('when', clause().required().text('Wake me up when').chip('month', 'month').text('ends.'))
+  .clause('when', builder().required().text('Wake me up when').chip('month', 'month').text('ends.'))
   .build();
 
 function createWrapper(def: SentenceDefinition = definition, onChange?: (state: unknown) => void) {
@@ -203,7 +203,7 @@ describe('usePopup', () => {
     });
 
     const twochipDef = sentence(secondPalette)
-      .clause('when', clause().required().text('In').chip('month', 'month').chip('year', 'year'))
+      .clause('when', builder().required().text('In').chip('month', 'month').chip('year', 'year'))
       .build();
 
     const { result } = renderHook(() => usePopup(), {

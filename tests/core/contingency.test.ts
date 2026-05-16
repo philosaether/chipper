@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { initializeSentenceState } from '../../src/core/initialize';
 import { sentenceReducer } from '../../src/core/reducer';
-import { sentence, clause } from '../../src/builder';
+import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
 import { enumDomain } from '../../src/domains/enum';
 import { keywordOrExpressionDomain } from '../../src/domains/keyword-or-expression';
@@ -63,13 +63,13 @@ const collapseKeywords = ['daily', 'weekday'];
 
 function createCadenceSentence() {
   return sentence(palette)
-    .clause('trigger', clause()
+    .clause('trigger', builder()
       .required()
       .text('Every')
       .chip('cadence', 'cadence')
       .produces({ cadence: 'cadence' })
     )
-    .clause('detail', clause()
+    .clause('detail', builder()
       .required()
       .contingentOn('trigger', {
         present: (ctx) => !collapseKeywords.includes(ctx.cadence as string),
@@ -79,7 +79,7 @@ function createCadenceSentence() {
       .chip('daySet', 'daySet')
       .produces({ period: 'period' })
     )
-    .clause('month-clause', clause()
+    .clause('month-clause', builder()
       .required()
       .contingentOn('detail', {
         present: (ctx) => ctx.period === 'quarters',
@@ -109,13 +109,13 @@ describe('contingency engine — clause presence', () => {
     });
 
     const def = sentence(collapsedPalette)
-      .clause('trigger', clause()
+      .clause('trigger', builder()
         .required()
         .text('Every')
         .chip('cadence', 'cadence')
         .produces({ cadence: 'cadence' })
       )
-      .clause('detail', clause()
+      .clause('detail', builder()
         .required()
         .contingentOn('trigger', {
           present: (ctx) => !collapseKeywords.includes(ctx.cadence as string),
@@ -356,12 +356,12 @@ describe('contingency engine — domain reconfiguration', () => {
     });
 
     const def = sentence(reconfigPalette)
-      .clause('parent', clause()
+      .clause('parent', builder()
         .required()
         .chip('mode', 'mode')
         .produces({ mode: 'mode' })
       )
-      .clause('child', clause()
+      .clause('child', builder()
         .required()
         .contingentOn('parent', {
           present: (ctx) => ctx.mode === 'advanced',

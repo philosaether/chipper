@@ -42,8 +42,8 @@ it does, and immediately clear to anyone who knows the builder pattern.
 ```
 
 **Implementation**: Rename `clause()` export to `builder()`. Update all
-callsites (demo, tests). Keep `clause()` as a deprecated alias during
-the transition.
+callsites (demo, tests). No deprecated alias — pre-v1, no users to
+migrate.
 
 ---
 

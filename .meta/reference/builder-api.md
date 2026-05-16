@@ -12,9 +12,6 @@ Returns a `SentenceBuilder`. Entry point for defining a sentence. Uses `chipperP
 ### `builder()`
 Returns a `ClauseBuilder`. Defines a single clause (a fragment of the sentence containing text and chips).
 
-### `clause()`
-**Deprecated** — alias for `builder()`. Use `builder()` instead.
-
 ### `chip(id, domainName?, options?)`
 Returns a `ChipDefinition` directly. Standalone alternative to `ClauseBuilder.chip()` — useful when you need a chip definition outside the builder chain (rare).
 - `domainName` — defaults to `id` when omitted

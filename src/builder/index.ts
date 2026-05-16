@@ -125,8 +125,6 @@ export function builder(): ClauseBuilder {
   return clauseBuilder;
 }
 
-/** @deprecated Use builder() instead */
-export const clause = builder;
 
 // ---------------------------------------------------------------------------
 // Repeating clause helper

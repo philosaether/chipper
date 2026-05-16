@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { Chipper } from '../../src/components/Chipper';
-import { sentence, clause } from '../../src/builder';
+import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
 import { enumDomain } from '../../src/domains/enum';
 import { monthKeywords } from '../fixtures/month-keywords';
@@ -25,7 +25,7 @@ const palette = extendPalette({
 afterEach(cleanup);
 
 const definition: SentenceDefinition = sentence(palette)
-  .clause('when', clause().required().text('Wake me up when').chip('month', 'month').text('ends.'))
+  .clause('when', builder().required().text('Wake me up when').chip('month', 'month').text('ends.'))
   .build();
 
 // ---------------------------------------------------------------------------

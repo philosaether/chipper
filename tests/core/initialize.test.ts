@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { initializeSentenceState } from '../../src/core/initialize';
-import { sentence, clause } from '../../src/builder';
+import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
 import { enumDomain } from '../../src/domains/enum';
 import { monthKeywords } from '../fixtures/month-keywords';
@@ -33,7 +33,7 @@ const palette = extendPalette({
 describe('initializeSentenceState', () => {
   it('creates initial state from a sentence definition', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().text('Wake me up when').chip('month', 'month'))
+      .clause('when', builder().required().text('Wake me up when').chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -44,7 +44,7 @@ describe('initializeSentenceState', () => {
 
   it('resolves domains and stores them by chip ID', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -55,7 +55,7 @@ describe('initializeSentenceState', () => {
 
   it('initializes chip with first keyword as default', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -67,7 +67,7 @@ describe('initializeSentenceState', () => {
 
   it('uses placeholder for display when default is invalid', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -79,7 +79,7 @@ describe('initializeSentenceState', () => {
 
   it('uses display for a valid default', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'monthWithDefault'))
+      .clause('when', builder().required().chip('month', 'monthWithDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -91,7 +91,7 @@ describe('initializeSentenceState', () => {
 
   it('required clauses start active', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -101,7 +101,7 @@ describe('initializeSentenceState', () => {
 
   it('optional clauses start dormant', () => {
     const definition = sentence(palette)
-      .clause('when', clause().optional().chip('month', 'month'))
+      .clause('when', builder().optional().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -111,7 +111,7 @@ describe('initializeSentenceState', () => {
 
   it('derives clause validity from chip validity', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -122,7 +122,7 @@ describe('initializeSentenceState', () => {
 
   it('derives sentence validity from active clause validity', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'monthNoDefault'))
+      .clause('when', builder().required().chip('month', 'monthNoDefault'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -133,7 +133,7 @@ describe('initializeSentenceState', () => {
 
   it('dormant clauses do not affect sentence validity', () => {
     const definition = sentence(palette)
-      .clause('when', clause().optional().chip('month', 'month'))
+      .clause('when', builder().optional().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
@@ -144,7 +144,7 @@ describe('initializeSentenceState', () => {
 
   it('throws on missing domain', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'nonexistent'))
+      .clause('when', builder().required().chip('month', 'nonexistent'))
       .build();
 
     expect(() => initializeSentenceState(definition)).toThrow(
@@ -154,7 +154,7 @@ describe('initializeSentenceState', () => {
 
   it('starts with empty contexts', () => {
     const definition = sentence(palette)
-      .clause('when', clause().required().chip('month', 'month'))
+      .clause('when', builder().required().chip('month', 'month'))
       .build();
 
     const store = initializeSentenceState(definition);
