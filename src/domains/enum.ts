@@ -8,7 +8,7 @@
 
 import type { Domain, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
-import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
+import { normalizeKeywords, buildDisplayMap, resolveDefault, type KeywordConfig } from './normalize-keywords';
 
 /** Configuration for an enum domain. */
 export interface EnumDomainConfig {
@@ -58,16 +58,9 @@ export function enumDomain(config: EnumDomainConfig): Domain<string> {
     config.keywords as KeywordConfig<string>[],
   );
 
-  const validValues = new Set<string>();
-  const displayByValue = new Map<string, string>();
-  for (const k of keywords) {
-    validValues.add(k.value);
-    displayByValue.set(k.value, k.displayLabel ?? k.label);
-  }
-
-  const defaultValue = config.default
-    ?? config.defaultValue
-    ?? (config.placeholder ? '' : (keywords.length > 0 ? keywords[0]!.value : ''));
+  const validValues = new Set<string>(keywords.map((k) => k.value));
+  const displayByValue = buildDisplayMap(keywords);
+  const defaultValue = resolveDefault(config, keywords, keywords[0]?.value, '');
 
   return createDomain<string>({
     type: 'enum',

@@ -42,6 +42,14 @@ export function extendPalette(
   const base = config !== undefined ? (baseOrConfig as Palette) : chipperPalette;
   const ext = config !== undefined ? config : (baseOrConfig as PaletteConfig);
 
+  // Catch accidental use of internal Palette shape ({ domains }) instead of PaletteConfig ({ chips })
+  if ('domains' in ext && !('chips' in ext)) {
+    throw new Error(
+      'extendPalette() expects { chips, patterns }, not { domains, clauseTemplates }. ' +
+      'See builder-dx.md §6.',
+    );
+  }
+
   return {
     domains: { ...base.domains, ...ext.chips },
     clauseTemplates: { ...base.clauseTemplates, ...ext.patterns },

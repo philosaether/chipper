@@ -12,7 +12,7 @@
 
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
-import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
+import { normalizeKeywords, buildDisplayMap, resolveDefault, type KeywordConfig } from './normalize-keywords';
 
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
@@ -118,15 +118,12 @@ export interface KeywordOrExpressionDomainConfig {
 export function keywordOrExpressionDomain(
   config: KeywordOrExpressionDomainConfig,
 ): Domain<string> {
-  const rawKeywords = config.keywords ?? [];
-  const keywords: Keyword<string>[] = isNormalizedKeywords(rawKeywords)
-    ? rawKeywords
-    : normalizeKeywords(rawKeywords as KeywordConfig<string>[]);
+  const keywords: Keyword<string>[] = normalizeKeywords(
+    (config.keywords ?? []) as KeywordConfig<string>[],
+  );
 
   const validKeywordValues = new Set<string>(keywords.map((k) => k.value));
-  const displayByValue = new Map<string, string>(
-    keywords.map((k) => [k.value, k.displayLabel ?? k.label]),
-  );
+  const displayByValue = buildDisplayMap(keywords);
 
   const expression = config.expression;
   const expressionValidate = expression?.validate ?? ((v: string) => v.length > 0);
@@ -156,9 +153,7 @@ export function keywordOrExpressionDomain(
     });
   }
 
-  const defaultValue = config.default
-    ?? config.defaultValue
-    ?? (config.placeholder ? '' : (keywords.length > 0 ? keywords[0]!.value : ''));
+  const defaultValue = resolveDefault(config, keywords, keywords[0]?.value, '');
 
   return createDomain<string>({
     type: 'keyword-or-expression',
@@ -173,17 +168,6 @@ export function keywordOrExpressionDomain(
     produces: config.produces,
     onContextChange: config.onContextChange,
   });
-}
-
-/** Check if keywords are already normalized (have `label` as a required string). */
-function isNormalizedKeywords<T>(
-  keywords: KeywordConfig<T>[] | Keyword<T>[],
-): keywords is Keyword<T>[] {
-  if (keywords.length === 0) return true;
-  // If the first entry has `label` as a non-undefined string, assume normalized.
-  // KeywordConfig makes label optional; Keyword makes it required.
-  return typeof (keywords[0] as Keyword<T>).label === 'string'
-    && !('display' in keywords[0]!);
 }
 
 /** Configuration for an expression-only domain (no keywords). */

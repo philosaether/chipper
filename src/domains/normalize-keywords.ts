@@ -1,5 +1,5 @@
 /**
- * Shared keyword normalization for domain factories.
+ * Shared keyword normalization and domain utilities.
  *
  * Consumers can provide keyword shorthand:
  *   { value: 'daily' }                          → label='daily', displayLabel=undefined
@@ -31,4 +31,31 @@ export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] 
       partial: config.partial,
     };
   });
+}
+
+/**
+ * Build a value → display text map from normalized keywords.
+ * Uses displayLabel if present, falls back to label.
+ */
+export function buildDisplayMap<T>(keywords: Keyword<T>[]): Map<T, string> {
+  return new Map(keywords.map((k) => [k.value, k.displayLabel ?? k.label]));
+}
+
+/**
+ * Resolve the default value for a domain.
+ *
+ * Cascade: explicit default → deprecated defaultValue → placeholder-aware fallback.
+ * When placeholder is set, defaults to fallbackEmpty (user must choose).
+ * When no placeholder, defaults to first keyword if available.
+ */
+export function resolveDefault<T>(
+  config: { default?: T; defaultValue?: T; placeholder?: string },
+  keywords: Keyword<unknown>[],
+  firstKeywordValue: T | undefined,
+  fallbackEmpty: T,
+): T {
+  if (config.default !== undefined) return config.default;
+  if (config.defaultValue !== undefined) return config.defaultValue;
+  if (config.placeholder) return fallbackEmpty;
+  return firstKeywordValue ?? fallbackEmpty;
 }

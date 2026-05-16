@@ -13,3 +13,4 @@ Items to address in a dedicated draft cycle.
 - **produces() shorthand**: `.produces()` with no args → `.produces({ [clauseId]: clauseId })`. Clause produces its own ID as a context key, mapped to its own chip value.
 - **Contingency at clause/chip/text level**: Currently contingency is clause-level only. Want to support contingent chips and contingent text spans within a clause (e.g., hide a text segment based on context). Major work — needs its own design cycle.
 - **Clause definition ergonomics**: `.clause('id', clause())` is verbose. `.clause('id', builder())` (rename from builder-notes.md) isn't much better. Need a smoother idiom for the most frequently typed line of chipper config. Open design question — bring to draft cycle.
+- **Architecture doc refresh**: chipper-architecture.md §3 and §4 are stale — still show `clause()`, `domains:`, no mention of lines, `displayLabel`, `default`, or expression helpers. Needs a pass to reflect builder-dx changes.

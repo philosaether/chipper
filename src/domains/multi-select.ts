@@ -10,7 +10,7 @@
 
 import type { Domain, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
-import { normalizeKeywords, type KeywordConfig } from './normalize-keywords';
+import { normalizeKeywords, buildDisplayMap, type KeywordConfig } from './normalize-keywords';
 
 /** Configuration for a multi-select domain. */
 export interface MultiSelectDomainConfig {
@@ -98,7 +98,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     : [];
 
   const validValues = new Set(options.map((o) => o.value));
-  const displayByValue = new Map(options.map((o) => [o.value, o.displayLabel ?? o.label]));
+  const displayByValue = buildDisplayMap(options);
   const maxSelections = config.maxSelections;
 
   const countLabel = config.countLabel ?? 'selected';

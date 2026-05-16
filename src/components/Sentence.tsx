@@ -31,8 +31,9 @@ export function Sentence() {
 
   // If lines are defined, render through them.
   // Otherwise, each clause gets its own implicit line.
-  const lines: LineDefinition[] = definition.lines
-    ?? definition.clauses.map((c) => ({ clauseIds: [c.id] }));
+  const lines: LineDefinition[] = (definition.lines
+    ?? definition.clauses.map((c) => ({ clauseIds: [c.id] })))
+    .filter((line) => line.clauseIds.length > 0);
 
   return (
     <div className="chipper-sentence">
