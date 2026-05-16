@@ -233,10 +233,22 @@ export interface RepeatingClauseConfig {
   template: ClauseDefinition;
 }
 
+/** A visual line within a sentence — groups one or more clauses into a single row. */
+export interface LineDefinition {
+  /** Clause IDs rendered on this line, in order */
+  clauseIds: string[];
+
+  /** Whether this line is visually indented (e.g., subordinate contingent clauses) */
+  indent?: boolean;
+}
+
 /** Complete definition of a sentence. */
 export interface SentenceDefinition {
   /** Ordered list of clause definitions */
   clauses: ClauseDefinition[];
+
+  /** Visual line groupings. If omitted, each clause gets its own line. */
+  lines?: LineDefinition[];
 
   /** Repeating clause groups, keyed by group ID */
   repeatingClauses?: Record<string, RepeatingClauseConfig>;

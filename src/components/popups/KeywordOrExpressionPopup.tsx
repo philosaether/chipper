@@ -14,7 +14,7 @@ import { NumericInput } from './NumericInput';
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
   value: string;
-  expressionMode: ExpressionMode<string>;
+  expressionMode?: ExpressionMode<string>;
   maxLength?: number;
   onSelect: (value: string) => void;
   onClose: () => void;
@@ -32,11 +32,12 @@ export function KeywordOrExpressionPopup({
   onSelect,
   onClose,
 }: KeywordOrExpressionPopupProps) {
-  const isNumeric = expressionMode.inputType === 'number';
+  const isNumeric = expressionMode?.inputType === 'number';
   const [inputValue, setInputValue] = useState(
+    // No expression mode → keywords only, no input state needed.
     // Numeric inputs always initialize with the current value (for the stepper).
     // Text inputs start empty when the current value is a keyword.
-    isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
+    !expressionMode ? '' : isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
   );
 
   // Track whether a keyword was clicked (skip auto-save in that case)
@@ -47,6 +48,7 @@ export function KeywordOrExpressionPopup({
   inputValueRef.current = inputValue;
 
   const handleSubmit = () => {
+    if (!expressionMode) return;
     const trimmed = inputValue.trim();
     if (trimmed && expressionMode.validate(trimmed)) {
       onSelect(trimmed);
@@ -57,6 +59,7 @@ export function KeywordOrExpressionPopup({
   // Auto-save valid text expression on unmount (outside-click close)
   useEffect(() => {
     return () => {
+      if (!expressionMode) return;
       if (keywordSelected.current) return;
       if (isNumeric) return;
       const trimmed = inputValueRef.current.trim();
@@ -94,7 +97,7 @@ export function KeywordOrExpressionPopup({
           ))}
         </div>
       )}
-      <div className="chipper-koe-popup__input-row">
+      {expressionMode && <div className="chipper-koe-popup__input-row">
         {expressionMode.inputType === 'number' ? (
           <NumericInput
             value={inputValue}
@@ -128,7 +131,7 @@ export function KeywordOrExpressionPopup({
             autoFocus={keywords.length === 0}
           />
         )}
-      </div>
+      </div>}
     </div>
   );
 }

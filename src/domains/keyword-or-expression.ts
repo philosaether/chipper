@@ -48,8 +48,8 @@ export interface KeywordOrExpressionDomainConfig {
   /** Preset values shown as keyword pills in the popup */
   keywords?: Keyword<string>[];
 
-  /** Expression mode configuration */
-  expression: ExpressionConfig;
+  /** Expression mode configuration. Omit for keywords-only domains. */
+  expression?: ExpressionConfig;
 
   /** Default value. Empty string if omitted (invalid → placeholder). */
   defaultValue?: string;
@@ -96,35 +96,40 @@ export function keywordOrExpressionDomain(
     keywords.map((k) => [k.value, k.label]),
   );
 
-  const expressionValidate = config.expression.validate ?? ((v: string) => v.length > 0);
-  const expressionDisplay = config.expression.display ?? ((v: string) => v);
+  const expression = config.expression;
+  const expressionValidate = expression?.validate ?? ((v: string) => v.length > 0);
+  const expressionDisplay = expression?.display ?? ((v: string) => v);
 
-  const validate = (value: string): boolean =>
-    validKeywordValues.has(value) || expressionValidate(value);
+  const validate = expression
+    ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
+    : (value: string): boolean => validKeywordValues.has(value);
 
   const display = (value: string): string =>
     labelByValue.get(value) ?? expressionDisplay(value);
 
-  const inputType = config.expression.inputType ?? 'text';
+  const expressionModes: ExpressionMode<string>[] = [];
 
-  const expressionMode: ExpressionMode<string> = {
-    id: inputType,
-    label: config.expression.placeholder ?? 'Type a value',
-    degreesOfFreedom: 1,
-    validate: expressionValidate,
-    display: expressionDisplay,
-    maxLength: config.expression.maxLength,
-    inputType,
-    min: config.expression.min,
-    max: config.expression.max,
-    step: config.expression.step,
-  };
+  if (expression) {
+    const inputType = expression.inputType ?? 'text';
+    expressionModes.push({
+      id: inputType,
+      label: expression.placeholder ?? 'Type a value',
+      degreesOfFreedom: 1,
+      validate: expressionValidate,
+      display: expressionDisplay,
+      maxLength: expression.maxLength,
+      inputType,
+      min: expression.min,
+      max: expression.max,
+      step: expression.step,
+    });
+  }
 
   return createDomain<string>({
     type: 'keyword-or-expression',
     color: config.color,
     keywords,
-    expressionModes: [expressionMode],
+    expressionModes,
     defaultValue: config.defaultValue ?? '',
     placeholder: config.placeholder,
     validate,

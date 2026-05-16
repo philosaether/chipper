@@ -12,6 +12,7 @@ import type {
   ClauseDefinition,
   ClauseSegment,
   ContingencyConfig,
+  LineDefinition,
   Palette,
   RepeatingClauseConfig,
   SentenceDefinition,
@@ -147,9 +148,14 @@ export function repeating(
 // Sentence builder
 // ---------------------------------------------------------------------------
 
+interface LineOptions {
+  indent?: boolean;
+}
+
 interface SentenceBuilder {
   clause(id: string, clauseBuilder: ClauseBuilder): SentenceBuilder;
   clauses(clauseBuilders: ClauseBuilder[]): SentenceBuilder;
+  line(options?: LineOptions): SentenceBuilder;
   serializer(fn: (state: SentenceState) => Record<string, unknown>): SentenceBuilder;
   deserializer(fn: (data: Record<string, unknown>) => Record<string, unknown>): SentenceBuilder;
   build(): SentenceDefinition;
@@ -163,19 +169,39 @@ interface SentenceBuilder {
 export function sentence(palette?: Palette): SentenceBuilder {
   const resolvedPalette = palette ?? chipperPalette;
   const clauseDefinitions: ClauseDefinition[] = [];
+  const lineDefinitions: LineDefinition[] = [];
+  // Track which line we're currently appending clauses to.
+  // -1 means "before any explicit .line() call" — the implicit first line.
+  let currentLineIndex = -1;
   let serializerFn: ((state: SentenceState) => Record<string, unknown>) | undefined;
   let deserializerFn: ((data: Record<string, unknown>) => Record<string, unknown>) | undefined;
 
+  function ensureCurrentLine(options?: LineOptions): void {
+    if (currentLineIndex < 0) {
+      lineDefinitions.push({ clauseIds: [], indent: options?.indent });
+      currentLineIndex = 0;
+    }
+  }
+
   const builder: SentenceBuilder = {
     clause(id: string, clauseBuilder: ClauseBuilder) {
+      ensureCurrentLine();
       clauseDefinitions.push(clauseBuilder._build(id));
+      lineDefinitions[currentLineIndex]!.clauseIds.push(id);
       return builder;
     },
     clauses(clauseBuilders: ClauseBuilder[]) {
-      // Clause composition helpers return arrays — spread them in
+      ensureCurrentLine();
       for (const cb of clauseBuilders) {
-        clauseDefinitions.push(cb._build(`_composed_${clauseDefinitions.length}`));
+        const id = `_composed_${clauseDefinitions.length}`;
+        clauseDefinitions.push(cb._build(id));
+        lineDefinitions[currentLineIndex]!.clauseIds.push(id);
       }
+      return builder;
+    },
+    line(options?: LineOptions) {
+      lineDefinitions.push({ clauseIds: [], indent: options?.indent });
+      currentLineIndex = lineDefinitions.length - 1;
       return builder;
     },
     serializer(fn) {
@@ -189,6 +215,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
     build(): SentenceDefinition {
       return {
         clauses: clauseDefinitions,
+        lines: lineDefinitions.length > 0 ? lineDefinitions : undefined,
         palette: resolvedPalette,
         serializer: serializerFn,
         deserializer: deserializerFn,

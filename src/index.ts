@@ -20,6 +20,7 @@ export type {
   ContingencyConfig,
   ClauseOverrides,
   RepeatingClauseConfig,
+  LineDefinition,
   SentenceDefinition,
   SentenceContext,
   Palette,

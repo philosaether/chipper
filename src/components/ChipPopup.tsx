@@ -69,13 +69,12 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
         );
       case 'keyword-or-expression': {
         const expressionMode = domain.expressionModes[0] as ExpressionMode<string> | undefined;
-        if (!expressionMode) return <div>Missing expression mode</div>;
         return (
           <KeywordOrExpressionPopup
             keywords={domain.keywords as Keyword<string>[]}
             value={value as string}
             expressionMode={expressionMode}
-            maxLength={expressionMode.maxLength}
+            maxLength={expressionMode?.maxLength}
             onSelect={onSelect as (value: string) => void}
             onClose={onClose}
           />

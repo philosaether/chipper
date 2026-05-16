@@ -13,239 +13,68 @@ import type { ReferenceItem, SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
 
-// Genre tree for reference domain demo
-interface GenreNode {
-  id: string;
-  label: string;
-  selectable?: boolean;
-  children?: GenreNode[];
-}
+//
+//  CHIPPER CONFIG
+//
 
-const genreTree: GenreNode[] = [
-  {
-    id: 'rock', label: 'Rock', children: [
-      { id: 'classic-rock', label: 'Classic Rock' },
-      { id: 'punk', label: 'Punk' },
-      { id: 'alternative', label: 'Alternative' },
-    ],
-  },
-  {
-    id: 'jazz', label: 'Jazz', children: [
-      { id: 'bebop', label: 'Bebop' },
-      { id: 'fusion', label: 'Fusion' },
-      { id: 'smooth-jazz', label: 'Smooth Jazz' },
-    ],
-  },
-  {
-    id: 'electronic', label: 'Electronic', selectable: false, children: [
-      { id: 'house', label: 'House' },
-      { id: 'techno', label: 'Techno' },
-      { id: 'ambient', label: 'Ambient' },
-      { id: 'dubstep', label: 'Dubstep', children: [
-        {id: 'skrillex', label: 'Skrillex'},
-        {id: 'royksopp', label: 'Röyksopp', children: [
-          {id: 'moment', label: 'Only This Moment', children: [
-            {id: 'good-part', label: 'The good part', children: [
-              {id: 'chills', label: 'Like the *really* good part'}
-            ]}
-          ]}
-        ]}
-      ]},
-    ],
-  },
-  {
-    id: 'classical', label: 'Classical', children: [
-      { id: 'baroque', label: 'Baroque' },
-      { id: 'romantic', label: 'Romantic' },
-      { id: 'modern', label: 'Modern' },
-    ],
-  },
-];
-
-function flattenGenreTree(nodes: GenreNode[]): GenreNode[] {
-  const result: GenreNode[] = [];
-  for (const node of nodes) {
-    result.push(node);
-    if (node.children) result.push(...flattenGenreTree(node.children));
-  }
-  return result;
-}
-
-const allGenres = flattenGenreTree(genreTree);
-
-function genreToReferenceItem(node: GenreNode): ReferenceItem {
-  return {
-    id: node.id,
-    label: node.label,
-    hasChildren: (node.children?.length ?? 0) > 0,
-    selectable: node.selectable,
-  };
-}
-
-function findGenrePath(id: string, nodes: GenreNode[], path: string[] = []): string[] | null {
-  for (const node of nodes) {
-    if (node.id === id) return [...path, node.label];
-    if (node.children) {
-      const found = findGenrePath(id, node.children, [...path, node.label]);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-
-// Cadence collapse keywords — selecting these hides the detail clause
-const cadenceCollapseKeywords = ['daily', 'weekday', 'weekend day'];
-
-const demoPalette = extendPalette({
+const myPalette = extendPalette({
   domains: {
-    cadence: keywordOrExpressionDomain({
-      color: 'copper',
+    intent: keywordOrExpressionDomain({
+      color: 'rose',
       keywords: [
-        { label: 'daily', value: 'daily' },
-        { label: 'weekday', value: 'weekday' },
-        { label: 'weekend day', value: 'weekend day' },
+        { value: 'wake', label: 'Wake me up' },
+        { value: 'take', label: 'Take me' },
+        { value: 'bring', label: 'Bring me' },
       ],
-      expression: {
-        inputType: 'number',
-        min: 1,
-        max: 52,
-        step: 1,
-        placeholder: 'every N...',
-        validate: (v) => /^\d+$/.test(v) && Number(v) >= 1,
-      },
-      defaultValue: 'weekday',
-      placeholder: 'how often',
+      defaultValue: 'wake',
     }),
-    period: enumDomain({
-      color: 'copper',
+    condition: keywordOrExpressionDomain({
+      color: 'indigo',
       keywords: [
-        { label: 'days', value: 'days' },
-        { label: 'weeks', value: 'weeks' },
-        { label: 'months', value: 'months' },
+        { value: 'september', label: 'when September ends' },
+        { value: 'inside', label: 'inside' },
+        { value: 'go', label: 'before you go-go' }
       ],
-      placeholder: 'period',
+      placeholder: 'eventually',
     }),
-    daySet: multiSelectDomain({
-      color: 'sage',
-      options: [
-        { label: 'Mon', value: 'mon' },
-        { label: 'Tue', value: 'tue' },
-        { label: 'Wed', value: 'wed' },
-        { label: 'Thu', value: 'thu' },
-        { label: 'Fri', value: 'fri' },
-        { label: 'Sat', value: 'sat' },
-        { label: 'Sun', value: 'sun' },
-      ],
-      keywords: [
-        { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] },
-        { label: 'weekends', value: ['sat', 'sun'] },
-      ],
-      placeholder: 'which days',
-      countLabel: 'days',
-    }),
-    alarm: keywordOrExpressionDomain({
+    destination: keywordOrExpressionDomain({
       color: 'slate',
       keywords: [
-        { label: 'my alarm', value: 'my alarm' },
-        { label: 'the fire alarm', value: 'the fire alarm' },
-        { label: 'the national anthem', value: 'the national anthem' },
+        { value: 'church', label: 'to church' },
+        { value: 'you', label: 'with you' },
+        { value: 'love', label: 'a higher love' },
       ],
+      defaultValue: 'you',
       expression: {
-        placeholder: 'something specific',
+        placeholder: 'what I need',
         maxLength: 100,
       },
-      placeholder: 'something',
-    }),
-    instruments: multiSelectDomain({
-      color: 'sage',
-      options: [
-        { label: 'guitar', value: 'guitar' },
-        { label: 'drums', value: 'drums' },
-        { label: 'bass', value: 'bass' },
-        { label: 'keys', value: 'keys' },
-        { label: 'horns', value: 'horns' },
-        { label: 'strings', value: 'strings' },
-      ],
-      keywords: [
-        { label: 'full band', value: ['guitar', 'drums', 'bass', 'keys'] },
-        { label: 'unplugged', value: ['guitar', 'strings'] },
-      ],
-      placeholder: 'instruments',
-      countLabel: 'instruments',
-    }),
-    genre: referenceDomain({
-      color: 'indigo',
-      source: {
-        getItems: (path) => {
-          let nodes = genreTree;
-          for (const item of path) {
-            const found = nodes.find((n) => n.id === item.id);
-            nodes = found?.children ?? [];
-          }
-          return nodes.map(genreToReferenceItem);
-        },
-        search: (query) =>
-          allGenres
-            .filter((g) => g.label.toLowerCase().includes(query.toLowerCase()))
-            .map(genreToReferenceItem),
-        resolveDisplay: (id) => {
-          const path = findGenrePath(id, genreTree);
-          return path ? path.join(' › ') : id;
-        },
-      },
-      placeholder: 'a genre',
-    }),
-    volume: keywordOrExpressionDomain({
-      color: 'gold',
-      keywords: [
-        { label: 'whisper', value: '1' },
-        { label: 'moderate', value: '5' },
-        { label: 'max', value: '10' },
-      ],
-      expression: {
-        inputType: 'number',
-        min: 1,
-        max: 10,
-        step: 1,
-        placeholder: 'volume level',
-        validate: (v) => {
-          const n = Number(v);
-          return !isNaN(n) && n >= 1 && n <= 10;
-        },
-      },
-      placeholder: 'a volume',
-    }),
-  },
-});
-
-const demoSentence = sentence(demoPalette)
-  .clause('cadence', clause()
-    .required()
-    .text('Every')
-    .chip('cadence', 'cadence')
-    .produces({ cadence: 'cadence' })
-  )
-  .clause('cadence-detail', clause()
-    .required()
-    .contingentOn('cadence', {
-      present: (ctx) => !cadenceCollapseKeywords.includes(ctx.cadence as string),
     })
-    .chip('period', 'period')
-    .text('on')
-    .chip('daySet', 'daySet')
+  }
+})
+
+const demoSentence = sentence(myPalette)
+  .clause('request', clause()
+    .chip('intent', 'intent')
+    .produces({intent: 'intent'})
   )
-  .clause('action', clause()
-    .required()
-    .text(', play')
-    .chip('alarm', 'alarm')
-    .text('from')
-    .chip('genre', 'genre')
-    .text('at')
-    .chip('volume', 'volume')
-    .text('with')
-    .chip('instruments', 'instruments')
-    .text('.'))
-  .build();
+  .clause('condition', clause()
+    .chip('condition', 'condition')
+    .contingentOn('request', {
+      present: (ctx) => { return ctx.intent === 'wake' }
+    })
+  )
+  .clause('destination', clause()
+    .chip('destination', 'destination')
+    .contingentOn('request', {
+      present: (ctx) => { return ['bring', 'take'].includes(ctx.intent as string) }
+    })
+  ).build()
+
+
+//
+//  DISPLAY LOGIC
+//
 
 const fontPanels = [
   {
@@ -253,36 +82,6 @@ const fontPanels = [
     label: 'Bookish',
     font: '"Newsreader", Georgia, "Times New Roman", serif',
     size: '1rem',
-  },
-  {
-    id: 'minimalist',
-    label: 'Minimalist',
-    font: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-    size: '0.9375rem',
-  },
-  {
-    id: 'government',
-    label: 'Government',
-    font: '"Times New Roman", Times, serif',
-    size: '1rem',
-  },
-  {
-    id: 'startup',
-    label: 'Startup',
-    font: '"DM Sans", "Helvetica Neue", Helvetica, sans-serif',
-    size: '1.0625rem',
-  },
-  {
-    id: 'terminal',
-    label: 'Terminal',
-    font: '"SF Mono", "Fira Code", "Fira Mono", Menlo, monospace',
-    size: '0.875rem',
-  },
-  {
-    id: 'brutalist',
-    label: 'Brutalist',
-    font: 'Arial, sans-serif',
-    size: '1.125rem',
   },
 ];
 
