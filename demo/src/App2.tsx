@@ -18,65 +18,62 @@ import './demo.css';
 //  CHIPPER CONFIG
 //
 
-const praxisPalette = extendPalette({
+const myPalette = extendPalette({
   chips: {
-    cadenceType: keywordOrExpressionDomain({
-      color: 'copper',
+    intent: keywordOrExpressionDomain({
+      color: 'rose',
       keywords: [
-        { value: 'daily', label: 'day' },
-        { value: 'weekly', label: 'week on...', display: 'week' },
-        { value: 'weekday' },
-        { value: 'weekend', label: 'weekend day' },
-        { value: 'custom', label: 'custom interval', display: '2'}
+        { value: 'wake', label: 'Wake me up' },
+        { value: 'take', label: 'Take me' },
+        { value: 'bring', label: 'Bring me' },
       ],
-      default: 'weekly'
+      default: 'wake',
     }),
-    cadencePeriod: keywordOrExpressionDomain({
-      color: 'copper',
+    condition: keywordOrExpressionDomain({
+      color: 'indigo',
       keywords: [
-        { value: 'day', label: 'days' },
-        { value: 'week', label: 'weeks' },
-        { value: 'month', label: 'months' },
-        { value: 'quarter', label: 'quarters' },
-        { value: 'year', label: 'years' },
-      ]
-    }),
-    dayOfWeek: multiSelectDomain({
-      color: 'sage',
-      options: [
-        { label: 'Mon', value: 'mon' },
-        { label: 'Tue', value: 'tue' },
-        { label: 'Wed', value: 'wed' },
-        { label: 'Thu', value: 'thu' },
-        { label: 'Fri', value: 'fri' },
-        { label: 'Sat', value: 'sat' },
-        { label: 'Sun', value: 'sun' },
+        { value: 'september', label: 'when September ends' },
+        { value: 'inside', label: 'inside' },
+        { value: 'go', label: 'before you go-go' }
       ],
+      placeholder: 'eventually',
+    }),
+    destination: keywordOrExpressionDomain({
+      color: 'plum',
       keywords: [
-        { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] }
+        { value: 'church', label: 'to church' },
+        { value: 'you', label: 'with you' },
+        { value: 'love', label: 'a higher love' },
       ],
-      placeholder: 'one or more days',
-      countLabel: 'days',
-    }),
+      default: 'you',
+      expression: {
+        placeholder: 'what I need',
+        maxLength: 100,
+      },
+    })
   }
 })
 
-const demoSentence = sentence(praxisPalette)
-  .clause('cadence', builder()
-    .text('Every')
-    .chip('cadenceType')
-    .chip('cadencePeriod', { present: (ctx) => ctx.cadenceType === 'custom' })
-    .produces({ cadenceType: 'cadenceType', cadencePeriod: 'cadencePeriod' })
+const demoSentence = sentence(myPalette)
+  .clause('request', builder()
+    .chip('intent')
+    .produces({intent: 'intent'})
   )
-  .clause('dayOfWeek', builder()
-    .text('on')
-    .chip('dayOfWeek')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if(ctx.cadenceType === 'weekly') return true
-        if(ctx.cadenceType === 'custom' ) return ['week', 'month'].includes(ctx.cadencePeriod as string)
-      }
+  .clause('condition', builder()
+    .chip('condition')
+    .contingentOn('request', {
+      present: (ctx) => { return ctx.intent === 'wake' }
     })
+  )
+  .clause('destination', builder()
+    .chip('destination')
+    .contingentOn('request', {
+      present: (ctx) => { return ['bring', 'take'].includes(ctx.intent as string) }
+    })
+  )
+  .line({indent: true})
+  .clause('next', builder()
+    .text('and do something!')
   )
   .build()
 
