@@ -5,9 +5,11 @@
  * The popup renders conditionally (unmounted when closed).
  */
 
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useChip } from '../hooks/useChip';
+import { useSentence } from '../hooks/useSentence';
 import { usePopup } from '../hooks/usePopup';
+import { buildClauseContext } from '../core/context-resolution';
 import { ChipPopup } from './ChipPopup';
 
 export interface ChipProps {
@@ -18,8 +20,23 @@ export interface ChipProps {
 export function Chip({ clauseId, chipId }: ChipProps) {
   const { displayValue, valid, domain, chipDefinition, value, expressionMode, setValue } =
     useChip(clauseId, chipId);
+  const { definition, state } = useSentence();
   const { open, close, isOpen } = usePopup();
   const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Resolve context for dynamic prefix/suffix (only when expression mode has function affixes)
+  const needsContext = domain.expressionModes.some(
+    (m) => typeof m.prefix === 'function' || typeof m.suffix === 'function',
+  );
+  const clauseDef = needsContext ? definition.clauses.find((c) => c.id === clauseId) : undefined;
+  const clauseState = needsContext ? state.clauses[clauseId] : undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const popupContext = useMemo(
+    () => needsContext && clauseDef && clauseState
+      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, definition, state.contexts)
+      : undefined,
+    [needsContext, clauseId, clauseDef, clauseState, definition, state.contexts],
+  );
 
   const isInteractive = chipDefinition.mode.type === 'interactive';
   const showPopup = isOpen(chipId);
@@ -70,6 +87,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
           domain={domain}
           value={value}
           expressionActive={expressionMode}
+          context={popupContext}
           onSelect={setValue}
           onClose={close}
         />

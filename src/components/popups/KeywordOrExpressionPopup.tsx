@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import type { ExpressionMode, Keyword } from '../../core/types';
+import type { ExpressionMode, Keyword, SentenceContext } from '../../core/types';
 import { TRIGGER_SENTINEL } from '../../core/mode-switching';
 import { NumericInput } from './NumericInput';
 
@@ -23,6 +23,8 @@ export interface KeywordOrExpressionPopupProps {
   expressionActive?: boolean;
   /** Label for the trigger pill (absent = always-on expression). */
   triggerLabel?: string;
+  /** Sentence context for resolving dynamic prefix/suffix. */
+  context?: SentenceContext;
   maxLength?: number;
   onSelect: (value: string | symbol) => void;
   onClose: () => void;
@@ -38,6 +40,7 @@ export function KeywordOrExpressionPopup({
   expressionMode,
   expressionActive,
   triggerLabel,
+  context,
   maxLength,
   onSelect,
   onClose,
@@ -133,7 +136,11 @@ export function KeywordOrExpressionPopup({
         {keywords.length > 0 && <hr className="chipper-koe-popup__separator" />}
         <div className="chipper-koe-popup__input-row">
           {expressionMode!.prefix && (
-            <span className="chipper-koe-popup__affix">{expressionMode!.prefix}</span>
+            <span className="chipper-koe-popup__affix">
+              {typeof expressionMode!.prefix === 'function'
+                ? expressionMode!.prefix(context ?? {})
+                : expressionMode!.prefix}
+            </span>
           )}
           {expressionMode!.inputType === 'number' ? (
             <NumericInput
@@ -169,7 +176,11 @@ export function KeywordOrExpressionPopup({
             />
           )}
           {expressionMode!.suffix && (
-            <span className="chipper-koe-popup__affix">{expressionMode!.suffix}</span>
+            <span className="chipper-koe-popup__affix">
+              {typeof expressionMode!.suffix === 'function'
+                ? expressionMode!.suffix(context ?? {})
+                : expressionMode!.suffix}
+            </span>
           )}
         </div>
       </>}

@@ -48,11 +48,11 @@ export interface ExpressionConfig {
   /** Format the value for chip trigger display (default: identity) */
   display?: (value: string) => string;
 
-  /** Text shown before the input in the popup (e.g., "in") */
-  prefix?: string;
+  /** Text shown before the input in the popup (e.g., "in"). Function receives sentence context. */
+  prefix?: string | ((context: Record<string, unknown>) => string);
 
-  /** Text shown after the input in the popup (e.g., "months") */
-  suffix?: string;
+  /** Text shown after the input in the popup (e.g., "months"). Function receives sentence context. */
+  suffix?: string | ((context: Record<string, unknown>) => string);
 
   /**
    * Keyword that enters expression mode when selected.

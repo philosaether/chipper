@@ -53,11 +53,10 @@ const praxisPalette = extendPalette({
         { value: '1', label: 'next month' },
       ],
       expression: numericExpression({
-        min: 1,
+        min: 0,
         max: 52,
         prefix: 'in',
-        suffix: 'months',
-        trigger: { label: 'in N months', default: '4' },
+        suffix: (ctx) => String(ctx.cadenceUnit ?? 'month') + 's',
       }),
     }),
     dayOfWeek: multiSelectDomain({
