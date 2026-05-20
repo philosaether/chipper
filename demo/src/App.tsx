@@ -7,6 +7,7 @@ import {
   extendPalette,
   enumDomain,
   keywordOrExpressionDomain,
+  numericExpression,
   multiSelectDomain,
   referenceDomain,
 } from 'chipper';
@@ -20,18 +21,22 @@ import './demo.css';
 
 const praxisPalette = extendPalette({
   chips: {
-    cadenceType: keywordOrExpressionDomain({
+    cadenceMeasure: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [
         { value: 'daily', label: 'day' },
         { value: 'weekly', label: 'week on...', display: 'week' },
         { value: 'weekday' },
         { value: 'weekend', label: 'weekend day' },
-        { value: 'custom', label: 'custom interval', display: '2'}
       ],
-      default: 'weekly'
+      expression: numericExpression({
+        min: 1,
+        max: 365,
+        trigger: { label: 'custom interval', default: '2' },
+      }),
+      default: 'weekly',
     }),
-    cadencePeriod: keywordOrExpressionDomain({
+    cadenceUnit: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [
         { value: 'day', label: 'days' },
@@ -64,17 +69,31 @@ const praxisPalette = extendPalette({
 const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
     .text('Every')
-    .chip('cadenceType')
-    .chip('cadencePeriod', { present: (ctx) => ctx.cadenceType === 'custom' })
-    .produces({ cadenceType: 'cadenceType', cadencePeriod: 'cadencePeriod' })
+    .chip('cadenceMeasure')
+    .chip('cadenceUnit', { present: (ctx) => !isNaN(Number(ctx.cadenceMeasure)) })
+    .produces({ cadenceMeasure: 'cadenceMeasure', cadenceUnit: 'cadenceUnit' })
   )
   .clause('dayOfWeek', builder()
     .text('on')
     .chip('dayOfWeek')
     .contingentOn('cadence', {
       present: (ctx) => {
-        if(ctx.cadenceType === 'weekly') return true
-        if(ctx.cadenceType === 'custom' ) return ['week', 'month'].includes(ctx.cadencePeriod as string)
+        if (ctx.cadenceMeasure === 'weekly') return true;
+        if (!isNaN(Number(ctx.cadenceMeasure)))
+          return ['week', 'month'].includes(ctx.cadenceUnit as string);
+        return false;
+      },
+    })
+    .text(',')
+  )
+  .clause('anchorDate', builder()
+    .text('starting')
+    .text('[immediately]')
+    .text(',')
+    .contingentOn('cadence', {
+      present: (ctx) => {
+        if (isNaN(Number(ctx.cadenceMeasure))) return false;
+        return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
       }
     })
   )

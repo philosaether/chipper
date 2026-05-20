@@ -14,6 +14,14 @@ import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/t
 import { createDomain } from './create-domain';
 import { normalizeKeywords, buildDisplayMap, resolveDefault, type KeywordConfig } from './normalize-keywords';
 
+/** Configuration for a trigger keyword that enters expression mode. */
+export interface ExpressionTrigger {
+  /** Popup pill label (e.g., "custom interval") */
+  label: string;
+  /** Default value when entering expression mode (e.g., "2") */
+  default: string;
+}
+
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
   /** Input type — 'text' or 'number' (stepper UI). Required. */
@@ -39,6 +47,13 @@ export interface ExpressionConfig {
 
   /** Format the value for chip trigger display (default: identity) */
   display?: (value: string) => string;
+
+  /**
+   * Keyword that enters expression mode when selected.
+   * When absent, the expression input is always visible in the popup.
+   * When present, the expression input is hidden until this trigger is selected.
+   */
+  trigger?: ExpressionTrigger;
 }
 
 /**
@@ -155,6 +170,10 @@ export function keywordOrExpressionDomain(
 
   const defaultValue = resolveDefault(config, keywords, keywords[0]?.value, '');
 
+  const meta: Record<string, unknown> | undefined = expression?.trigger
+    ? { trigger: expression.trigger }
+    : undefined;
+
   return createDomain<string>({
     type: 'keyword-or-expression',
     color: config.color,
@@ -167,6 +186,7 @@ export function keywordOrExpressionDomain(
     consumes: config.consumes,
     produces: config.produces,
     onContextChange: config.onContextChange,
+    meta,
   });
 }
 

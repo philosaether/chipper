@@ -22,6 +22,9 @@ export interface ChipState<T = unknown> {
   /** Whether the value has changed from the initial state */
   dirty: boolean;
 
+  /** True when the chip is in expression mode via a trigger keyword. */
+  expressionMode?: boolean;
+
   /** Whether a live source is currently fetching (live chips only) */
   loading?: boolean;
 

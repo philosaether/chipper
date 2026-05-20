@@ -9,6 +9,7 @@
 import { useEffect, useRef } from 'react';
 import type { Domain, ExpressionMode, Keyword } from '../core/types';
 import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
+import type { ExpressionTrigger } from '../domains/keyword-or-expression';
 import type { ReferenceSource } from '../domains/reference';
 import { EnumPopup } from './popups/EnumPopup';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
@@ -21,11 +22,12 @@ export interface ChipPopupProps {
   chipId: string;
   domain: Domain;
   value: unknown;
+  expressionActive?: boolean;
   onSelect: (value: unknown) => void;
   onClose: () => void;
 }
 
-export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) {
+export function ChipPopup({ domain, value, expressionActive, onSelect, onClose }: ChipPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
@@ -69,13 +71,16 @@ export function ChipPopup({ domain, value, onSelect, onClose }: ChipPopupProps) 
         );
       case 'keyword-or-expression': {
         const expressionMode = domain.expressionModes[0] as ExpressionMode<string> | undefined;
+        const trigger = domain.meta?.trigger as ExpressionTrigger | undefined;
         return (
           <KeywordOrExpressionPopup
             keywords={domain.keywords as Keyword<string>[]}
             value={value as string}
             expressionMode={expressionMode}
+            expressionActive={expressionActive}
+            triggerLabel={trigger?.label}
             maxLength={expressionMode?.maxLength}
-            onSelect={onSelect as (value: string) => void}
+            onSelect={onSelect as (value: string | symbol) => void}
             onClose={onClose}
           />
         );

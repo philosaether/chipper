@@ -16,7 +16,7 @@ export interface ChipProps {
 }
 
 export function Chip({ clauseId, chipId }: ChipProps) {
-  const { displayValue, valid, domain, chipDefinition, value, setValue } =
+  const { displayValue, valid, domain, chipDefinition, value, expressionMode, setValue } =
     useChip(clauseId, chipId);
   const { open, close, isOpen } = usePopup();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -69,6 +69,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
           chipId={chipId}
           domain={domain}
           value={value}
+          expressionActive={expressionMode}
           onSelect={setValue}
           onClose={close}
         />

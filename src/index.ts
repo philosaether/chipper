@@ -55,6 +55,7 @@ export {
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,
+  type ExpressionTrigger,
   type KeywordConfig,
   multiSelectDomain,
   type MultiSelectDomainConfig,

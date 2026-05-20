@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-Nothing active — chip-level contingency and builder DX both merged to main.
+- **Mode-switching** (designs/mode-switching.md) — trigger keywords enter expression mode, regular keywords exit. Branch: feature/mode-switching.
 
 ## Next Session
 
