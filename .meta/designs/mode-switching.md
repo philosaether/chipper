@@ -4,7 +4,7 @@ Date: 2026-05-20
 Accepted: 2026-05-20
 Implemented: 2026-05-20 (feature/mode-switching)
 Divergences: none
-Deferred: popup component tests (koe-mode-popup.test.tsx — reducer tests cover behavior)
+Deferred: none
 Assessment: ../assessments/koe-mode-switching.md
 ---
 
