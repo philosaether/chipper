@@ -50,7 +50,7 @@ const praxisPalette = extendPalette({
       color: 'copper',
       keywords: [
         { value: '0', label: 'immediately' },
-        { value: '1', label: (ctx: Record<string, unknown>) => `next ${ctx.cadenceUnit ?? 'month'}` },
+        { value: '1', label: (ctx) => `next ${ctx.cadenceUnit ?? 'month'}` },
       ],
       expression: numericExpression({
         min: 0,
