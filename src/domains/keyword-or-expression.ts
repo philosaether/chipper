@@ -154,8 +154,16 @@ export function keywordOrExpressionDomain(
     ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
     : (value: string): boolean => validKeywordValues.has(value);
 
-  const display = (value: string, _context?: Record<string, unknown>): string =>
-    displayByValue.get(value) ?? expressionDisplay(value);
+  const display = (value: string, context?: Record<string, unknown>): string => {
+    const staticLabel = displayByValue.get(value);
+    if (staticLabel) return staticLabel;
+    // Check for dynamic keyword labels (function labels excluded from static map)
+    const dynamicKeyword = keywords.find(
+      (k) => k.value === value && typeof k.label === 'function',
+    );
+    if (dynamicKeyword) return (dynamicKeyword.label as (ctx: Record<string, unknown>) => string)(context ?? {});
+    return expressionDisplay(value);
+  };
 
   const expressionModes: ExpressionMode<string>[] = [];
 

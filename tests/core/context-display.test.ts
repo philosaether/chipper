@@ -114,19 +114,13 @@ describe('context-aware display', () => {
     // Set offset to '1' — initially cadenceUnit is 'month'
     store = dispatch(store, 'offset', 'cadenceOffset', '1');
     const before = store.state.clauses['offset']!.chips['cadenceOffset']!;
-    // Keyword value '1' → displayByValue lookup or expression display
-    // Since '1' matches keyword, displayByValue should map it
-    // But the keyword has a function label, so buildDisplayMap skips it,
-    // and display falls through to expression display: '1'
-    expect(before.displayValue).toBe('1');
+    // Keyword value '1' → dynamic label resolved with context
+    expect(before.displayValue).toBe('next month');
 
-    // Change unit to 'quarter' — offset chip display should update on next value change
+    // Change unit to 'quarter' — offset chip display should update via revalidation
     store = dispatch(store, 'cadence', 'cadenceUnit', 'quarter');
-    // The offset clause is contingent on cadence, so revalidation runs.
-    // Display should still be '1' (context-aware display on the domain
-    // requires a custom display function, which our test domain doesn't have)
     const after = store.state.clauses['offset']!.chips['cadenceOffset']!;
-    expect(after.displayValue).toBe('1');
+    expect(after.displayValue).toBe('next quarter');
   });
 });
 
@@ -157,12 +151,13 @@ describe('dynamic keyword labels', () => {
     expect(staticKeyword.label).toBe('immediately');
   });
 
-  it('keywords with function labels are excluded from displayByValue', () => {
+  it('dynamic label resolves in domain.display() with context', () => {
     const store = initializeSentenceState(testSentence);
     const domain = store.domains['cadenceOffset']!;
     // '0' → 'immediately' (static label, in display map)
     expect(domain.display('0')).toBe('immediately');
-    // '1' → function label, no displayLabel → falls through to expression display → '1'
-    expect(domain.display('1')).toBe('1');
+    // '1' → dynamic label resolved with context (empty → fallback)
+    expect(domain.display('1')).toBe('next period');
+    expect(domain.display('1', { cadenceUnit: 'week' })).toBe('next week');
   });
 });
