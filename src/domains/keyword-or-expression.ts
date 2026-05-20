@@ -154,6 +154,9 @@ export function keywordOrExpressionDomain(
     ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
     : (value: string): boolean => validKeywordValues.has(value);
 
+  const resolveAffix = (affix: string | ((ctx: Record<string, unknown>) => string) | undefined, ctx: Record<string, unknown>): string =>
+    affix ? (typeof affix === 'function' ? affix(ctx) : affix) : '';
+
   const display = (value: string, context?: Record<string, unknown>): string => {
     const staticLabel = displayByValue.get(value);
     if (staticLabel) return staticLabel;
@@ -162,7 +165,12 @@ export function keywordOrExpressionDomain(
       (k) => k.value === value && typeof k.label === 'function',
     );
     if (dynamicKeyword) return (dynamicKeyword.label as (ctx: Record<string, unknown>) => string)(context ?? {});
-    return expressionDisplay(value);
+    // Expression value: wrap with prefix/suffix for chip trigger display
+    const ctx = context ?? {};
+    const prefix = resolveAffix(expression?.prefix, ctx);
+    const suffix = resolveAffix(expression?.suffix, ctx);
+    const core = expressionDisplay(value);
+    return [prefix, core, suffix].filter(Boolean).join(' ');
   };
 
   const expressionModes: ExpressionMode<string>[] = [];
