@@ -9,6 +9,7 @@ import {
   keywordOrExpressionDomain,
   numericExpression,
   multiSelectDomain,
+  alternativeCoordinateDomain,
   referenceDomain,
 } from 'chipper';
 import type { ReferenceItem, SentenceState, ClauseBuilder } from 'chipper';
@@ -76,6 +77,77 @@ const praxisPalette = extendPalette({
       placeholder: 'one or more days',
       countLabel: 'days',
     }),
+    dayOfMonth: alternativeCoordinateDomain({
+      color: 'sage',
+      modes: [
+        {
+          id: 'date',
+          label: 'Date',
+          slots: [{
+            prefix: 'the',
+            keywords: [
+              { label: '1st', value: '1' },
+              { label: '2nd', value: '2' },
+              { label: '3rd', value: '3' },
+              { label: '4th', value: '4' },
+              { label: '5th', value: '5' },
+              { label: '10th', value: '10' },
+              { label: '15th', value: '15' },
+              { label: '20th', value: '20' },
+              { label: '25th', value: '25' },
+              { label: 'last', value: 'last' },
+            ],
+          }],
+          compose: (day) => day,
+          decompose: (v) => [v],
+          display: (v) => {
+            if (v === 'last') return 'the last day';
+            const s = ['th', 'st', 'nd', 'rd'];
+            const n = Number(v);
+            const suffix = n > 3 && n < 21 ? 'th' : (s[n % 10] ?? 'th');
+            return `the ${n}${suffix}`;
+          },
+        },
+        {
+          id: 'weekday',
+          label: 'Weekday',
+          slots: [
+            {
+              prefix: 'the',
+              keywords: [
+                { label: 'first', value: 'first' },
+                { label: 'second', value: 'second' },
+                { label: 'third', value: 'third' },
+                { label: 'fourth', value: 'fourth' },
+                { label: 'last', value: 'last' },
+              ],
+            },
+            {
+              keywords: [
+                { label: 'Mon', value: 'monday' },
+                { label: 'Tue', value: 'tuesday' },
+                { label: 'Wed', value: 'wednesday' },
+                { label: 'Thu', value: 'thursday' },
+                { label: 'Fri', value: 'friday' },
+                { label: 'Sat', value: 'saturday' },
+                { label: 'Sun', value: 'sunday' },
+              ],
+            },
+          ],
+          compose: (ordinal, day) => `${ordinal} ${day}`,
+          decompose: (v) => {
+            const parts = v.split(' ');
+            return parts.length === 2 ? parts : [undefined, undefined];
+          },
+          display: (v) => {
+            const [ordinal, day] = v.split(' ');
+            if (!ordinal || !day) return v;
+            return `the ${ordinal} ${day.charAt(0).toUpperCase() + day.slice(1)}`;
+          },
+        },
+      ],
+      placeholder: 'which day',
+    }),
   }
 })
 
@@ -93,7 +165,19 @@ const demoSentence = sentence(praxisPalette)
       present: (ctx) => {
         if (ctx.cadenceMeasure === 'weekly') return true;
         if (!isNaN(Number(ctx.cadenceMeasure)))
-          return ['week', 'month'].includes(ctx.cadenceUnit as string);
+          return ctx.cadenceUnit === 'week';
+        return false;
+      },
+    })
+    .text(',')
+  )
+  .clause('dayOfMonth', builder()
+    .text('on')
+    .chip('dayOfMonth')
+    .contingentOn('cadence', {
+      present: (ctx) => {
+        if (!isNaN(Number(ctx.cadenceMeasure)))
+          return ['month', 'quarter'].includes(ctx.cadenceUnit as string);
         return false;
       },
     })
