@@ -7,8 +7,10 @@
 
 import type { ChipState, ClauseState } from '../state';
 import type { SentenceStore } from '../store';
+import type { ExpressionTrigger } from '../../domains/keyword-or-expression';
 import { buildContextFromChips, computeClauseValidity, computeDisplayValue, computeSentenceValidity, evaluateVisibleChips } from '../initialize';
 import { evaluateContingency, buildClauseContext } from '../context-resolution';
+import { TRIGGER_SENTINEL } from '../mode-switching';
 
 /** Set a chip's value. */
 export interface SetChipValueAction {
@@ -34,13 +36,30 @@ export function handleSetChipValue(
     throw new Error(`Clause "${clauseId}" not found in sentence state.`);
   }
 
-  const isValid = domain.validate(value);
+  // Mode-switching: detect trigger sentinel and keyword exits
+  const trigger = domain.meta?.trigger as ExpressionTrigger | undefined;
+  let effectiveValue = value;
+  let expressionMode = clause.chips[chipId]?.expressionMode;
+
+  if (trigger) {
+    if (value === TRIGGER_SENTINEL) {
+      expressionMode = true;
+      effectiveValue = trigger.default;
+    } else if (expressionMode && domain.keywords.some((k) => k.value === value)) {
+      // Selecting a regular keyword exits expression mode
+      expressionMode = false;
+    }
+    // Stepper/expression value changes while in expression mode: no mode change
+  }
+
+  const isValid = domain.validate(effectiveValue);
 
   const newChipState: ChipState = {
-    value,
-    displayValue: computeDisplayValue(domain, value, isValid),
+    value: effectiveValue,
+    displayValue: computeDisplayValue(domain, effectiveValue, isValid),
     valid: isValid,
     dirty: true,
+    expressionMode: expressionMode || undefined,
   };
 
   const newChips = { ...clause.chips, [chipId]: newChipState };

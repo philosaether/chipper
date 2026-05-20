@@ -14,6 +14,7 @@ export {
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,
+  type ExpressionTrigger,
 } from './keyword-or-expression';
 export { type KeywordConfig } from './normalize-keywords';
 export {

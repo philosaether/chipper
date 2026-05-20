@@ -1,22 +1,30 @@
 /**
  * KeywordOrExpressionPopup — keyword pills + text/numeric input.
  *
- * Keywords on top (high-value shortcuts), input field below.
- * Expression-only domains render just the input.
+ * Three layout modes:
+ * 1. Always-on expression (no trigger): keywords + expression visible simultaneously.
+ * 2. Trigger-gated, keyword mode: keywords + trigger pill, no expression input.
+ * 3. Trigger-gated, expression mode: keywords (escape hatches) + expression input.
+ *
  * Text: keyword click or Enter submits. Valid input auto-saves on close.
  * Numeric: stepper buttons submit immediately. Manual entry validates.
  */
 
 import { useEffect, useRef, useState } from 'react';
 import type { ExpressionMode, Keyword } from '../../core/types';
+import { TRIGGER_SENTINEL } from '../../core/mode-switching';
 import { NumericInput } from './NumericInput';
 
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
   value: string;
   expressionMode?: ExpressionMode<string>;
+  /** Is the chip currently in trigger-gated expression mode? */
+  expressionActive?: boolean;
+  /** Label for the trigger pill (absent = always-on expression). */
+  triggerLabel?: string;
   maxLength?: number;
-  onSelect: (value: string) => void;
+  onSelect: (value: string | symbol) => void;
   onClose: () => void;
 }
 
@@ -28,16 +36,24 @@ export function KeywordOrExpressionPopup({
   keywords,
   value,
   expressionMode,
+  expressionActive,
+  triggerLabel,
   maxLength,
   onSelect,
   onClose,
 }: KeywordOrExpressionPopupProps) {
+  // Should the expression input be shown?
+  // Always-on (no trigger): show if expressionMode exists.
+  // Trigger-gated: show only when expressionActive.
+  const hasTrigger = !!triggerLabel;
+  const showExpression = expressionMode && (!hasTrigger || expressionActive);
+
   const isNumeric = expressionMode?.inputType === 'number';
   const [inputValue, setInputValue] = useState(
-    // No expression mode → keywords only, no input state needed.
+    // No expression visible → no input state needed.
     // Numeric inputs always initialize with the current value (for the stepper).
     // Text inputs start empty when the current value is a keyword.
-    !expressionMode ? '' : isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
+    !showExpression ? '' : isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
   );
 
   // Track whether a keyword was clicked (skip auto-save in that case)
@@ -62,6 +78,7 @@ export function KeywordOrExpressionPopup({
       if (!expressionMode) return;
       if (keywordSelected.current) return;
       if (isNumeric) return;
+      if (!showExpression) return;
       const trimmed = inputValueRef.current.trim();
       if (trimmed && trimmed !== value && expressionMode.validate(trimmed)) {
         onSelect(trimmed);
@@ -81,11 +98,11 @@ export function KeywordOrExpressionPopup({
               role="option"
               className={[
                 'chipper-popup-option',
-                keyword.value === value && 'chipper-popup-option--selected',
+                keyword.value === value && !expressionActive && 'chipper-popup-option--selected',
               ]
                 .filter(Boolean)
                 .join(' ')}
-              aria-selected={keyword.value === value}
+              aria-selected={keyword.value === value && !expressionActive}
               onClick={() => {
                 keywordSelected.current = true;
                 onSelect(keyword.value);
@@ -97,21 +114,41 @@ export function KeywordOrExpressionPopup({
           ))}
         </div>
       )}
-      {expressionMode && <div className="chipper-koe-popup__input-row">
-        {expressionMode.inputType === 'number' ? (
+      {hasTrigger && !expressionActive && (
+        <div className="chipper-koe-popup__trigger">
+          <button
+            type="button"
+            role="option"
+            className={[
+              'chipper-popup-option',
+              expressionActive && 'chipper-popup-option--selected',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => {
+              onSelect(TRIGGER_SENTINEL);
+              onClose();
+            }}
+          >
+            {triggerLabel}
+          </button>
+        </div>
+      )}
+      {showExpression && <div className="chipper-koe-popup__input-row">
+        {expressionMode!.inputType === 'number' ? (
           <NumericInput
             value={inputValue}
-            min={expressionMode.min}
-            max={expressionMode.max}
-            step={expressionMode.step}
+            min={expressionMode!.min}
+            max={expressionMode!.max}
+            step={expressionMode!.step}
             onSelect={(v) => {
               setInputValue(v);
-              if (expressionMode.validate(v)) {
+              if (expressionMode!.validate(v)) {
                 onSelect(v);
               }
             }}
             onSubmit={() => {
-              if (expressionMode.validate(inputValue)) {
+              if (expressionMode!.validate(inputValue)) {
                 onSelect(inputValue);
                 onClose();
               }
@@ -126,7 +163,7 @@ export function KeywordOrExpressionPopup({
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSubmit();
             }}
-            placeholder={expressionMode.label}
+            placeholder={expressionMode!.label}
             maxLength={maxLength}
             autoFocus={keywords.length === 0}
           />

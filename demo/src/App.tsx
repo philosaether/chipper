@@ -7,6 +7,7 @@ import {
   extendPalette,
   enumDomain,
   keywordOrExpressionDomain,
+  numericExpression,
   multiSelectDomain,
   referenceDomain,
 } from 'chipper';
@@ -27,9 +28,13 @@ const praxisPalette = extendPalette({
         { value: 'weekly', label: 'week on...', display: 'week' },
         { value: 'weekday' },
         { value: 'weekend', label: 'weekend day' },
-        { value: 'custom', label: 'custom interval', display: '2'}
       ],
-      default: 'weekly'
+      expression: numericExpression({
+        min: 2,
+        max: 365,
+        trigger: { label: 'custom interval', default: '2' },
+      }),
+      default: 'weekly',
     }),
     cadencePeriod: keywordOrExpressionDomain({
       color: 'copper',
@@ -65,7 +70,7 @@ const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
     .text('Every')
     .chip('cadenceType')
-    .chip('cadencePeriod', { present: (ctx) => ctx.cadenceType === 'custom' })
+    .chip('cadencePeriod', { present: (ctx) => !isNaN(Number(ctx.cadenceType)) })
     .produces({ cadenceType: 'cadenceType', cadencePeriod: 'cadencePeriod' })
   )
   .clause('dayOfWeek', builder()
@@ -73,9 +78,11 @@ const demoSentence = sentence(praxisPalette)
     .chip('dayOfWeek')
     .contingentOn('cadence', {
       present: (ctx) => {
-        if(ctx.cadenceType === 'weekly') return true
-        if(ctx.cadenceType === 'custom' ) return ['week', 'month'].includes(ctx.cadencePeriod as string)
-      }
+        if (ctx.cadenceType === 'weekly') return true;
+        if (!isNaN(Number(ctx.cadenceType)))
+          return ['week', 'month'].includes(ctx.cadencePeriod as string);
+        return false;
+      },
     })
   )
   .build()
