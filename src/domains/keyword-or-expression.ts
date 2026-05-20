@@ -154,8 +154,13 @@ export function keywordOrExpressionDomain(
     ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
     : (value: string): boolean => validKeywordValues.has(value);
 
-  const resolveAffix = (affix: string | ((ctx: Record<string, unknown>) => string) | undefined, ctx: Record<string, unknown>): string =>
-    affix ? (typeof affix === 'function' ? affix(ctx) : affix) : '';
+  const resolveAffix = (
+    affix: string | ((ctx: Record<string, unknown>) => string) | undefined,
+    ctx: Record<string, unknown>,
+  ): string => {
+    if (!affix) return '';
+    return typeof affix === 'function' ? affix(ctx) : affix;
+  };
 
   const display = (value: string, context?: Record<string, unknown>): string => {
     const staticLabel = displayByValue.get(value);

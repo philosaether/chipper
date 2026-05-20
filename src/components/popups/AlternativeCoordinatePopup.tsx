@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import type { AlternativeCoordinateMode } from '../../domains/alternative-coordinate';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 
 export interface AlternativeCoordinatePopupProps {
   modes: AlternativeCoordinateMode[];
@@ -149,7 +150,7 @@ export function AlternativeCoordinatePopup({
                     aria-selected={isSelected}
                     onClick={() => handleSlotSelect(slotIndex, keyword.value)}
                   >
-                    {typeof keyword.label === 'function' ? keyword.label({}) : keyword.label}
+                    {resolveKeywordLabel(keyword)}
                   </button>
                 );
               })}

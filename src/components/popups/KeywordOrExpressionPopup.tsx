@@ -12,6 +12,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { ExpressionMode, Keyword, SentenceContext } from '../../core/types';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { TRIGGER_SENTINEL } from '../../core/mode-switching';
 import { NumericInput } from './NumericInput';
 
@@ -112,7 +113,7 @@ export function KeywordOrExpressionPopup({
                 onClose();
               }}
             >
-              {typeof keyword.label === 'function' ? keyword.label(context ?? {}) : keyword.label}
+              {resolveKeywordLabel(keyword, context)}
             </button>
           ))}
         </div>

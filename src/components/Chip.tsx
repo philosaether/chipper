@@ -25,8 +25,11 @@ export function Chip({ clauseId, chipId }: ChipProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Resolve context for dynamic prefix/suffix (only when expression mode has function affixes)
-  const needsContext = domain.expressionModes.some(
-    (m) => typeof m.prefix === 'function' || typeof m.suffix === 'function',
+  const needsContext = useMemo(
+    () => domain.expressionModes.some(
+      (m) => typeof m.prefix === 'function' || typeof m.suffix === 'function',
+    ),
+    [domain.expressionModes],
   );
   const clauseDef = needsContext ? definition.clauses.find((c) => c.id === clauseId) : undefined;
   const clauseState = needsContext ? state.clauses[clauseId] : undefined;

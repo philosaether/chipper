@@ -6,6 +6,7 @@
  */
 
 import type { Keyword } from '../../core/types';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 
 export interface EnumPopupProps {
   keywords: Keyword[];
@@ -32,7 +33,7 @@ export function EnumPopup({ keywords, value, onSelect, onClose }: EnumPopupProps
             onClose();
           }}
         >
-          {typeof keyword.label === 'function' ? keyword.label({}) : keyword.label}
+          {resolveKeywordLabel(keyword)}
         </button>
       ))}
     </div>
