@@ -119,12 +119,7 @@ export function KeywordOrExpressionPopup({
           <button
             type="button"
             role="option"
-            className={[
-              'chipper-popup-option',
-              expressionActive && 'chipper-popup-option--selected',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            className="chipper-popup-option"
             onClick={() => {
               onSelect(TRIGGER_SENTINEL);
               onClose();

@@ -59,6 +59,7 @@ export function handleSetChipValue(
     displayValue: computeDisplayValue(domain, effectiveValue, isValid),
     valid: isValid,
     dirty: true,
+    // false → undefined so the field is absent (not false) when not in expression mode
     expressionMode: expressionMode || undefined,
   };
 
