@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import type { Domain, ExpressionMode, Keyword } from '../core/types';
+import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
 import type { ExpressionTrigger } from '../domains/keyword-or-expression';
 import type { ReferenceSource } from '../domains/reference';
@@ -23,11 +23,12 @@ export interface ChipPopupProps {
   domain: Domain;
   value: unknown;
   expressionActive?: boolean;
+  context?: SentenceContext;
   onSelect: (value: unknown) => void;
   onClose: () => void;
 }
 
-export function ChipPopup({ domain, value, expressionActive, onSelect, onClose }: ChipPopupProps) {
+export function ChipPopup({ domain, value, expressionActive, context, onSelect, onClose }: ChipPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
@@ -79,6 +80,7 @@ export function ChipPopup({ domain, value, expressionActive, onSelect, onClose }
             expressionMode={expressionMode}
             expressionActive={expressionActive}
             triggerLabel={trigger?.label}
+            context={context}
             maxLength={expressionMode?.maxLength}
             onSelect={onSelect as (value: string | symbol) => void}
             onClose={onClose}

@@ -6,6 +6,7 @@
  */
 
 import type { Keyword } from '../../core/types';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 
 export interface EnumPopupProps {
   keywords: Keyword[];
@@ -19,7 +20,7 @@ export function EnumPopup({ keywords, value, onSelect, onClose }: EnumPopupProps
     <div className="chipper-enum-popup">
       {keywords.map((keyword) => (
         <button
-          key={keyword.label}
+          key={String(keyword.value)}
           type="button"
           role="option"
           className={[
@@ -32,7 +33,7 @@ export function EnumPopup({ keywords, value, onSelect, onClose }: EnumPopupProps
             onClose();
           }}
         >
-          {keyword.label}
+          {resolveKeywordLabel(keyword)}
         </button>
       ))}
     </div>

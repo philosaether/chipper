@@ -15,22 +15,19 @@ import type { Keyword } from '../core/types';
 /** Shorthand keyword config accepted by domain factories. */
 export interface KeywordConfig<T = string> {
   value: T;
-  label?: string;
+  label?: string | ((context: Record<string, unknown>) => string);
   display?: string;
   partial?: boolean;
 }
 
 /** Normalize shorthand keyword configs into full Keyword<T> objects. */
 export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] {
-  return configs.map((config) => {
-    const label = config.label ?? String(config.value);
-    return {
-      label,
-      displayLabel: config.display,
-      value: config.value,
-      partial: config.partial,
-    };
-  });
+  return configs.map((config) => ({
+    label: config.label ?? String(config.value),
+    displayLabel: config.display,
+    value: config.value,
+    partial: config.partial,
+  }));
 }
 
 /**
@@ -38,7 +35,10 @@ export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] 
  * Uses displayLabel if present, falls back to label.
  */
 export function buildDisplayMap<T>(keywords: Keyword<T>[]): Map<T, string> {
-  return new Map(keywords.map((k) => [k.value, k.displayLabel ?? k.label]));
+  return new Map(keywords.map((k) => {
+    const label = k.displayLabel ?? (typeof k.label === 'string' ? k.label : undefined);
+    return label ? [k.value, label] as const : undefined;
+  }).filter((entry): entry is [T, string] => entry !== undefined));
 }
 
 /**

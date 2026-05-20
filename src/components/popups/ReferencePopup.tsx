@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Keyword } from '../../core/types';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import type { ReferenceItem, ReferenceSource } from '../../domains/reference';
 
 export interface ReferencePopupProps {
@@ -194,7 +195,7 @@ export function ReferencePopup({
                 onClose();
               }}
             >
-              {keyword.label}
+              {resolveKeywordLabel(keyword)}
             </button>
           ))}
         </div>

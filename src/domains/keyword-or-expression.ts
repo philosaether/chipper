@@ -48,6 +48,12 @@ export interface ExpressionConfig {
   /** Format the value for chip trigger display (default: identity) */
   display?: (value: string) => string;
 
+  /** Text shown before the input in the popup (e.g., "in"). Function receives sentence context. */
+  prefix?: string | ((context: Record<string, unknown>) => string);
+
+  /** Text shown after the input in the popup (e.g., "months"). Function receives sentence context. */
+  suffix?: string | ((context: Record<string, unknown>) => string);
+
   /**
    * Keyword that enters expression mode when selected.
    * When absent, the expression input is always visible in the popup.
@@ -148,8 +154,29 @@ export function keywordOrExpressionDomain(
     ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
     : (value: string): boolean => validKeywordValues.has(value);
 
-  const display = (value: string): string =>
-    displayByValue.get(value) ?? expressionDisplay(value);
+  const resolveAffix = (
+    affix: string | ((ctx: Record<string, unknown>) => string) | undefined,
+    ctx: Record<string, unknown>,
+  ): string => {
+    if (!affix) return '';
+    return typeof affix === 'function' ? affix(ctx) : affix;
+  };
+
+  const display = (value: string, context?: Record<string, unknown>): string => {
+    const staticLabel = displayByValue.get(value);
+    if (staticLabel) return staticLabel;
+    // Check for dynamic keyword labels (function labels excluded from static map)
+    const dynamicKeyword = keywords.find(
+      (k) => k.value === value && typeof k.label === 'function',
+    );
+    if (dynamicKeyword) return (dynamicKeyword.label as (ctx: Record<string, unknown>) => string)(context ?? {});
+    // Expression value: wrap with prefix/suffix for chip trigger display
+    const ctx = context ?? {};
+    const prefix = resolveAffix(expression?.prefix, ctx);
+    const suffix = resolveAffix(expression?.suffix, ctx);
+    const core = expressionDisplay(value);
+    return [prefix, core, suffix].filter(Boolean).join(' ');
+  };
 
   const expressionModes: ExpressionMode<string>[] = [];
 
@@ -165,6 +192,8 @@ export function keywordOrExpressionDomain(
       min: expression.min,
       max: expression.max,
       step: expression.step,
+      prefix: expression.prefix,
+      suffix: expression.suffix,
     });
   }
 

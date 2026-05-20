@@ -31,6 +31,7 @@ core/
 │                           (presence, domain reconfiguration, cascade), runInitialContextPass.
 ├── reducer.ts            — sentenceReducer: pure switch over SentenceAction union. Delegates to action handlers.
 ├── mode-switching.ts     — TRIGGER_SENTINEL symbol for mode-transition signaling in SET_CHIP_VALUE (internal)
+├── resolve-keyword-label.ts — resolveKeywordLabel(): resolve static or dynamic keyword labels with context
 └── actions/
     ├── set-chip-value.ts — SET_CHIP_VALUE: update value, validate, display, cascade validity, trigger context propagation
     ├── toggle-clause.ts  — TOGGLE_CLAUSE: flip user-controlled activation on optional clauses

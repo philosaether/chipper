@@ -53,10 +53,17 @@ export function handleSetChipValue(
   }
 
   const isValid = domain.validate(effectiveValue);
+  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
+
+  // Build clause context (ancestor + own productions) for display and segment visibility
+  const pendingChips = { ...clause.chips, [chipId]: { ...clause.chips[chipId]!, value: effectiveValue } };
+  const clauseContext = clauseDef
+    ? buildClauseContext(clauseId, clauseDef, pendingChips, store.definition, store.state.contexts)
+    : undefined;
 
   const newChipState: ChipState = {
     value: effectiveValue,
-    displayValue: computeDisplayValue(domain, effectiveValue, isValid),
+    displayValue: computeDisplayValue(domain, effectiveValue, isValid, clauseContext),
     valid: isValid,
     dirty: true,
     // false → undefined so the field is absent (not false) when not in expression mode
@@ -65,8 +72,6 @@ export function handleSetChipValue(
 
   const newChips = { ...clause.chips, [chipId]: newChipState };
 
-  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
-
   // Re-evaluate segment visibility when the clause has chip-level predicates
   let visibleChips = clause.visibleChips;
   if (clauseDef) {
@@ -74,7 +79,7 @@ export function handleSetChipValue(
       (s) => s.type === 'chip' && s.present,
     );
     if (hasSegmentPredicates) {
-      const fullContext = buildClauseContext(
+      const fullContext = clauseContext ?? buildClauseContext(
         clauseId, clauseDef, newChips, store.definition, store.state.contexts,
       );
       visibleChips = evaluateVisibleChips(clauseDef.segments, fullContext);

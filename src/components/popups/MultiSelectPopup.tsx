@@ -7,6 +7,7 @@
  */
 
 import type { Keyword } from '../../core/types';
+import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { selectionMatchesKeyword } from '../../domains/multi-select';
 
 export interface MultiSelectPopupProps {
@@ -47,7 +48,7 @@ export function MultiSelectPopup({
             const isMatch = selectionMatchesKeyword(selectedSet, value.length, keyword.value);
             return (
               <button
-                key={keyword.label}
+                key={String(keyword.value)}
                 type="button"
                 role="option"
                 className={[
@@ -57,7 +58,7 @@ export function MultiSelectPopup({
                 aria-selected={isMatch}
                 onClick={() => handleKeywordSelect(keyword.value)}
               >
-                {keyword.label}
+                {resolveKeywordLabel(keyword)}
               </button>
             );
           })}

@@ -107,8 +107,16 @@
   min-width: 12rem;
 }
 
+.chipper-koe-popup__separator {
+  border: none;
+  border-top: 1px solid;
+  margin: 0;
+}
+
 .chipper-koe-popup__input-row {
   display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .chipper-koe-popup__input {
