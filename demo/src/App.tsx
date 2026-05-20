@@ -21,7 +21,7 @@ import './demo.css';
 
 const praxisPalette = extendPalette({
   chips: {
-    cadenceType: keywordOrExpressionDomain({
+    cadenceMeasure: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [
         { value: 'daily', label: 'day' },
@@ -30,13 +30,13 @@ const praxisPalette = extendPalette({
         { value: 'weekend', label: 'weekend day' },
       ],
       expression: numericExpression({
-        min: 2,
+        min: 1,
         max: 365,
         trigger: { label: 'custom interval', default: '2' },
       }),
       default: 'weekly',
     }),
-    cadencePeriod: keywordOrExpressionDomain({
+    cadenceUnit: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [
         { value: 'day', label: 'days' },
@@ -69,20 +69,32 @@ const praxisPalette = extendPalette({
 const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
     .text('Every')
-    .chip('cadenceType')
-    .chip('cadencePeriod', { present: (ctx) => !isNaN(Number(ctx.cadenceType)) })
-    .produces({ cadenceType: 'cadenceType', cadencePeriod: 'cadencePeriod' })
+    .chip('cadenceMeasure')
+    .chip('cadenceUnit', { present: (ctx) => !isNaN(Number(ctx.cadenceMeasure)) })
+    .produces({ cadenceMeasure: 'cadenceMeasure', cadenceUnit: 'cadenceUnit' })
   )
   .clause('dayOfWeek', builder()
     .text('on')
     .chip('dayOfWeek')
     .contingentOn('cadence', {
       present: (ctx) => {
-        if (ctx.cadenceType === 'weekly') return true;
-        if (!isNaN(Number(ctx.cadenceType)))
-          return ['week', 'month'].includes(ctx.cadencePeriod as string);
+        if (ctx.cadenceMeasure === 'weekly') return true;
+        if (!isNaN(Number(ctx.cadenceMeasure)))
+          return ['week', 'month'].includes(ctx.cadenceUnit as string);
         return false;
       },
+    })
+    .text(',')
+  )
+  .clause('anchorDate', builder()
+    .text('starting')
+    .text('[immediately]')
+    .text(',')
+    .contingentOn('cadence', {
+      present: (ctx) => {
+        if (isNaN(Number(ctx.cadenceMeasure))) return false;
+        return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
+      }
     })
   )
   .build()
