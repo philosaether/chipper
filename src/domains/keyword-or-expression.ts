@@ -48,6 +48,12 @@ export interface ExpressionConfig {
   /** Format the value for chip trigger display (default: identity) */
   display?: (value: string) => string;
 
+  /** Text shown before the input in the popup (e.g., "in") */
+  prefix?: string;
+
+  /** Text shown after the input in the popup (e.g., "months") */
+  suffix?: string;
+
   /**
    * Keyword that enters expression mode when selected.
    * When absent, the expression input is always visible in the popup.
@@ -165,6 +171,8 @@ export function keywordOrExpressionDomain(
       min: expression.min,
       max: expression.max,
       step: expression.step,
+      prefix: expression.prefix,
+      suffix: expression.suffix,
     });
   }
 

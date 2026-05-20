@@ -46,6 +46,20 @@ const praxisPalette = extendPalette({
         { value: 'year', label: 'years' },
       ]
     }),
+    cadenceOffset: keywordOrExpressionDomain({
+      color: 'copper',
+      keywords: [
+        { value: '0', label: 'immediately' },
+        { value: '1', label: 'next month' },
+      ],
+      expression: numericExpression({
+        min: 1,
+        max: 52,
+        prefix: 'in',
+        suffix: 'months',
+        trigger: { label: 'in N months', default: '4' },
+      }),
+    }),
     dayOfWeek: multiSelectDomain({
       color: 'sage',
       options: [
@@ -88,7 +102,7 @@ const demoSentence = sentence(praxisPalette)
   )
   .clause('anchorDate', builder()
     .text('starting')
-    .text('[immediately]')
+    .chip('cadenceOffset')
     .text(',')
     .contingentOn('cadence', {
       present: (ctx) => {

@@ -129,41 +129,50 @@ export function KeywordOrExpressionPopup({
           </button>
         </div>
       )}
-      {showExpression && <div className="chipper-koe-popup__input-row">
-        {expressionMode!.inputType === 'number' ? (
-          <NumericInput
-            value={inputValue}
-            min={expressionMode!.min}
-            max={expressionMode!.max}
-            step={expressionMode!.step}
-            onSelect={(v) => {
-              setInputValue(v);
-              if (expressionMode!.validate(v)) {
-                onSelect(v);
-              }
-            }}
-            onSubmit={() => {
-              if (expressionMode!.validate(inputValue)) {
-                onSelect(inputValue);
-                onClose();
-              }
-            }}
-          />
-        ) : (
-          <input
-            type="text"
-            className="chipper-koe-popup__input"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSubmit();
-            }}
-            placeholder={expressionMode!.label}
-            maxLength={maxLength}
-            autoFocus={keywords.length === 0}
-          />
-        )}
-      </div>}
+      {showExpression && <>
+        {keywords.length > 0 && <hr className="chipper-koe-popup__separator" />}
+        <div className="chipper-koe-popup__input-row">
+          {expressionMode!.prefix && (
+            <span className="chipper-koe-popup__affix">{expressionMode!.prefix}</span>
+          )}
+          {expressionMode!.inputType === 'number' ? (
+            <NumericInput
+              value={inputValue}
+              min={expressionMode!.min}
+              max={expressionMode!.max}
+              step={expressionMode!.step}
+              onSelect={(v) => {
+                setInputValue(v);
+                if (expressionMode!.validate(v)) {
+                  onSelect(v);
+                }
+              }}
+              onSubmit={() => {
+                if (expressionMode!.validate(inputValue)) {
+                  onSelect(inputValue);
+                  onClose();
+                }
+              }}
+            />
+          ) : (
+            <input
+              type="text"
+              className="chipper-koe-popup__input"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSubmit();
+              }}
+              placeholder={expressionMode!.label}
+              maxLength={maxLength}
+              autoFocus={keywords.length === 0}
+            />
+          )}
+          {expressionMode!.suffix && (
+            <span className="chipper-koe-popup__affix">{expressionMode!.suffix}</span>
+          )}
+        </div>
+      </>}
     </div>
   );
 }

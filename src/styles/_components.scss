@@ -142,6 +142,15 @@
   }
 }
 
+.chipper-koe-popup__separator {
+  border-top-color: var(--chipper-border-subtle);
+}
+
+.chipper-koe-popup__affix {
+  color: var(--chipper-text-muted);
+  white-space: nowrap;
+}
+
 // Numeric input --------------------------------------------------------------
 
 .chipper-numeric-input {

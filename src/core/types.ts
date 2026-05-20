@@ -61,6 +61,12 @@ export interface ExpressionMode<T = unknown> {
 
   /** Step increment for +/- buttons (number inputs only, default 1) */
   step?: number;
+
+  /** Text shown before the input in the popup (e.g., "in") */
+  prefix?: string;
+
+  /** Text shown after the input in the popup (e.g., "months") */
+  suffix?: string;
 }
 
 /**
