@@ -194,7 +194,7 @@ export function ReferencePopup({
                 onClose();
               }}
             >
-              {keyword.label}
+              {typeof keyword.label === 'function' ? keyword.label({}) : keyword.label}
             </button>
           ))}
         </div>

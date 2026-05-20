@@ -14,8 +14,8 @@
 
 /** A named preset value within a domain. */
 export interface Keyword<T = unknown> {
-  /** Display label shown in the popup */
-  label: string;
+  /** Display label shown in the popup. Function receives sentence context. */
+  label: string | ((context: SentenceContext) => string);
 
   /** Display text shown in the chip trigger (defaults to label) */
   displayLabel?: string;
@@ -95,8 +95,8 @@ export interface Domain<T = unknown> {
   /** Validate a value */
   validate: (value: T) => boolean;
 
-  /** Format a value for display in the chip trigger */
-  display: (value: T) => string;
+  /** Format a value for display in the chip trigger. Context is available when called from the reducer. */
+  display: (value: T, context?: SentenceContext) => string;
 
   /** Default value (may or may not be valid) */
   defaultValue: T;

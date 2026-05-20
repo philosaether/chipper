@@ -112,7 +112,7 @@ export function KeywordOrExpressionPopup({
                 onClose();
               }}
             >
-              {keyword.label}
+              {typeof keyword.label === 'function' ? keyword.label(context ?? {}) : keyword.label}
             </button>
           ))}
         </div>

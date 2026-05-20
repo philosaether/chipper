@@ -26,12 +26,17 @@ function resolveDomain(domainName: string, palette: Palette): Domain {
   return domain;
 }
 
-/** Compute displayValue from a domain and value. */
-export function computeDisplayValue(domain: Domain, value: unknown, isValid: boolean): string {
+/** Compute displayValue from a domain and value. Context enables dynamic display. */
+export function computeDisplayValue(
+  domain: Domain,
+  value: unknown,
+  isValid: boolean,
+  context?: SentenceContext,
+): string {
   if (isValid) {
-    return domain.display(value);
+    return domain.display(value, context);
   }
-  return domain.placeholder ?? domain.display(value);
+  return domain.placeholder ?? domain.display(value, context);
 }
 
 /** Derive clause validity: all visible chips must be valid. */

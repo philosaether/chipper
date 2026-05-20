@@ -149,7 +149,7 @@ export function AlternativeCoordinatePopup({
                     aria-selected={isSelected}
                     onClick={() => handleSlotSelect(slotIndex, keyword.value)}
                   >
-                    {keyword.label}
+                    {typeof keyword.label === 'function' ? keyword.label({}) : keyword.label}
                   </button>
                 );
               })}

@@ -154,7 +154,7 @@ export function keywordOrExpressionDomain(
     ? (value: string): boolean => validKeywordValues.has(value) || expressionValidate(value)
     : (value: string): boolean => validKeywordValues.has(value);
 
-  const display = (value: string): string =>
+  const display = (value: string, _context?: Record<string, unknown>): string =>
     displayByValue.get(value) ?? expressionDisplay(value);
 
   const expressionModes: ExpressionMode<string>[] = [];

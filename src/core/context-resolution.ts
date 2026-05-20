@@ -149,8 +149,15 @@ export function evaluateContingency(
       }
     }
 
-    // Revalidate chips whose domains changed
-    newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses);
+    // Revalidate and recompute display for chips (domains or context may have changed)
+    if (shouldBePresent) {
+      const revalContext = buildClauseContext(
+        contingentDef.id, contingentDef, newClauses[contingentDef.id]!.chips, definition, newContexts,
+      );
+      newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses, revalContext);
+    } else {
+      newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses);
+    }
 
     // Re-evaluate segment visibility for the contingent clause
     if (shouldBePresent) {
@@ -209,7 +216,9 @@ export function evaluateContingency(
 }
 
 /**
- * Revalidate chips in a clause whose domains may have changed.
+ * Revalidate chips in a clause whose domains or context may have changed.
+ * When context is provided, recomputes display for all chips (context-aware display).
+ * When context is absent, only revalidates chips whose domains changed.
  * Returns a new clauses record — does not mutate the input.
  */
 function revalidateClauseChips(
@@ -217,31 +226,35 @@ function revalidateClauseChips(
   store: SentenceStore,
   newDomains: Record<string, import('./types').Domain>,
   clauses: Record<string, ClauseState>,
+  context?: SentenceContext,
 ): Record<string, ClauseState> {
   let result = clauses;
 
   for (const chipDef of contingentDef.chips) {
-    if (newDomains[chipDef.id] !== store.domains[chipDef.id]) {
-      const clause = result[contingentDef.id];
-      const chipState = clause?.chips[chipDef.id];
-      if (clause && chipState) {
-        const domain = newDomains[chipDef.id]!;
-        const isValid = domain.validate(chipState.value);
-        const newChipState: ChipState = {
-          ...chipState,
-          valid: isValid,
-          displayValue: computeDisplayValue(domain, chipState.value, isValid),
-        };
-        const newChips = { ...clause.chips, [chipDef.id]: newChipState };
-        result = {
-          ...result,
-          [contingentDef.id]: {
-            ...clause,
-            chips: newChips,
-            valid: computeClauseValidity(newChips, clause.visibleChips),
-          },
-        };
-      }
+    const domainChanged = newDomains[chipDef.id] !== store.domains[chipDef.id];
+    if (!domainChanged && !context) continue;
+
+    const clause = result[contingentDef.id];
+    const chipState = clause?.chips[chipDef.id];
+    if (clause && chipState) {
+      const domain = newDomains[chipDef.id]!;
+      const isValid = domainChanged ? domain.validate(chipState.value) : chipState.valid;
+      const newDisplayValue = computeDisplayValue(domain, chipState.value, isValid, context);
+      if (newDisplayValue === chipState.displayValue && isValid === chipState.valid) continue;
+      const newChipState: ChipState = {
+        ...chipState,
+        valid: isValid,
+        displayValue: newDisplayValue,
+      };
+      const newChips = { ...clause.chips, [chipDef.id]: newChipState };
+      result = {
+        ...result,
+        [contingentDef.id]: {
+          ...clause,
+          chips: newChips,
+          valid: computeClauseValidity(newChips, clause.visibleChips),
+        },
+      };
     }
   }
 
