@@ -10,6 +10,23 @@ item should say *why* it was deferred and *what* would trigger picking it up.
 
 Items that require a /draft cycle before implementation.
 
+- **Theming engine v2 — runtime theme switching** — the demo's theme
+  toggle (praxis/midnight/terminal) works by applying CSS custom property
+  overrides via JS. This should be a first-class library feature, not
+  demo-only code. Design questions: (1) Should themes be JS objects or
+  SCSS-compiled CSS files? The demo proved JS token maps work well for
+  runtime switching, but SCSS gives compile-time derived colors (hover
+  states via `color.mix`). Hybrid approach: SCSS compiles base themes,
+  JS overrides for runtime switching. (2) Chip classification colors
+  need to be part of the theme contract — currently SASS `chip-colors`
+  mixin generates them, but runtime themes must override them too.
+  (3) Font as a theme token works (`--chipper-font` + `--demo-font`),
+  but the `inherit` default breaks at body level — needs a cleaner
+  pattern. (4) Theme restoration (clearing overrides to return to SCSS
+  defaults) works but is fragile — enumerate all possible props to
+  `removeProperty`. Deferred from riff/demo-task-sentence (2026-05-21).
+  Trigger: second consumer theme or npm publish prep.
+
 - **Keyword grouping across popup types** — visual separator / groups
   within a single slot's keyword list. Needed for day-of-month (shortcut
   row + full 1–28 grid), likely useful for multi-select and KOE too.
@@ -19,6 +36,22 @@ Items that require a /draft cycle before implementation.
 - **Serialization / deserialization** — save and restore sentence state.
   Core engine feature, not yet designed. Trigger: Praxis integration
   (needs to persist user configs).
+
+- **Context-aware punctuation** — clause-terminating characters (comma,
+  period, none) should be context-aware. Takes a `(ctx) => char` lambda;
+  defaults to comma when not last clause, period when last. Single
+  `(ctx) => bool` overload reproduces default but is none when false.
+  Likely a specific use case of a general context-aware text element with
+  syntax sugar (`.punctuation()` on clause builder). Deferred from
+  riff/demo-task-sentence (2026-05-21). Trigger: any sentence where
+  clause ordering or optionality affects punctuation.
+
+- **Time picker chip** — dedicated time-of-day domain. The 0–24 integer
+  stepper with `:00` suffix works well and may be the Praxis solution,
+  but a proper time picker (hour:minute, AM/PM toggle, or 24h input)
+  deserves a design pass for the general case. Deferred from
+  riff/demo-task-sentence (2026-05-21). Trigger: consumer needing
+  minute-level granularity.
 
 ## Tech Debt
 

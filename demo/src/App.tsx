@@ -185,6 +185,145 @@ const praxisPalette = extendPalette({
   }
 })
 
+//
+//  THEME TOGGLE
+//
+
+const themeTokens: Record<string, Record<string, string>> = {
+  praxis: {
+    // Default — no overrides needed, SCSS provides these
+  },
+  midnight: {
+    '--chipper-bg-primary': '#1a1b2e',
+    '--chipper-bg-secondary': '#232440',
+    '--chipper-bg-tertiary': '#2d2f50',
+    '--chipper-bg-elevated': '#2a2c48',
+    '--chipper-text-primary': '#e0e0ef',
+    '--chipper-text-secondary': '#a0a0c0',
+    '--chipper-text-muted': '#6a6a8a',
+    '--chipper-border': '#3a3c5e',
+    '--chipper-border-subtle': 'rgba(58, 60, 94, 0.4)',
+    '--chipper-accent': '#7b9fd4',
+    '--chipper-accent-bright': '#a8c4e8',
+    '--chipper-accent-dim': '#5a7fb0',
+    '--chipper-accent-glow': '#3a4a6e',
+    '--chipper-focus-ring': '0 0 0 2px rgba(123, 159, 212, 0.3)',
+    '--chipper-popup-shadow': '0 4px 12px rgba(0, 0, 0, 0.3)',
+    // Chip colors — cool desaturated hues on dark pastels
+    '--chipper-color-copper-text': '#d4a87a',
+    '--chipper-color-copper-bg': '#2e2418',
+    '--chipper-color-copper-hover': '#3a2e20',
+    '--chipper-color-sage-text': '#7ac47a',
+    '--chipper-color-sage-bg': '#1a2e1a',
+    '--chipper-color-sage-hover': '#223822',
+    '--chipper-color-slate-text': '#7aaad4',
+    '--chipper-color-slate-bg': '#1a2240',
+    '--chipper-color-slate-hover': '#222a4a',
+    '--chipper-color-stone-text': '#b0a898',
+    '--chipper-color-stone-bg': '#2a2822',
+    '--chipper-color-stone-hover': '#33302a',
+    '--chipper-color-teal-text': '#6ac4be',
+    '--chipper-color-teal-bg': '#1a2e2c',
+    '--chipper-color-teal-hover': '#223836',
+    '--chipper-color-rose-text': '#d48a96',
+    '--chipper-color-rose-bg': '#2e1a1e',
+    '--chipper-color-rose-hover': '#382228',
+  },
+  terminal: {
+    '--chipper-font': "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace",
+    '--demo-font': "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace",
+    '--chipper-bg-primary': '#0a0a0a',
+    '--chipper-bg-secondary': '#141414',
+    '--chipper-bg-tertiary': '#1e1e1e',
+    '--chipper-bg-elevated': '#1a1a1a',
+    '--chipper-text-primary': '#33ff33',
+    '--chipper-text-secondary': '#22bb22',
+    '--chipper-text-muted': '#117711',
+    '--chipper-border': '#1a3a1a',
+    '--chipper-border-subtle': 'rgba(26, 58, 26, 0.4)',
+    '--chipper-accent': '#33ff33',
+    '--chipper-accent-bright': '#66ff66',
+    '--chipper-accent-dim': '#22aa22',
+    '--chipper-accent-glow': '#0a2a0a',
+    '--chipper-focus-ring': '0 0 0 2px rgba(51, 255, 51, 0.3)',
+    '--chipper-popup-shadow': '0 4px 12px rgba(0, 0, 0, 0.5)',
+    // Chip colors — monochrome green at varying intensities
+    '--chipper-color-copper-text': '#33ff33',
+    '--chipper-color-copper-bg': '#0a1a0a',
+    '--chipper-color-copper-hover': '#0f240f',
+    '--chipper-color-sage-text': '#33ff33',
+    '--chipper-color-sage-bg': '#0a1a0a',
+    '--chipper-color-sage-hover': '#0f240f',
+    '--chipper-color-slate-text': '#33ff33',
+    '--chipper-color-slate-bg': '#0a1a0a',
+    '--chipper-color-slate-hover': '#0f240f',
+    '--chipper-color-stone-text': '#33ff33',
+    '--chipper-color-stone-bg': '#0a1a0a',
+    '--chipper-color-stone-hover': '#0f240f',
+    '--chipper-color-teal-text': '#33ff33',
+    '--chipper-color-teal-bg': '#0a1a0a',
+    '--chipper-color-teal-hover': '#0f240f',
+    '--chipper-color-rose-text': '#33ff33',
+    '--chipper-color-rose-bg': '#0a1a0a',
+    '--chipper-color-rose-hover': '#0f240f',
+  },
+};
+
+// Store original praxis values so we can restore them
+let praxisTokens: Record<string, string> | null = null;
+
+function applyTheme(themeName: string) {
+  const root = document.documentElement;
+
+  // Capture praxis (original) values on first call
+  if (!praxisTokens) {
+    praxisTokens = {};
+    const midnight = themeTokens['midnight']!;
+    for (const prop of Object.keys(midnight)) {
+      praxisTokens[prop] = getComputedStyle(root).getPropertyValue(prop).trim();
+    }
+  }
+
+  // Clear all overrides first
+  const allProps = new Set([
+    ...Object.keys(themeTokens['midnight']!),
+    ...Object.keys(themeTokens['terminal']!),
+  ]);
+  for (const prop of allProps) {
+    root.style.removeProperty(prop);
+  }
+
+  // Apply new theme (praxis = no overrides, SCSS handles it)
+  const tokens = themeTokens[themeName];
+  if (tokens) {
+    for (const [prop, value] of Object.entries(tokens)) {
+      root.style.setProperty(prop, value);
+    }
+  }
+}
+
+const themePalette = extendPalette({
+  chips: {
+    theme: enumDomain({
+      color: 'slate',
+      keywords: [
+        { value: 'praxis', label: 'praxis' },
+        { value: 'midnight', label: 'midnight' },
+        { value: 'terminal', label: 'terminal' },
+      ],
+      default: 'praxis',
+    }),
+  },
+});
+
+const themeSentence = sentence(themePalette)
+  .clause('theme', builder()
+    .text('View this page in')
+    .chip('theme')
+    .text('theme.')
+  )
+  .build();
+
 const meetingPalette = extendPalette({
   chips: {
     meetingDate: keywordOrExpressionDomain({
@@ -321,6 +460,25 @@ export function App() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Theme toggle</div>
+        <p className="demo-section__desc">
+          A Chipper sentence that controls the page. Pick a theme and
+          watch the colors change.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper
+              sentence={themeSentence}
+              onChange={(state) => {
+                const theme = state.clauses['theme']?.chips['theme']?.value as string;
+                if (theme) applyTheme(theme);
+              }}
+            />
+          </div>
+        </div>
       </section>
 
       <section className="demo-section">

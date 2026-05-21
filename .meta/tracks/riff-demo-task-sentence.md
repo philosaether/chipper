@@ -230,3 +230,22 @@ flips `active`, doesn't clear values). So "at dusk" survives deactivation
 If default is invalid → show placeholder text in the dormant string. If
 default is valid (e.g., first keyword) → show that keyword's display.
 Both feel correct.
+
+## Note 6: theme toggle sentence
+
+Self-referential demo sentence: the user picks a theme and the page updates
+live. Shows Chipper controlling something outside its own sentence state.
+
+Sentence: `"View this page in [praxis] theme."`
+
+Single enum chip with theme keywords. The `onChange` callback reads the
+selected theme value and applies CSS custom property overrides to the
+document root. Themes defined as token maps in the demo — not new SCSS
+files, just JS objects that override `--chipper-*` tokens.
+
+Themes:
+- **praxis** (default) — warm parchment, gold accents (current)
+- **midnight** — dark background, cool blues
+- **terminal** — black/green monospace hacker aesthetic
+
+Implementation: all in App.tsx + demo.css. No library changes.
