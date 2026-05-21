@@ -8,6 +8,7 @@ import {
   enumDomain,
   keywordOrExpressionDomain,
   numericExpression,
+  dateExpression,
   multiSelectDomain,
   alternativeCoordinateDomain,
   referenceDomain,
@@ -86,18 +87,14 @@ const praxisPalette = extendPalette({
           slots: [{
             prefix: 'the',
             keywords: [
-              { label: '1st', value: '1' },
-              { label: '2nd', value: '2' },
-              { label: '3rd', value: '3' },
-              { label: '4th', value: '4' },
-              { label: '5th', value: '5' },
-              { label: '10th', value: '10' },
+              { label: 'first', value: '1' },
               { label: '15th', value: '15' },
-              { label: '20th', value: '20' },
-              { label: '25th', value: '25' },
               { label: 'last', value: 'last' },
             ],
           }],
+          expression: dateExpression({
+            placeholder: 'pick a date'
+          }),
           compose: (day) => day,
           decompose: (v) => [v],
           display: (v) => {
@@ -150,6 +147,30 @@ const praxisPalette = extendPalette({
     }),
   }
 })
+
+const meetingPalette = extendPalette({
+  chips: {
+    meetingDate: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { value: 'tomorrow', label: 'tomorrow' },
+        { value: 'next-monday', label: 'next Monday' },
+      ],
+      expression: dateExpression({
+        trigger: { label: 'pick a date', default: '' },
+      }),
+      placeholder: 'a date',
+    }),
+  },
+});
+
+const meetingSentence = sentence(meetingPalette)
+  .clause('meeting', builder()
+    .text('Schedule a meeting for')
+    .chip('meetingDate')
+    .text('.')
+  )
+  .build();
 
 const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
@@ -252,6 +273,18 @@ export function App() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Date expression</div>
+        <p className="demo-section__desc">
+          A calendar date picker as a KOE expression mode, with keyword shortcuts.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper sentence={meetingSentence} />
+          </div>
+        </div>
       </section>
 
       <section className="demo-section">

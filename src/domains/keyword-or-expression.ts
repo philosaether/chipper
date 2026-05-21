@@ -24,8 +24,8 @@ export interface ExpressionTrigger {
 
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
-  /** Input type — 'text' or 'number' (stepper UI). Required. */
-  inputType: 'text' | 'number';
+  /** Input type — 'text', 'number' (stepper UI), or 'date' (calendar picker). Required. */
+  inputType: 'text' | 'number' | 'date';
 
   /** Placeholder text for the input field */
   placeholder?: string;
@@ -82,6 +82,21 @@ export function numericExpression(
   return {
     inputType: 'number',
     validate: (v) => { const n = Number(v); return !isNaN(n) && isFinite(n); },
+    ...options,
+  };
+}
+
+/**
+ * Create a calendar date expression config.
+ * Sugar for { inputType: 'date', ...options } with sensible defaults.
+ * Values are YYYY-MM-DD strings (native date input format).
+ */
+export function dateExpression(
+  options?: Omit<ExpressionConfig, 'inputType'>,
+): ExpressionConfig {
+  return {
+    inputType: 'date',
+    validate: (v) => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v)),
     ...options,
   };
 }

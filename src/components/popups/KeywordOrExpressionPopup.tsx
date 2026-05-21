@@ -53,11 +53,12 @@ export function KeywordOrExpressionPopup({
   const showExpression = expressionMode && (!hasTrigger || expressionActive);
 
   const isNumeric = expressionMode?.inputType === 'number';
+  const isDate = expressionMode?.inputType === 'date';
   const [inputValue, setInputValue] = useState(
     // No expression visible → no input state needed.
-    // Numeric inputs always initialize with the current value (for the stepper).
+    // Numeric/date inputs always initialize with the current value.
     // Text inputs start empty when the current value is a keyword.
-    !showExpression ? '' : isNumeric ? value : (isKeywordValue(value, keywords) ? '' : value),
+    !showExpression ? '' : (isNumeric || isDate) ? value : (isKeywordValue(value, keywords) ? '' : value),
   );
 
   // Track whether a keyword was clicked (skip auto-save in that case)
@@ -81,7 +82,7 @@ export function KeywordOrExpressionPopup({
     return () => {
       if (!expressionMode) return;
       if (keywordSelected.current) return;
-      if (isNumeric) return;
+      if (isNumeric || isDate) return;
       if (!showExpression) return;
       const trimmed = inputValueRef.current.trim();
       if (trimmed && trimmed !== value && expressionMode.validate(trimmed)) {
@@ -161,6 +162,21 @@ export function KeywordOrExpressionPopup({
                   onClose();
                 }
               }}
+            />
+          ) : expressionMode!.inputType === 'date' ? (
+            <input
+              type="date"
+              className="chipper-koe-popup__input"
+              value={inputValue}
+              onChange={(e) => {
+                const v = e.target.value;
+                setInputValue(v);
+                if (v && expressionMode!.validate(v)) {
+                  onSelect(v);
+                  onClose();
+                }
+              }}
+              autoFocus={keywords.length === 0}
             />
           ) : (
             <input
