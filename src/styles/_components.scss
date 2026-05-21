@@ -22,8 +22,8 @@
   }
 }
 
-.chipper-clause__placeholder {
-  opacity: 0.3;
+.chipper-clause--dormant .chipper-clause__text {
+  color: var(--chipper-text-muted);
   font-style: italic;
 }
 

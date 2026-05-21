@@ -60,7 +60,7 @@ export interface ClauseBuilder {
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
   chip(id: string, domainName?: string, options?: ChipOptions): ClauseBuilder;
-  contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>): ClauseBuilder;
+  contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
 }
@@ -112,8 +112,10 @@ export function builder(): ClauseBuilder {
       segments.push({ type: 'chip', chipId: id, present: options?.present });
       return clauseBuilder;
     },
-    contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'>) {
-      contingency = { superclauseId, ...config };
+    contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)) {
+      contingency = typeof config === 'function'
+        ? { superclauseId, present: config }
+        : { superclauseId, ...config };
       return clauseBuilder;
     },
     produces(chipIdOrMapping: string | Record<string, string>) {

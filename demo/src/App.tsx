@@ -89,12 +89,9 @@ const praxisPalette = extendPalette({
             keywords: [
               { label: 'first', value: '1' },
               { label: '15th', value: '15' },
-              { label: 'last', value: 'last' },
+              { label: 'last', value: 'last', displayLabel: 'last day' },
             ],
           }],
-          expression: dateExpression({
-            placeholder: 'pick a date'
-          }),
           compose: (day) => day,
           decompose: (v) => [v],
           display: (v) => {
@@ -145,6 +142,46 @@ const praxisPalette = extendPalette({
       ],
       placeholder: 'which day',
     }),
+    monthOfQuarter: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { label: 'first', value: '1' },
+        { label: 'second', value: '2' },
+        { label: 'last', value: '3' },
+      ],
+    }),
+    monthOfYear: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { label: 'Jan', value: 'jan' },
+        { label: 'Feb', value: 'feb' },
+        { label: 'Mar', value: 'mar' },
+        { label: 'Apr', value: 'apr' },
+        { label: 'May', value: 'may' },
+        { label: 'Jun', value: 'jun' },
+        { label: 'Jul', value: 'jul' },
+        { label: 'Aug', value: 'aug' },
+        { label: 'Sep', value: 'sep' },
+        { label: 'Oct', value: 'oct' },
+        { label: 'Nov', value: 'nov' },
+        { label: 'Dec', value: 'dec' },
+      ],
+    }),
+    timeOfDay: keywordOrExpressionDomain({
+      color: 'slate',
+      keywords: [
+        { value: '6', label: 'dawn' },
+        { value: '12', label: 'noon' },
+        { value: '18', label: 'dusk' },
+        { value: '24', label: 'midnight' },
+      ],
+      expression: numericExpression({
+        min: 0,
+        max: 24,
+        suffix: ':00',
+      }),
+      placeholder: 'a specific time of day',
+    }),
   }
 })
 
@@ -182,38 +219,49 @@ const demoSentence = sentence(praxisPalette)
   .clause('dayOfWeek', builder()
     .text('on')
     .chip('dayOfWeek')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (ctx.cadenceMeasure === 'weekly') return true;
-        if (!isNaN(Number(ctx.cadenceMeasure)))
-          return ctx.cadenceUnit === 'week';
-        return false;
-      },
+    .contingentOn('cadence', (ctx) => {
+      if (ctx.cadenceMeasure === 'weekly') return true;
+      if (!isNaN(Number(ctx.cadenceMeasure)))
+        return ctx.cadenceUnit === 'week';
+      return false;
     })
     .text(',')
   )
   .clause('dayOfMonth', builder()
     .text('on')
     .chip('dayOfMonth')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (!isNaN(Number(ctx.cadenceMeasure)))
-          return ['month', 'quarter'].includes(ctx.cadenceUnit as string);
-        return false;
-      },
+    .contingentOn('cadence', (ctx) => {
+      if (!isNaN(Number(ctx.cadenceMeasure)))
+        return ['month', 'quarter', 'year'].includes(ctx.cadenceUnit as string);
+      return false;
     })
-    .text(',')
+  )
+  .clause('monthOfQuarter', builder()
+    .text('of the')
+    .chip('monthOfQuarter')
+    .text('month')
+    .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'quarter')
+  )
+    .clause('monthOfYear', builder()
+    .text('of')
+    .chip('monthOfYear')
+    .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'year')
   )
   .clause('anchorDate', builder()
     .text('starting')
     .chip('cadenceOffset')
     .text(',')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (isNaN(Number(ctx.cadenceMeasure))) return false;
-        return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
-      }
+    .contingentOn('cadence', (ctx) => {
+      if (isNaN(Number(ctx.cadenceMeasure))) return false;
+      return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
     })
+  )
+  .line()
+  .clause('timeOfDay', builder()
+    .optional()
+    .text('at')
+    .chip('timeOfDay')
+    .text(',')
   )
   .build()
 

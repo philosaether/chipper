@@ -81,7 +81,7 @@ export function numericExpression(
 ): ExpressionConfig {
   return {
     inputType: 'number',
-    validate: (v) => { const n = Number(v); return !isNaN(n) && isFinite(n); },
+    validate: (v) => { if (v === '') return false; const n = Number(v); return !isNaN(n) && isFinite(n); },
     ...options,
   };
 }
