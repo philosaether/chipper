@@ -11,6 +11,7 @@ export {
   expressionDomain,
   textExpression,
   numericExpression,
+  dateExpression,
   type KeywordOrExpressionDomainConfig,
   type ExpressionDomainConfig,
   type ExpressionConfig,

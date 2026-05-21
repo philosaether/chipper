@@ -3,8 +3,8 @@
  *
  * Handles three presentation modes:
  * - Contingent + latent: returns null (clause not rendered)
- * - Optional + dormant: shows ↳ toggle + placeholder text
- * - Active: shows segments (with × toggle for optional clauses)
+ * - Optional + dormant: shows ↳ toggle + segments as plain text (muted italic)
+ * - Active: shows segments with interactive chips (with × toggle for optional)
  */
 
 import { useMemo } from 'react';
@@ -17,7 +17,7 @@ export interface ClauseProps {
 }
 
 export function Clause({ clauseId }: ClauseProps) {
-  const { definition, state, dispatch } = useSentence();
+  const { definition, state, dispatch, domains } = useSentence();
   const clauseDef = definition.clauses.find((c) => c.id === clauseId);
   const clauseState = state.clauses[clauseId];
 
@@ -28,7 +28,7 @@ export function Clause({ clauseId }: ClauseProps) {
     return null;
   }
 
-  // Optional clause that is not active: show toggle + placeholder
+  // Optional clause that is not active: show toggle + segments as plain text
   if (clauseDef.necessity === 'optional' && !clauseState?.active) {
     return (
       <div className="chipper-clause chipper-clause--dormant">
@@ -39,9 +39,30 @@ export function Clause({ clauseId }: ClauseProps) {
         >
           ↳
         </button>
-        <span className="chipper-clause__placeholder">
-          {clauseDef.placeholder ?? clauseId}
-        </span>
+        {clauseDef.segments.map((segment, index) => {
+          if (segment.type === 'text') {
+            return (
+              <span key={index} className="chipper-clause__text">
+                {segment.value}
+              </span>
+            );
+          }
+          // Skip chips hidden by chip-level contingency
+          if (clauseState?.visibleChips && !clauseState.visibleChips.includes(segment.chipId)) {
+            return null;
+          }
+          // Render chip as plain text using its display value
+          const chipState = clauseState?.chips[segment.chipId];
+          const domain = domains[segment.chipId];
+          const displayText = chipState
+            ? (chipState.valid ? chipState.displayValue : (domain?.placeholder ?? chipState.displayValue))
+            : (domain?.placeholder ?? segment.chipId);
+          return (
+            <span key={segment.chipId} className="chipper-clause__text">
+              {displayText}
+            </span>
+          );
+        })}
       </div>
     );
   }

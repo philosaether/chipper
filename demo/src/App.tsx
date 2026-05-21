@@ -8,6 +8,7 @@ import {
   enumDomain,
   keywordOrExpressionDomain,
   numericExpression,
+  dateExpression,
   multiSelectDomain,
   alternativeCoordinateDomain,
   referenceDomain,
@@ -26,7 +27,7 @@ const praxisPalette = extendPalette({
       color: 'copper',
       keywords: [
         { value: 'daily', label: 'day' },
-        { value: 'weekly', label: 'week on...', display: 'week' },
+        { value: 'weekly', label: 'week on...', displayLabel: 'week' },
         { value: 'weekday' },
         { value: 'weekend', label: 'weekend day' },
       ],
@@ -86,16 +87,9 @@ const praxisPalette = extendPalette({
           slots: [{
             prefix: 'the',
             keywords: [
-              { label: '1st', value: '1' },
-              { label: '2nd', value: '2' },
-              { label: '3rd', value: '3' },
-              { label: '4th', value: '4' },
-              { label: '5th', value: '5' },
-              { label: '10th', value: '10' },
+              { label: 'first', value: '1' },
               { label: '15th', value: '15' },
-              { label: '20th', value: '20' },
-              { label: '25th', value: '25' },
-              { label: 'last', value: 'last' },
+              { label: 'last', value: 'last', displayLabel: 'last day' },
             ],
           }],
           compose: (day) => day,
@@ -148,8 +142,200 @@ const praxisPalette = extendPalette({
       ],
       placeholder: 'which day',
     }),
+    monthOfQuarter: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { label: 'first', value: '1' },
+        { label: 'second', value: '2' },
+        { label: 'last', value: '3' },
+      ],
+    }),
+    monthOfYear: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { label: 'Jan', value: 'jan' },
+        { label: 'Feb', value: 'feb' },
+        { label: 'Mar', value: 'mar' },
+        { label: 'Apr', value: 'apr' },
+        { label: 'May', value: 'may' },
+        { label: 'Jun', value: 'jun' },
+        { label: 'Jul', value: 'jul' },
+        { label: 'Aug', value: 'aug' },
+        { label: 'Sep', value: 'sep' },
+        { label: 'Oct', value: 'oct' },
+        { label: 'Nov', value: 'nov' },
+        { label: 'Dec', value: 'dec' },
+      ],
+    }),
+    timeOfDay: keywordOrExpressionDomain({
+      color: 'slate',
+      keywords: [
+        { value: '6', label: 'dawn' },
+        { value: '12', label: 'noon' },
+        { value: '18', label: 'dusk' },
+        { value: '24', label: 'midnight' },
+      ],
+      expression: numericExpression({
+        min: 0,
+        max: 24,
+        suffix: ':00',
+      }),
+      placeholder: 'a specific time of day',
+    }),
   }
 })
+
+//
+//  THEME TOGGLE
+//
+
+const themeTokens: Record<string, Record<string, string>> = {
+  praxis: {
+    // Default — no overrides needed, SCSS provides these
+  },
+  midnight: {
+    '--chipper-bg-primary': '#1a1b2e',
+    '--chipper-bg-secondary': '#232440',
+    '--chipper-bg-tertiary': '#2d2f50',
+    '--chipper-bg-elevated': '#2a2c48',
+    '--chipper-text-primary': '#e0e0ef',
+    '--chipper-text-secondary': '#a0a0c0',
+    '--chipper-text-muted': '#6a6a8a',
+    '--chipper-border': '#3a3c5e',
+    '--chipper-border-subtle': 'rgba(58, 60, 94, 0.4)',
+    '--chipper-accent': '#7b9fd4',
+    '--chipper-accent-bright': '#a8c4e8',
+    '--chipper-accent-dim': '#5a7fb0',
+    '--chipper-accent-glow': '#3a4a6e',
+    '--chipper-focus-ring': '0 0 0 2px rgba(123, 159, 212, 0.3)',
+    '--chipper-popup-shadow': '0 4px 12px rgba(0, 0, 0, 0.3)',
+    // Chip colors — cool desaturated hues on dark pastels
+    '--chipper-color-copper-text': '#d4a87a',
+    '--chipper-color-copper-bg': '#2e2418',
+    '--chipper-color-copper-hover': '#3a2e20',
+    '--chipper-color-sage-text': '#7ac47a',
+    '--chipper-color-sage-bg': '#1a2e1a',
+    '--chipper-color-sage-hover': '#223822',
+    '--chipper-color-slate-text': '#7aaad4',
+    '--chipper-color-slate-bg': '#1a2240',
+    '--chipper-color-slate-hover': '#222a4a',
+    '--chipper-color-stone-text': '#b0a898',
+    '--chipper-color-stone-bg': '#2a2822',
+    '--chipper-color-stone-hover': '#33302a',
+    '--chipper-color-teal-text': '#6ac4be',
+    '--chipper-color-teal-bg': '#1a2e2c',
+    '--chipper-color-teal-hover': '#223836',
+    '--chipper-color-rose-text': '#d48a96',
+    '--chipper-color-rose-bg': '#2e1a1e',
+    '--chipper-color-rose-hover': '#382228',
+  },
+  terminal: {
+    '--chipper-font': "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace",
+    '--demo-font': "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace",
+    '--chipper-bg-primary': '#0a0a0a',
+    '--chipper-bg-secondary': '#141414',
+    '--chipper-bg-tertiary': '#1e1e1e',
+    '--chipper-bg-elevated': '#1a1a1a',
+    '--chipper-text-primary': '#33ff33',
+    '--chipper-text-secondary': '#22bb22',
+    '--chipper-text-muted': '#117711',
+    '--chipper-border': '#1a3a1a',
+    '--chipper-border-subtle': 'rgba(26, 58, 26, 0.4)',
+    '--chipper-accent': '#33ff33',
+    '--chipper-accent-bright': '#66ff66',
+    '--chipper-accent-dim': '#22aa22',
+    '--chipper-accent-glow': '#0a2a0a',
+    '--chipper-focus-ring': '0 0 0 2px rgba(51, 255, 51, 0.3)',
+    '--chipper-popup-shadow': '0 4px 12px rgba(0, 0, 0, 0.5)',
+    // Chip colors — monochrome green at varying intensities
+    '--chipper-color-copper-text': '#33ff33',
+    '--chipper-color-copper-bg': '#0a1a0a',
+    '--chipper-color-copper-hover': '#0f240f',
+    '--chipper-color-sage-text': '#33ff33',
+    '--chipper-color-sage-bg': '#0a1a0a',
+    '--chipper-color-sage-hover': '#0f240f',
+    '--chipper-color-slate-text': '#33ff33',
+    '--chipper-color-slate-bg': '#0a1a0a',
+    '--chipper-color-slate-hover': '#0f240f',
+    '--chipper-color-stone-text': '#33ff33',
+    '--chipper-color-stone-bg': '#0a1a0a',
+    '--chipper-color-stone-hover': '#0f240f',
+    '--chipper-color-teal-text': '#33ff33',
+    '--chipper-color-teal-bg': '#0a1a0a',
+    '--chipper-color-teal-hover': '#0f240f',
+    '--chipper-color-rose-text': '#33ff33',
+    '--chipper-color-rose-bg': '#0a1a0a',
+    '--chipper-color-rose-hover': '#0f240f',
+  },
+};
+
+// All overridable props across all themes (computed once)
+const allThemeProps = new Set(
+  Object.values(themeTokens).flatMap((t) => Object.keys(t)),
+);
+
+function applyTheme(themeName: string) {
+  const root = document.documentElement;
+
+  // Clear all overrides — SCSS cascade restores praxis defaults
+  for (const prop of allThemeProps) {
+    root.style.removeProperty(prop);
+  }
+
+  // Apply new theme tokens (praxis = empty, relies on SCSS)
+  const tokens = themeTokens[themeName];
+  if (tokens) {
+    for (const [prop, value] of Object.entries(tokens)) {
+      root.style.setProperty(prop, value);
+    }
+  }
+}
+
+const themePalette = extendPalette({
+  chips: {
+    theme: enumDomain({
+      color: 'slate',
+      keywords: [
+        { value: 'praxis', label: 'praxis' },
+        { value: 'midnight', label: 'midnight' },
+        { value: 'terminal', label: 'terminal' },
+      ],
+      default: 'praxis',
+    }),
+  },
+});
+
+const themeSentence = sentence(themePalette)
+  .clause('theme', builder()
+    .text('View this page in')
+    .chip('theme')
+    .text('theme.')
+  )
+  .build();
+
+const meetingPalette = extendPalette({
+  chips: {
+    meetingDate: keywordOrExpressionDomain({
+      color: 'sage',
+      keywords: [
+        { value: 'tomorrow', label: 'tomorrow' },
+        { value: 'next-monday', label: 'next Monday' },
+      ],
+      expression: dateExpression({
+        trigger: { label: 'pick a date', default: '' },
+      }),
+      placeholder: 'a date',
+    }),
+  },
+});
+
+const meetingSentence = sentence(meetingPalette)
+  .clause('meeting', builder()
+    .text('Schedule a meeting for')
+    .chip('meetingDate')
+    .text('.')
+  )
+  .build();
 
 const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
@@ -161,38 +347,49 @@ const demoSentence = sentence(praxisPalette)
   .clause('dayOfWeek', builder()
     .text('on')
     .chip('dayOfWeek')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (ctx.cadenceMeasure === 'weekly') return true;
-        if (!isNaN(Number(ctx.cadenceMeasure)))
-          return ctx.cadenceUnit === 'week';
-        return false;
-      },
+    .contingentOn('cadence', (ctx) => {
+      if (ctx.cadenceMeasure === 'weekly') return true;
+      if (!isNaN(Number(ctx.cadenceMeasure)))
+        return ctx.cadenceUnit === 'week';
+      return false;
     })
     .text(',')
   )
   .clause('dayOfMonth', builder()
     .text('on')
     .chip('dayOfMonth')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (!isNaN(Number(ctx.cadenceMeasure)))
-          return ['month', 'quarter'].includes(ctx.cadenceUnit as string);
-        return false;
-      },
+    .contingentOn('cadence', (ctx) => {
+      if (!isNaN(Number(ctx.cadenceMeasure)))
+        return ['month', 'quarter', 'year'].includes(ctx.cadenceUnit as string);
+      return false;
     })
-    .text(',')
+  )
+  .clause('monthOfQuarter', builder()
+    .text('of the')
+    .chip('monthOfQuarter')
+    .text('month')
+    .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'quarter')
+  )
+    .clause('monthOfYear', builder()
+    .text('of')
+    .chip('monthOfYear')
+    .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'year')
   )
   .clause('anchorDate', builder()
     .text('starting')
     .chip('cadenceOffset')
     .text(',')
-    .contingentOn('cadence', {
-      present: (ctx) => {
-        if (isNaN(Number(ctx.cadenceMeasure))) return false;
-        return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
-      }
+    .contingentOn('cadence', (ctx) => {
+      if (isNaN(Number(ctx.cadenceMeasure))) return false;
+      return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
     })
+  )
+  .line()
+  .clause('timeOfDay', builder()
+    .optional()
+    .text('at')
+    .chip('timeOfDay')
+    .text(',')
   )
   .build()
 
@@ -252,6 +449,37 @@ export function App() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Theme toggle</div>
+        <p className="demo-section__desc">
+          A Chipper sentence that controls the page. Pick a theme and
+          watch the colors change.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper
+              sentence={themeSentence}
+              onChange={(state) => {
+                const theme = state.clauses['theme']?.chips['theme']?.value as string;
+                if (theme) applyTheme(theme);
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Date expression</div>
+        <p className="demo-section__desc">
+          A calendar date picker as a KOE expression mode, with keyword shortcuts.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper sentence={meetingSentence} />
+          </div>
+        </div>
       </section>
 
       <section className="demo-section">
