@@ -14,7 +14,6 @@
 
 import { useSentence } from '../hooks/useSentence';
 import type { ClauseDefinition, LineDefinition } from '../core/types';
-import type { SentenceState } from '../core/state';
 import { Clause } from './Clause';
 
 /**
@@ -25,7 +24,6 @@ import { Clause } from './Clause';
 function shouldIndent(
   line: LineDefinition,
   clausesByIds: Map<string, ClauseDefinition>,
-  state: SentenceState,
 ): boolean {
   if (line.indent !== undefined) return line.indent;
 
@@ -36,12 +34,11 @@ function shouldIndent(
   });
 }
 
-function Line({ line, clausesByIds, state }: {
+function Line({ line, clausesByIds }: {
   line: LineDefinition;
   clausesByIds: Map<string, ClauseDefinition>;
-  state: SentenceState;
 }) {
-  const indent = shouldIndent(line, clausesByIds, state);
+  const indent = shouldIndent(line, clausesByIds);
   const className = indent
     ? 'chipper-line chipper-line--indent'
     : 'chipper-line';
@@ -56,7 +53,7 @@ function Line({ line, clausesByIds, state }: {
 }
 
 export function Sentence() {
-  const { definition, state } = useSentence();
+  const { definition } = useSentence();
 
   const clausesByIds = new Map(
     definition.clauses.map((c) => [c.id, c]),
@@ -71,7 +68,7 @@ export function Sentence() {
   return (
     <div className="chipper-sentence">
       {lines.map((line, index) => (
-        <Line key={index} line={line} clausesByIds={clausesByIds} state={state} />
+        <Line key={index} line={line} clausesByIds={clausesByIds} />
       ))}
     </div>
   );

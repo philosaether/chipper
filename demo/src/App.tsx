@@ -27,7 +27,7 @@ const praxisPalette = extendPalette({
       color: 'copper',
       keywords: [
         { value: 'daily', label: 'day' },
-        { value: 'weekly', label: 'week on...', display: 'week' },
+        { value: 'weekly', label: 'week on...', displayLabel: 'week' },
         { value: 'weekday' },
         { value: 'weekend', label: 'weekend day' },
       ],
@@ -269,31 +269,20 @@ const themeTokens: Record<string, Record<string, string>> = {
   },
 };
 
-// Store original praxis values so we can restore them
-let praxisTokens: Record<string, string> | null = null;
+// All overridable props across all themes (computed once)
+const allThemeProps = new Set(
+  Object.values(themeTokens).flatMap((t) => Object.keys(t)),
+);
 
 function applyTheme(themeName: string) {
   const root = document.documentElement;
 
-  // Capture praxis (original) values on first call
-  if (!praxisTokens) {
-    praxisTokens = {};
-    const midnight = themeTokens['midnight']!;
-    for (const prop of Object.keys(midnight)) {
-      praxisTokens[prop] = getComputedStyle(root).getPropertyValue(prop).trim();
-    }
-  }
-
-  // Clear all overrides first
-  const allProps = new Set([
-    ...Object.keys(themeTokens['midnight']!),
-    ...Object.keys(themeTokens['terminal']!),
-  ]);
-  for (const prop of allProps) {
+  // Clear all overrides — SCSS cascade restores praxis defaults
+  for (const prop of allThemeProps) {
     root.style.removeProperty(prop);
   }
 
-  // Apply new theme (praxis = no overrides, SCSS handles it)
+  // Apply new theme tokens (praxis = empty, relies on SCSS)
   const tokens = themeTokens[themeName];
   if (tokens) {
     for (const [prop, value] of Object.entries(tokens)) {

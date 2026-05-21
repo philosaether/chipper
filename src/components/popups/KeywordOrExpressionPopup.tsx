@@ -82,7 +82,7 @@ export function KeywordOrExpressionPopup({
     return () => {
       if (!expressionMode) return;
       if (keywordSelected.current) return;
-      if (isNumeric || isDate) return;
+      if (isNumeric) return;
       if (!showExpression) return;
       const trimmed = inputValueRef.current.trim();
       if (trimmed && trimmed !== value && expressionMode.validate(trimmed)) {

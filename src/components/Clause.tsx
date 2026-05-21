@@ -47,6 +47,10 @@ export function Clause({ clauseId }: ClauseProps) {
               </span>
             );
           }
+          // Skip chips hidden by chip-level contingency
+          if (clauseState?.visibleChips && !clauseState.visibleChips.includes(segment.chipId)) {
+            return null;
+          }
           // Render chip as plain text using its display value
           const chipState = clauseState?.chips[segment.chipId];
           const domain = domains[segment.chipId];

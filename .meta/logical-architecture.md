@@ -48,6 +48,8 @@ domains/
 ├── create-domain.ts           — createDomain<T>(): internal base, fills defaults, passes through config
 ├── enum.ts                    — enumDomain(): pure enum archetype, keywords-only, derived validate/display
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
+│                                 Expression helpers: textExpression(), numericExpression(), dateExpression()
+│                                 inputType: 'text' | 'number' | 'date'
 ├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
 ├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
 ├── reference.ts               — referenceDomain(): external data, navigation/search popup, display cache
@@ -72,7 +74,8 @@ Sentence builder API. Imperative composition of clauses from palette domains.
 
 ```
 builder/
-└── index.ts              — sentence(), clause(), chip(), repeating(). Builder pattern returning SentenceDefinition.
+└── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
+                           contingentOn() accepts bare lambda as presence shorthand.
 ```
 
 ### components/
@@ -82,8 +85,10 @@ React components. Depend on hooks for state access.
 ```
 components/
 ├── Chipper.tsx           — Auto-render entry point: wraps SentenceProvider + Sentence
-├── Sentence.tsx          — Renders clause list from definition (no props, reads context)
-├── Clause.tsx            — Lead text + chips for one clause
+├── Sentence.tsx          — Renders clauses grouped by LineDefinition. Auto-indents lines
+│                           where all clauses are optional or contingent.
+├── Clause.tsx            — Three modes: latent (hidden), dormant (muted italic plain text),
+│                           active (interactive chips with × toggle)
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
