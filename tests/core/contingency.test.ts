@@ -8,7 +8,7 @@ import { initializeSentenceState } from '../../src/core/initialize';
 import { sentenceReducer } from '../../src/core/reducer';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { keywordOrExpressionDomain } from '../../src/domains/keyword-or-expression';
 
 // --- Palette: cadence-like pattern with two levels of contingency ---
@@ -31,7 +31,7 @@ const palette = extendPalette({
       default: '',
       placeholder: 'how often',
     }),
-    period: enumDomain({
+    period: keywordDomain({
       color: 'copper',
       keywords: [
         { label: 'weeks', value: 'weeks' },
@@ -40,7 +40,7 @@ const palette = extendPalette({
       ],
       placeholder: 'period',
     }),
-    daySet: enumDomain({
+    daySet: keywordDomain({
       color: 'sage',
       keywords: [
         { label: 'Mon', value: 'monday' },
@@ -48,7 +48,7 @@ const palette = extendPalette({
       ],
       placeholder: 'which day',
     }),
-    month: enumDomain({
+    month: keywordDomain({
       color: 'copper',
       keywords: [
         { label: 'January', value: 'january' },
@@ -337,14 +337,14 @@ describe('contingency engine — domain reconfiguration', () => {
   it('configure() applies chip overrides when clause becomes present', () => {
     const reconfigPalette = extendPalette({
       chips: {
-        mode: enumDomain({
+        mode: keywordDomain({
           color: 'copper',
           keywords: [
             { label: 'simple', value: 'simple' },
             { label: 'advanced', value: 'advanced' },
           ],
         }),
-        target: enumDomain({
+        target: keywordDomain({
           color: 'sage',
           keywords: [
             { label: 'A', value: 'a' },

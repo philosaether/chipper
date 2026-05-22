@@ -7,12 +7,12 @@ import { initializeSentenceState } from '../../src/core/initialize';
 import { sentenceReducer } from '../../src/core/reducer';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { monthKeywords } from '../fixtures/month-keywords';
 
 const palette = extendPalette({
   chips: {
-    month: enumDomain({
+    month: keywordDomain({
       color: 'month',
       keywords: monthKeywords,
       default: '',

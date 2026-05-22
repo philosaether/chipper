@@ -67,6 +67,9 @@ export interface ExpressionMode<T = unknown> {
 
   /** Text shown after the input in the popup (e.g., "months"). Function receives sentence context. */
   suffix?: string | ((context: SentenceContext) => string);
+
+  /** Expression input placement relative to keywords: 'above' or 'below' (default 'below'). */
+  position?: 'above' | 'below';
 }
 
 /**

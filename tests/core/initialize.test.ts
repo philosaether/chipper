@@ -6,17 +6,17 @@ import { describe, it, expect } from 'vitest';
 import { initializeSentenceState } from '../../src/core/initialize';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { monthKeywords } from '../fixtures/month-keywords';
 
 const palette = extendPalette({
   chips: {
-    month: enumDomain({
+    month: keywordDomain({
       color: 'month',
       keywords: monthKeywords,
       placeholder: 'a month',
     }),
-    monthWithDefault: enumDomain({
+    monthWithDefault: keywordDomain({
       color: 'month',
       keywords: monthKeywords,
       default: 'september',
@@ -44,7 +44,7 @@ describe('initializeSentenceState', () => {
     const store = initializeSentenceState(definition);
 
     expect(store.domains['month']).toBeDefined();
-    expect(store.domains['month'].type).toBe('enum');
+    expect(store.domains['month'].type).toBe('keyword-or-expression');
   });
 
   it('initializes chip with empty default when placeholder is set', () => {

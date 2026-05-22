@@ -3,7 +3,6 @@ export { Sentence } from './Sentence';
 export { Clause, type ClauseProps } from './Clause';
 export { Chip, type ChipProps } from './Chip';
 export { ChipPopup, type ChipPopupProps } from './ChipPopup';
-export { EnumPopup, type EnumPopupProps } from './popups/EnumPopup';
 export {
   KeywordOrExpressionPopup,
   type KeywordOrExpressionPopupProps,

@@ -54,6 +54,9 @@ export interface ExpressionConfig {
   /** Text shown after the input in the popup (e.g., "months"). Function receives sentence context. */
   suffix?: string | ((context: Record<string, unknown>) => string);
 
+  /** Expression input placement relative to keywords: 'above' or 'below' (default 'below'). */
+  position?: 'above' | 'below';
+
   /**
    * Keyword that enters expression mode when selected.
    * When absent, the expression input is always visible in the popup.
@@ -214,6 +217,7 @@ export function keywordOrExpressionDomain(
       step: expression.step,
       prefix: expression.prefix,
       suffix: expression.suffix,
+      position: expression.position,
     });
   }
 

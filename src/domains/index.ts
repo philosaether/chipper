@@ -2,10 +2,10 @@
  * Domain archetype implementations.
  *
  * Each archetype provides a factory function that creates a configured
- * Domain instance. See chipper-architecture.md §2, domain-factories.md.
+ * Domain instance. See chipper-architecture.md §2, domain-factories.md,
+ * koe-facades.md.
  */
 
-export { enumDomain, type EnumDomainConfig } from './enum';
 export {
   keywordOrExpressionDomain,
   expressionDomain,
@@ -18,6 +18,16 @@ export {
   type ExpressionTrigger,
 } from './keyword-or-expression';
 export { type KeywordConfig } from './normalize-keywords';
+export {
+  textDomain,
+  numberDomain,
+  dateDomain,
+  keywordDomain,
+  type TextDomainConfig,
+  type NumberDomainConfig,
+  type DateDomainConfig,
+  type KeywordDomainConfig,
+} from './facades';
 export {
   multiSelectDomain,
   selectionMatchesKeyword,

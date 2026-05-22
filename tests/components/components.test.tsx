@@ -1,5 +1,5 @@
 /**
- * Tests for interactive components: Chipper, Sentence, Clause, Chip, ChipPopup, EnumPopup.
+ * Tests for interactive components: Chipper, Sentence, Clause, Chip, ChipPopup.
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -7,13 +7,13 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { Chipper } from '../../src/components/Chipper';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { monthKeywords } from '../fixtures/month-keywords';
 import type { SentenceDefinition } from '../../src/core/types';
 
 const palette = extendPalette({
   chips: {
-    month: enumDomain({
+    month: keywordDomain({
       color: 'month',
       keywords: monthKeywords,
       default: '',

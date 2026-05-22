@@ -4,7 +4,7 @@ import {
   sentence,
   clause,
   extendPalette,
-  enumDomain,
+  keywordDomain,
   keywordOrExpressionDomain,
   multiSelectDomain,
   referenceDomain,
@@ -116,7 +116,7 @@ const demoPalette = extendPalette({
       defaultValue: 'weekday',
       placeholder: 'how often',
     }),
-    period: enumDomain({
+    period: keywordDomain({
       color: 'copper',
       keywords: [
         { label: 'days', value: 'days' },

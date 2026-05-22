@@ -7,7 +7,7 @@ import { initializeSentenceState } from '../../src/core/initialize';
 import { sentenceReducer } from '../../src/core/reducer';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { keywordOrExpressionDomain } from '../../src/domains/keyword-or-expression';
 import { multiSelectDomain } from '../../src/domains/multi-select';
 
@@ -24,7 +24,7 @@ const palette = extendPalette({
       ],
       default: 'weekly',
     }),
-    cadencePeriod: enumDomain({
+    cadencePeriod: keywordDomain({
       color: 'copper',
       keywords: [
         { value: 'weeks' },

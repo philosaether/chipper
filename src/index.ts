@@ -44,10 +44,20 @@ export type { ToggleClauseAction } from './core/actions/toggle-clause';
 export type { SetContextAction } from './core/actions/set-context';
 export type { SetLiveValueAction } from './core/actions/set-live-value';
 
-// Domains
+// Domains — facade factories (sugar)
 export {
-  enumDomain,
-  type EnumDomainConfig,
+  textDomain,
+  numberDomain,
+  dateDomain,
+  keywordDomain,
+  type TextDomainConfig,
+  type NumberDomainConfig,
+  type DateDomainConfig,
+  type KeywordDomainConfig,
+} from './domains';
+
+// Domains — power-user factories
+export {
   keywordOrExpressionDomain,
   expressionDomain,
   textExpression,
@@ -99,8 +109,6 @@ export {
   type ChipProps,
   ChipPopup,
   type ChipPopupProps,
-  EnumPopup,
-  type EnumPopupProps,
   KeywordOrExpressionPopup,
   type KeywordOrExpressionPopupProps,
   MultiSelectPopup,

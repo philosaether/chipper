@@ -5,7 +5,7 @@ import {
   builder,
   line,
   extendPalette,
-  enumDomain,
+  keywordDomain,
   keywordOrExpressionDomain,
   multiSelectDomain,
   referenceDomain,

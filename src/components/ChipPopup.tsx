@@ -11,7 +11,6 @@ import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/t
 import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
 import type { ExpressionTrigger } from '../domains/keyword-or-expression';
 import type { ReferenceSource } from '../domains/reference';
-import { EnumPopup } from './popups/EnumPopup';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
 import { MultiSelectPopup } from './popups/MultiSelectPopup';
 import { AlternativeCoordinatePopup } from './popups/AlternativeCoordinatePopup';
@@ -61,15 +60,6 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
 
   const popupContent = () => {
     switch (domain.type) {
-      case 'enum':
-        return (
-          <EnumPopup
-            keywords={domain.keywords}
-            value={value}
-            onSelect={onSelect}
-            onClose={onClose}
-          />
-        );
       case 'keyword-or-expression': {
         const expressionMode = domain.expressionModes[0] as ExpressionMode<string> | undefined;
         const trigger = domain.meta?.trigger as ExpressionTrigger | undefined;

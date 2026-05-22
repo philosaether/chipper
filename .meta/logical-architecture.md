@@ -46,18 +46,16 @@ Domain archetype factories. Each factory takes volatile config and returns a `Do
 ```
 domains/
 ├── create-domain.ts           — createDomain<T>(): internal base, fills defaults, passes through config
-├── enum.ts                    — enumDomain(): pure enum archetype, keywords-only, derived validate/display
+├── facades.ts                 — Sugar factories: textDomain, numberDomain, dateDomain, keywordDomain
+│                                 All delegate to keywordOrExpressionDomain
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
 │                                 Expression helpers: textExpression(), numericExpression(), dateExpression()
 │                                 inputType: 'text' | 'number' | 'date'
 ├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
 ├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
 ├── reference.ts               — referenceDomain(): external data, navigation/search popup, display cache
-└── index.ts                   — Re-exports all archetype factories
+└── index.ts                   — Re-exports all archetype factories + facades
 ```
-
-Future files (one per archetype, added when needed):
-- `composite.ts` — compositeDomain()
 
 ### palette/
 
@@ -92,8 +90,7 @@ components/
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
-│   ├── EnumPopup.tsx     — Keyword list for enum domains (closes after selection)
-│   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains
+│   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains (also handles keywords-only)
 │   ├── MultiSelectPopup.tsx — Toggle grid for multi-select domains (stays open)
 │   ├── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
 │   └── ReferencePopup.tsx — Tree navigation + search for reference domains

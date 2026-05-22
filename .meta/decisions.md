@@ -44,3 +44,4 @@ Append-only log. Don't edit old entries.
 2026-05-21: Dormant optional clauses render full segment text with chip display values inlined, muted italic styling, no chip borders. Chip state persists through deactivation — configured values survive toggle cycle.
 2026-05-21: numericExpression default validate rejects empty string explicitly. Number('') === 0 was passing isNaN/isFinite checks, hiding placeholder text.
 2026-05-21: alt-coordinate buildLabelByValue now respects Keyword.displayLabel, falling back to label. Previously always used label for chip trigger display text.
+2026-05-22: KOE facade domains design accepted (designs/koe-facades.md). Four sugar factories: textDomain, numberDomain, dateDomain, keywordDomain — all delegate to keywordOrExpressionDomain. enumDomain deleted (not aliased), EnumPopup deleted. ExpressionConfig gets position?: 'above' | 'below' for input placement relative to keywords. textDomain maxLength defaults to 140.

@@ -11,13 +11,13 @@ import { useChip } from '../../src/hooks/useChip';
 import { usePopup } from '../../src/hooks/usePopup';
 import { sentence, builder } from '../../src/builder';
 import { extendPalette } from '../../src/palette';
-import { enumDomain } from '../../src/domains/enum';
+import { keywordDomain } from '../../src/domains/facades';
 import { monthKeywords } from '../fixtures/month-keywords';
 import type { SentenceDefinition } from '../../src/core/types';
 
 const palette = extendPalette({
   chips: {
-    month: enumDomain({
+    month: keywordDomain({
       color: 'month',
       keywords: monthKeywords,
       default: '',
@@ -68,7 +68,7 @@ describe('useSentence', () => {
     });
 
     expect(result.current.domains['month']).toBeDefined();
-    expect(result.current.domains['month']!.type).toBe('enum');
+    expect(result.current.domains['month']!.type).toBe('keyword-or-expression');
   });
 
   it('initializes with correct clause state', () => {
@@ -99,7 +99,7 @@ describe('useChip', () => {
     expect(result.current.displayValue).toBe('a month');
     expect(result.current.valid).toBe(false);
     expect(result.current.dirty).toBe(false);
-    expect(result.current.domain.type).toBe('enum');
+    expect(result.current.domain.type).toBe('keyword-or-expression');
     expect(result.current.chipDefinition.id).toBe('month');
     expect(result.current.setValue).toBeTypeOf('function');
   });
@@ -189,13 +189,13 @@ describe('usePopup', () => {
   it('opening a different chip closes the previous one (singleton)', () => {
     const secondPalette = extendPalette({
       chips: {
-        month: enumDomain({
+        month: keywordDomain({
           color: 'month',
           keywords: monthKeywords,
           default: '',
           placeholder: 'a month',
         }),
-        year: enumDomain({
+        year: keywordDomain({
           color: 'year',
           keywords: [{ label: '2026', value: '2026' }],
         }),

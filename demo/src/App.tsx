@@ -3,17 +3,17 @@ import {
   Chipper,
   sentence,
   builder,
-  line,
   extendPalette,
-  enumDomain,
+  keywordDomain,
+  numberDomain,
+  dateDomain,
+  textDomain,
   keywordOrExpressionDomain,
   numericExpression,
-  dateExpression,
   multiSelectDomain,
   alternativeCoordinateDomain,
-  referenceDomain,
 } from 'chipper';
-import type { ReferenceItem, SentenceState, ClauseBuilder } from 'chipper';
+import type { SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
 
@@ -27,7 +27,8 @@ const praxisPalette = extendPalette({
       color: 'copper',
       keywords: [
         { value: 'daily', label: 'day' },
-        { value: 'weekly', label: 'week on...', displayLabel: 'week' },
+        { value: 'weekly', label: 'week' },
+        { value: 'monthly', label: 'month' },
         { value: 'weekday' },
         { value: 'weekend', label: 'weekend day' },
       ],
@@ -38,7 +39,7 @@ const praxisPalette = extendPalette({
       }),
       default: 'weekly',
     }),
-    cadenceUnit: keywordOrExpressionDomain({
+    cadenceUnit: keywordDomain({
       color: 'copper',
       keywords: [
         { value: 'day', label: 'days' },
@@ -46,7 +47,7 @@ const praxisPalette = extendPalette({
         { value: 'month', label: 'months' },
         { value: 'quarter', label: 'quarters' },
         { value: 'year', label: 'years' },
-      ]
+      ],
     }),
     cadenceOffset: keywordOrExpressionDomain({
       color: 'copper',
@@ -140,9 +141,9 @@ const praxisPalette = extendPalette({
           },
         },
       ],
-      placeholder: 'which day',
+      placeholder: 'a day',
     }),
-    monthOfQuarter: keywordOrExpressionDomain({
+    monthOfQuarter: keywordDomain({
       color: 'sage',
       keywords: [
         { label: 'first', value: '1' },
@@ -150,7 +151,7 @@ const praxisPalette = extendPalette({
         { label: 'last', value: '3' },
       ],
     }),
-    monthOfYear: keywordOrExpressionDomain({
+    monthOfYear: keywordDomain({
       color: 'sage',
       keywords: [
         { label: 'Jan', value: 'jan' },
@@ -167,7 +168,7 @@ const praxisPalette = extendPalette({
         { label: 'Dec', value: 'dec' },
       ],
     }),
-    timeOfDay: keywordOrExpressionDomain({
+    timeOfDay: numberDomain({
       color: 'slate',
       keywords: [
         { value: '6', label: 'dawn' },
@@ -175,15 +176,17 @@ const praxisPalette = extendPalette({
         { value: '18', label: 'dusk' },
         { value: '24', label: 'midnight' },
       ],
-      expression: numericExpression({
-        min: 0,
-        max: 24,
-        suffix: ':00',
-      }),
+      min: 0,
+      max: 24,
+      suffix: ':00',
       placeholder: 'a specific time of day',
     }),
-  }
-})
+    taskName: textDomain({
+      color: 'rose',
+      placeholder: 'New Task'
+    })
+    },
+});
 
 //
 //  THEME TOGGLE
@@ -293,7 +296,7 @@ function applyTheme(themeName: string) {
 
 const themePalette = extendPalette({
   chips: {
-    theme: enumDomain({
+    theme: keywordDomain({
       color: 'slate',
       keywords: [
         { value: 'praxis', label: 'praxis' },
@@ -315,15 +318,12 @@ const themeSentence = sentence(themePalette)
 
 const meetingPalette = extendPalette({
   chips: {
-    meetingDate: keywordOrExpressionDomain({
+    meetingDate: dateDomain({
       color: 'sage',
       keywords: [
         { value: 'tomorrow', label: 'tomorrow' },
         { value: 'next-monday', label: 'next Monday' },
       ],
-      expression: dateExpression({
-        trigger: { label: 'pick a date', default: '' },
-      }),
       placeholder: 'a date',
     }),
   },
@@ -359,6 +359,7 @@ const demoSentence = sentence(praxisPalette)
     .text('on')
     .chip('dayOfMonth')
     .contingentOn('cadence', (ctx) => {
+      if(ctx.cadenceMeasure === 'monthly') return true;
       if (!isNaN(Number(ctx.cadenceMeasure)))
         return ['month', 'quarter', 'year'].includes(ctx.cadenceUnit as string);
       return false;
@@ -391,7 +392,14 @@ const demoSentence = sentence(praxisPalette)
     .chip('timeOfDay')
     .text(',')
   )
-  .build()
+  .line()
+  .clause('verb', builder()
+    .text('create a task named')
+    .chip('taskName')
+    .text('.')
+  )
+  .build();
+
 
 
 //

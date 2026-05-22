@@ -102,8 +102,12 @@ accumulating cost.
 - **Theme toggle demo** — Chipper sentence that switches the page theme.
 - **Additional themes** — "taxes" (institutional) + one fun theme.
 - **Killer app demo** — TBD.
-- **Documentation** — contingency engine examples, cookbook-style docs for
-  lambda-based `present`/`configure`.
+- **v1 developer documentation** — API reference, getting started guide,
+  cookbook-style examples (contingency engine, context propagation,
+  expression modes, facade domains). Dogfood while building — Phil is
+  already forgetting what's implemented, which makes him a prime test
+  consumer. Design session needed before writing. Trigger: after facade
+  API ships, before npm publish.
 - **Publicity article**
 
 ## Integration
