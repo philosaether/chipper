@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **KOE facade domains** (feature/koe-facades) — textDomain, numberDomain, dateDomain, keywordDomain. Delete enumDomain + EnumPopup. Add expression position option.
+- **v1 developer documentation** (feature/v1-docs) — single README.md with quick start, domain types, sentence building, theming, API reference.
 
 ## Next Session
 
