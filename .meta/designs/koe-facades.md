@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-22
 Accepted: 2026-05-22
+Implemented: 2026-05-22 (feature/koe-facades)
+Divergences: none
+Deferred: none
 Assessment: assessments/koe-facade-api.md
 ---
 
