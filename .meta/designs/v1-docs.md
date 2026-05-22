@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-22
 Accepted: 2026-05-22
+Implemented: 2026-05-22 (feature/v1-docs)
+Divergences: none
+Deferred: none
 ---
 
 # v1 Developer Documentation — Desired State
