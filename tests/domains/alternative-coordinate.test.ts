@@ -164,7 +164,7 @@ describe('alternativeCoordinateDomain', () => {
 
   // -- defaults --
 
-  it('defaults to empty string when no defaultValue provided', () => {
+  it('defaults to empty string when no default provided', () => {
     const domain = alternativeCoordinateDomain({
       color: 'sage',
       modes: [dateMode],
@@ -173,11 +173,11 @@ describe('alternativeCoordinateDomain', () => {
     expect(domain.validate(domain.defaultValue)).toBe(false);
   });
 
-  it('accepts an explicit defaultValue', () => {
+  it('accepts an explicit default', () => {
     const domain = alternativeCoordinateDomain({
       color: 'sage',
       modes: [dateMode],
-      defaultValue: '15',
+      default: '15',
     });
     expect(domain.defaultValue).toBe('15');
     expect(domain.validate(domain.defaultValue)).toBe(true);

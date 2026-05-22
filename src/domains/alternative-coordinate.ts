@@ -61,7 +61,7 @@ export interface AlternativeCoordinateDomainConfig {
   modes: AlternativeCoordinateMode[];
 
   /** Default value — empty string if omitted (invalid → placeholder) */
-  defaultValue?: string;
+  default?: string;
 
   /** Text shown when value is invalid */
   placeholder?: string;
@@ -237,7 +237,7 @@ export function alternativeCoordinateDomain(
     color: config.color,
     keywords,
     expressionModes,
-    defaultValue: config.defaultValue ?? '',
+    defaultValue: config.default ?? '',
     placeholder: config.placeholder,
     validate,
     display,

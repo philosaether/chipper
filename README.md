@@ -17,6 +17,7 @@ npm install chipper
 
 ```tsx
 import { Chipper, sentence, builder, extendPalette, keywordDomain } from 'chipper';
+import 'chipper/styles.css';
 
 const palette = extendPalette({
   chips: {

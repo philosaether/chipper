@@ -50,17 +50,17 @@ describe('referenceDomain', () => {
     expect(domain.color).toBe('indigo');
   });
 
-  it('defaults to empty string when no defaultValue provided', () => {
+  it('defaults to empty string when no default provided', () => {
     const domain = referenceDomain({ color: 'indigo', source: flatSource });
     expect(domain.defaultValue).toBe('');
     expect(domain.validate(domain.defaultValue)).toBe(false);
   });
 
-  it('accepts an explicit defaultValue', () => {
+  it('accepts an explicit default', () => {
     const domain = referenceDomain({
       color: 'indigo',
       source: flatSource,
-      defaultValue: 'rock',
+      default: 'rock',
     });
     expect(domain.defaultValue).toBe('rock');
     expect(domain.validate(domain.defaultValue)).toBe(true);

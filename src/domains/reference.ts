@@ -72,7 +72,7 @@ export interface ReferenceDomainConfig {
   keywords?: Keyword<string>[];
 
   /** Default value — empty string if omitted (invalid → placeholder) */
-  defaultValue?: string;
+  default?: string;
 
   /** Text shown when value is invalid */
   placeholder?: string;
@@ -112,7 +112,7 @@ export function referenceDomain(config: ReferenceDomainConfig): Domain<string> {
     type: 'reference',
     color: config.color,
     keywords,
-    defaultValue: config.defaultValue ?? '',
+    defaultValue: config.default ?? '',
     placeholder: config.placeholder,
     validate: (value) => {
       if (value === '') return false;
