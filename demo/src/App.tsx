@@ -183,9 +183,9 @@ const praxisPalette = extendPalette({
     }),
     taskName: textDomain({
       color: 'rose',
-      placeholder: 'New Task'
-    })
-    },
+      placeholder: 'New Task',
+    }),
+  },
 });
 
 //

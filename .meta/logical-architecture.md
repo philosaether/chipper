@@ -158,7 +158,7 @@ tests/
 │   ├── initialize.test.ts  — State initialization from definitions
 │   └── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
 ├── domains/
-│   └── enum.test.ts        — enumDomain factory: validate, display, defaults, placeholder
+│   └── keyword.test.ts     — keywordDomain factory: validate, display, defaults, placeholder
 ├── hooks/
 │   └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
 ├── components/
