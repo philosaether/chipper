@@ -8,7 +8,7 @@
  * DOM focus can remain on an input element while arrows navigate options.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface KeyboardNavigationOptions {
   /** Total number of navigable options */
@@ -54,6 +54,16 @@ export function useKeyboardNavigation({
   idPrefix = 'chipper-option',
 }: KeyboardNavigationOptions): KeyboardNavigationResult {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+
+  // Clamp activeIndex when itemCount shrinks (e.g., drill in reference,
+  // trigger pill toggle in KOE, search results update)
+  useEffect(() => {
+    if (itemCount === 0) {
+      setActiveIndex(-1);
+    } else if (activeIndex >= itemCount) {
+      setActiveIndex(itemCount - 1);
+    }
+  }, [itemCount, activeIndex]);
 
   const getOptionId = useCallback(
     (index: number) => `${idPrefix}-${index}`,

@@ -112,6 +112,8 @@ hooks/
 ├── useSentence.ts        — Sentence-level state, dispatch, definition, resolved domains
 ├── useChip.ts            — Chip state + setValue dispatch for a single chip
 ├── usePopup.ts           — Singleton popup open/close (one popup per sentence)
+├── useKeyboardNavigation.ts — Shared arrow/Home/End/Enter/Escape nav for popup option lists.
+│                              aria-activedescendant pattern. Internal only (not re-exported from index.ts).
 └── index.ts              — Re-exports all hooks + SentenceProvider
 ```
 

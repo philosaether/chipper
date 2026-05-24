@@ -10,9 +10,6 @@ item should say *why* it was deferred and *what* would trigger picking it up.
 
 Items that must ship before npm publish.
 
-- **Keyboard navigation** — roving tabindex, arrow keys, Enter/Escape
-  across all popup types. AA compliance.
-
 - **Screen reader support** — aria-live, aria-invalid, role=option.
 
 - **Architecture doc refresh** — chipper-architecture.md §3 and §4 are
