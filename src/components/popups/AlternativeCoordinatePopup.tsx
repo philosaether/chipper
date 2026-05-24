@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import type { AlternativeCoordinateMode } from '../../domains/alternative-coordinate';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 export interface AlternativeCoordinatePopupProps {
   modes: AlternativeCoordinateMode[];
@@ -106,10 +107,48 @@ export function AlternativeCoordinatePopup({
     }
   };
 
+  // Flatten all slot keywords for arrow-key navigation
+  const flatKeywords: { slotIndex: number; keyword: typeof activeMode.slots[0]['keywords'][0] }[] = [];
+  for (let s = 0; s < activeMode.slots.length; s++) {
+    for (const kw of activeMode.slots[s]!.keywords) {
+      flatKeywords.push({ slotIndex: s, keyword: kw });
+    }
+  }
+
+  const keyboard = useKeyboardNavigation({
+    itemCount: flatKeywords.length,
+    onSelect: (index) => {
+      const item = flatKeywords[index]!;
+      handleSlotSelect(item.slotIndex, item.keyword.value);
+    },
+    onClose,
+    closeOnSelect: false, // multi-slot modes stay open until all filled
+    idPrefix: 'chipper-alt-option',
+  });
+
+  // Tab switching via Left/Right on the tablist
+  const handleTabKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      handleTabChange(activeTabIndex > 0 ? activeTabIndex - 1 : modes.length - 1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      handleTabChange(activeTabIndex < modes.length - 1 ? activeTabIndex + 1 : 0);
+    }
+  };
+
+  // Track flat index offset per slot for getOptionProps
+  let flatIndexOffset = 0;
+
   return (
-    <div className="chipper-alt-coord-popup">
+    <div
+      className="chipper-alt-coord-popup"
+      onKeyDown={!activeMode.expression ? keyboard.handleKeyDown : undefined}
+      tabIndex={!activeMode.expression ? 0 : undefined}
+      aria-activedescendant={!activeMode.expression ? keyboard.activeDescendantId : undefined}
+    >
       {modes.length > 1 && (
-        <div className="chipper-alt-coord-popup__tabs" role="tablist">
+        <div className="chipper-alt-coord-popup__tabs" role="tablist" onKeyDown={handleTabKeyDown}>
           {modes.map((mode, index) => (
             <button
               key={mode.id}
@@ -128,35 +167,39 @@ export function AlternativeCoordinatePopup({
         </div>
       )}
       <div className="chipper-alt-coord-popup__content">
-        {activeMode.slots.map((slot, slotIndex) => (
-          <div key={slotIndex} className="chipper-alt-coord-popup__slot">
-            <div className="chipper-alt-coord-popup__slot-keywords">
-              {slot.prefix && (
-                <span className="chipper-alt-coord-popup__slot-prefix">
-                  {slot.prefix}
-                </span>
-              )}
-              {slot.keywords.map((keyword) => {
-                const isSelected = slotSelections[slotIndex] === keyword.value;
-                return (
-                  <button
-                    key={keyword.value}
-                    type="button"
-                    role="option"
-                    className={[
-                      'chipper-popup-option',
-                      isSelected && 'chipper-popup-option--selected',
-                    ].filter(Boolean).join(' ')}
-                    aria-selected={isSelected}
-                    onClick={() => handleSlotSelect(slotIndex, keyword.value)}
-                  >
-                    {resolveKeywordLabel(keyword)}
-                  </button>
-                );
-              })}
+        {activeMode.slots.map((slot, slotIndex) => {
+          const slotStartIndex = flatIndexOffset;
+          flatIndexOffset += slot.keywords.length;
+          return (
+            <div key={slotIndex} className="chipper-alt-coord-popup__slot">
+              <div className="chipper-alt-coord-popup__slot-keywords">
+                {slot.prefix && (
+                  <span className="chipper-alt-coord-popup__slot-prefix">
+                    {slot.prefix}
+                  </span>
+                )}
+                {slot.keywords.map((keyword, kwIndex) => {
+                  const isSelected = slotSelections[slotIndex] === keyword.value;
+                  const optionProps = keyboard.getOptionProps(slotStartIndex + kwIndex);
+                  return (
+                    <button
+                      key={keyword.value}
+                      type="button"
+                      {...optionProps}
+                      aria-selected={isSelected}
+                      className={[
+                        optionProps.className,
+                        isSelected && 'chipper-popup-option--selected',
+                      ].filter(Boolean).join(' ')}
+                    >
+                      {resolveKeywordLabel(keyword)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {activeMode.expression && (
           <div className="chipper-alt-coord-popup__expression">
             <input
@@ -165,10 +208,21 @@ export function AlternativeCoordinatePopup({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleExpressionSubmit();
+                if (e.key === 'Enter') {
+                  if (keyboard.activeIndex >= 0) {
+                    keyboard.handleKeyDown(e);
+                  } else {
+                    handleExpressionSubmit();
+                  }
+                } else {
+                  keyboard.handleKeyDown(e);
+                }
               }}
               placeholder={activeMode.expression.placeholder}
               maxLength={activeMode.expression.maxLength}
+              aria-activedescendant={keyboard.activeDescendantId}
+              role="combobox"
+              aria-expanded={true}
             />
           </div>
         )}

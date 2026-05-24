@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Keyword } from '../../core/types';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import type { ReferenceItem, ReferenceSource } from '../../domains/reference';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 export interface ReferencePopupProps {
   source: ReferenceSource;
@@ -173,31 +174,50 @@ export function ReferencePopup({
   const displayItems = isSearching ? searchResults : items;
   const isLoading = isSearching ? searchLoading : loading;
 
+  // Keyboard navigation: keywords + display items in one flat list
+  const totalNavItems = keywords.length + (isLoading ? 0 : displayItems.length);
+  const keyboard = useKeyboardNavigation({
+    itemCount: totalNavItems,
+    onSelect: (index) => {
+      if (index < keywords.length) {
+        onSelect(keywords[index]!.value);
+      } else {
+        const item = displayItems[index - keywords.length]!;
+        const isSelectable = item.selectable !== false;
+        const isDrillable = item.hasChildren === true;
+        if (isSelectable) {
+          handleSelect(item);
+        } else if (isDrillable) {
+          handleDrill(item);
+        }
+      }
+    },
+    onClose,
+    idPrefix: 'chipper-ref-option',
+  });
+
   return (
     <div className="chipper-reference-popup">
       {/* Keyword shortcuts */}
       {keywords.length > 0 && (
         <div className="chipper-reference-popup__keywords">
-          {keywords.map((keyword) => (
-            <button
-              key={keyword.value}
-              type="button"
-              role="option"
-              className={[
-                'chipper-popup-option',
-                keyword.value === value && 'chipper-popup-option--selected',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              aria-selected={keyword.value === value}
-              onClick={() => {
-                onSelect(keyword.value);
-                onClose();
-              }}
-            >
-              {resolveKeywordLabel(keyword)}
-            </button>
-          ))}
+          {keywords.map((keyword, index) => {
+            const optionProps = keyboard.getOptionProps(index);
+            return (
+              <button
+                key={keyword.value}
+                type="button"
+                {...optionProps}
+                aria-selected={keyword.value === value}
+                className={[
+                  optionProps.className,
+                  keyword.value === value && 'chipper-popup-option--selected',
+                ].filter(Boolean).join(' ')}
+              >
+                {resolveKeywordLabel(keyword)}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -207,6 +227,7 @@ export function ReferencePopup({
           <button
             type="button"
             className="chipper-reference-popup__breadcrumb-segment"
+            aria-label="all items"
             onClick={() => handleBreadcrumbNavigate(-1)}
           >
             all
@@ -263,9 +284,10 @@ export function ReferencePopup({
 
         {!isLoading &&
           !error &&
-          displayItems.map((item) => {
+          displayItems.map((item, index) => {
             const isSelectable = item.selectable !== false;
             const isDrillable = item.hasChildren === true;
+            const optionProps = keyboard.getOptionProps(keywords.length + index);
 
             if (!isSelectable && isDrillable) {
               // Non-selectable drillable: entire row is a drill target
@@ -273,8 +295,12 @@ export function ReferencePopup({
                 <button
                   key={item.id}
                   type="button"
-                  className="chipper-reference-popup__item chipper-reference-popup__item--non-selectable"
-                  onClick={() => handleDrill(item)}
+                  {...optionProps}
+                  className={[
+                    'chipper-reference-popup__item chipper-reference-popup__item--non-selectable',
+                    optionProps.className,
+                  ].filter(Boolean).join(' ')}
+                  aria-label={`expand ${item.label}`}
                 >
                   <span className="chipper-reference-popup__item-label">
                     {item.label}
@@ -289,14 +315,15 @@ export function ReferencePopup({
                 {isSelectable ? (
                   <button
                     type="button"
+                    {...optionProps}
                     className={[
                       'chipper-reference-popup__item-label',
+                      optionProps.className,
                       item.id === value &&
                         'chipper-reference-popup__item-label--selected',
                     ]
                       .filter(Boolean)
                       .join(' ')}
-                    onClick={() => handleSelect(item)}
                   >
                     {item.label}
                   </button>
@@ -309,6 +336,7 @@ export function ReferencePopup({
                   <button
                     type="button"
                     className="chipper-reference-popup__item-drill"
+                    aria-label={`expand ${item.label}`}
                     onClick={() => handleDrill(item)}
                   >
                     ▸
@@ -327,7 +355,18 @@ export function ReferencePopup({
             className="chipper-reference-popup__search"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && keyboard.activeIndex >= 0) {
+                keyboard.handleKeyDown(e);
+              } else {
+                keyboard.handleKeyDown(e);
+              }
+            }}
             placeholder="Search…"
+            aria-label="search items"
+            aria-activedescendant={keyboard.activeDescendantId}
+            role="combobox"
+            aria-expanded={true}
           />
         </div>
       )}

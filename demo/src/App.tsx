@@ -6,8 +6,9 @@ import {
   extendPalette,
   keywordDomain,
   dateDomain,
+  referenceDomain,
 } from 'chipper';
-import type { SentenceState } from 'chipper';
+import type { ReferenceItem, SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
 import { praxisPalette } from './praxis-palette';
@@ -158,6 +159,115 @@ const meetingSentence = sentence(meetingPalette)
     .text('Schedule a meeting for')
     .chip('meetingDate')
     .text('.')
+  )
+  .build();
+
+//
+//  REFERENCE DOMAIN DEMO
+//
+
+interface GenreNode {
+  id: string;
+  label: string;
+  selectable?: boolean;
+  children?: GenreNode[];
+}
+
+const genreTree: GenreNode[] = [
+  {
+    id: 'rock', label: 'Rock', children: [
+      { id: 'classic-rock', label: 'Classic Rock' },
+      { id: 'punk', label: 'Punk' },
+      { id: 'alternative', label: 'Alternative' },
+    ],
+  },
+  {
+    id: 'jazz', label: 'Jazz', children: [
+      { id: 'bebop', label: 'Bebop' },
+      { id: 'fusion', label: 'Fusion' },
+      { id: 'smooth-jazz', label: 'Smooth Jazz' },
+    ],
+  },
+  {
+    id: 'electronic', label: 'Electronic', selectable: false, children: [
+      { id: 'house', label: 'House' },
+      { id: 'techno', label: 'Techno' },
+      { id: 'ambient', label: 'Ambient' },
+      { id: 'dubstep', label: 'Dubstep' },
+    ],
+  },
+  {
+    id: 'classical', label: 'Classical', children: [
+      { id: 'baroque', label: 'Baroque' },
+      { id: 'romantic', label: 'Romantic' },
+      { id: 'modern', label: 'Modern' },
+    ],
+  },
+];
+
+function flattenGenreTree(nodes: GenreNode[]): GenreNode[] {
+  const result: GenreNode[] = [];
+  for (const node of nodes) {
+    result.push(node);
+    if (node.children) result.push(...flattenGenreTree(node.children));
+  }
+  return result;
+}
+
+const allGenres = flattenGenreTree(genreTree);
+
+function genreToReferenceItem(node: GenreNode): ReferenceItem {
+  return {
+    id: node.id,
+    label: node.label,
+    hasChildren: (node.children?.length ?? 0) > 0,
+    selectable: node.selectable,
+  };
+}
+
+function findGenrePath(id: string, nodes: GenreNode[], path: string[] = []): string[] | null {
+  for (const node of nodes) {
+    if (node.id === id) return [...path, node.label];
+    if (node.children) {
+      const found = findGenrePath(id, node.children, [...path, node.label]);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+const genrePalette = extendPalette({
+  chips: {
+    genre: referenceDomain({
+      color: 'indigo',
+      source: {
+        getItems: (path) => {
+          let nodes = genreTree;
+          for (const item of path) {
+            const found = nodes.find((n) => n.id === item.id);
+            nodes = found?.children ?? [];
+          }
+          return nodes.map(genreToReferenceItem);
+        },
+        search: (query) =>
+          allGenres
+            .filter((g) => g.label.toLowerCase().includes(query.toLowerCase()))
+            .map(genreToReferenceItem),
+        resolveDisplay: (id) => {
+          const path = findGenrePath(id, genreTree);
+          return path ? path.join(' › ') : id;
+        },
+      },
+      placeholder: 'a genre',
+    }),
+  },
+});
+
+const genreSentence = sentence(genrePalette)
+  .clause('genre', builder()
+    .text('Play something in the')
+    .chip('genre')
+    .text('genre.')
   )
   .build();
 
@@ -323,6 +433,19 @@ export function App() {
         <div className="demo-font-panel">
           <div className="demo-font-panel__sentence">
             <Chipper sentence={meetingSentence} />
+          </div>
+        </div>
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Reference domain</div>
+        <p className="demo-section__desc">
+          A hierarchical tree with drill-in navigation and search.
+          Try drilling into Electronic, or searching for &ldquo;fusion&rdquo;.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper sentence={genreSentence} />
           </div>
         </div>
       </section>
