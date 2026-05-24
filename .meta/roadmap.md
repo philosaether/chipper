@@ -112,6 +112,13 @@ Items that must ship before npm publish.
 
 - **Additional themes** — "taxes" (institutional) + one fun theme.
 
+### Accessibility
+
+- **Screen reader UAT** — Coordinate with native screen-reader user for
+  acceptance testing of keyboard navigation implementation. Roll findings
+  into fixes. Schedules take time to coordinate.
+  Deferred from: chipper/feature/keyboard-navigation (2026-05-24).
+
 ### Integration
 
 - **Praxis palette** — 16 domains from htmx prototype (lives in praxis/).
