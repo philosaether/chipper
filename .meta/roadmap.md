@@ -37,14 +37,6 @@ Items that require a /draft cycle before implementation.
   Core engine feature, not yet designed. Trigger: Praxis integration
   (needs to persist user configs).
 
-- **Context-aware punctuation** — clause-terminating characters (comma,
-  period, none) should be context-aware. Takes a `(ctx) => char` lambda;
-  defaults to comma when not last clause, period when last. Single
-  `(ctx) => bool` overload reproduces default but is none when false.
-  Likely a specific use case of a general context-aware text element with
-  syntax sugar (`.punctuation()` on clause builder). Deferred from
-  riff/demo-task-sentence (2026-05-21). Trigger: any sentence where
-  clause ordering or optionality affects punctuation.
 
 - **Time picker chip** — dedicated time-of-day domain. The 0–24 integer
   stepper with `:00` suffix works well and may be the Praxis solution,

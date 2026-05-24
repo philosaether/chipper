@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-24
 Accepted: 2026-05-24
+Implemented: 2026-05-24 (feature/context-punctuation)
+Divergences: resolveDefaultPunctuation handles undefined definition.lines; cadence clause uses punc({present}) for keyword-only visibility
+Deferred: none
 ---
 
 # Context-Aware Punctuation — Desired State
@@ -150,18 +153,13 @@ is O(segments).
 ### Utility function
 
 ```typescript
-function resolveTrailingPunctuation(
+function resolveDefaultPunctuation(
   clauseId: string,
-  definition: SentenceDefinition,
+  subsequentIds: string[],  // precomputed at build time
   state: SentenceState,
 ): string {
   const clauseState = state.clauses[clauseId];
   if (!clauseState?.present || !clauseState?.active) return '';
-
-  // Flatten all clause IDs across all lines in definition order
-  const allClauseIds = definition.lines.flatMap(l => l.clauseIds);
-  const clauseIndex = allClauseIds.indexOf(clauseId);
-  const subsequentIds = allClauseIds.slice(clauseIndex + 1);
 
   const anySubsequentActive = subsequentIds.some(id => {
     const cs = state.clauses[id];
@@ -171,6 +169,11 @@ function resolveTrailingPunctuation(
   return anySubsequentActive ? ',' : '.';
 }
 ```
+
+The `subsequentIds` array is precomputed once during `sentence().build()`
+and captured in the resolver closure — no per-render allocations. If
+`definition.lines` is undefined (no explicit `.line()` calls), the build
+pass falls back to `definition.clauses.map(c => c.id)`.
 
 ## Demo Application
 

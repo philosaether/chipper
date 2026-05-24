@@ -192,20 +192,16 @@ export function repeating(
  * Default trailing-clause punctuation resolver.
  * Comma when any subsequent clause is present+active, period when last.
  * Returns empty string when owning clause is inactive.
+ *
+ * subsequentIds is precomputed at build time for O(1) lookups at render time.
  */
-function resolveTrailingPunctuation(
+function resolveDefaultPunctuation(
   clauseId: string,
-  definition: SentenceDefinition,
+  subsequentIds: string[],
   state: SentenceState,
 ): string {
   const clauseState = state.clauses[clauseId];
   if (!clauseState?.present || !clauseState?.active) return '';
-
-  const allClauseIds = definition.lines
-    ? definition.lines.flatMap(l => l.clauseIds)
-    : definition.clauses.map(c => c.id);
-  const clauseIndex = allClauseIds.indexOf(clauseId);
-  const subsequentIds = allClauseIds.slice(clauseIndex + 1);
 
   const anySubsequentActive = subsequentIds.some(id => {
     const cs = state.clauses[id];
@@ -304,12 +300,19 @@ export function sentence(palette?: Palette): SentenceBuilder {
       };
 
       // Post-build pass: replace punctuation sentinels with bound resolvers
+      // Precompute clause ordering once for all punc resolvers
+      const allClauseIds = definition.lines
+        ? definition.lines.flatMap(l => l.clauseIds)
+        : definition.clauses.map(c => c.id);
+
       for (const clauseDef of definition.clauses) {
         for (let i = 0; i < clauseDef.segments.length; i++) {
           const segment = clauseDef.segments[i] as unknown as Record<string, unknown>;
           if (segment.__punctuation) {
             const { config } = segment.__punctuation as { config?: PuncConfig };
             const clauseId = clauseDef.id;
+            const idx = allClauseIds.indexOf(clauseId);
+            const subsequentIds = allClauseIds.slice(idx + 1);
             clauseDef.segments[i] = {
               type: 'text',
               value: config?.display
@@ -319,7 +322,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                     const context = buildPuncContext(clauseId, clauseDef, cs.chips, definition, state.contexts);
                     return config.display!(context);
                   }
-                : (state: SentenceState) => resolveTrailingPunctuation(clauseId, definition, state),
+                : (state: SentenceState) => resolveDefaultPunctuation(clauseId, subsequentIds, state),
               present: config?.present,
             };
           }

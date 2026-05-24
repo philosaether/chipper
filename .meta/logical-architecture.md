@@ -74,6 +74,9 @@ Sentence builder API. Imperative composition of clauses from palette domains.
 builder/
 └── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
                            contingentOn() accepts bare lambda as presence shorthand.
+                           punc() adds context-aware punctuation via sentinel + post-build binding.
+                           resolveDefaultPunctuation() implements default comma/period logic.
+                           PuncConfig type for custom display/present.
 ```
 
 ### components/
@@ -86,7 +89,8 @@ components/
 ├── Sentence.tsx          — Renders clauses grouped by LineDefinition. Auto-indents lines
 │                           where all clauses are optional or contingent.
 ├── Clause.tsx            — Three modes: latent (hidden), dormant (muted italic plain text),
-│                           active (interactive chips with × toggle)
+│                           active (interactive chips with × toggle). Resolves function-valued
+│                           text segments (punctuation) at render time; skips them in dormant mode.
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
@@ -142,6 +146,7 @@ demo/
 └── src/
     ├── main.tsx          — React root mount
     ├── App.tsx           — Demo page: sentence, state inspector, explainer
+    ├── praxis-palette.ts — Praxis palette: cadence, time units, day/month selection, task names, due dates
     └── demo.css          — Demo page styles + --chip-color-month token
 ```
 
@@ -156,7 +161,8 @@ tests/
 ├── core/
 │   ├── types.test.ts       — Builder smoke tests
 │   ├── initialize.test.ts  — State initialization from definitions
-│   └── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
+│   ├── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
+│   └── punctuation.test.ts — punc() builder method: default resolver, contingent clauses, custom display
 ├── domains/
 │   └── keyword.test.ts     — keywordDomain factory: validate, display, defaults, placeholder
 ├── hooks/
