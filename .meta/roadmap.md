@@ -24,8 +24,11 @@ Items that must ship before npm publish.
 
 - **Publicity article**
 
-- **Serialization / deserialization** — save and restore sentence state.
-  Core engine feature, not yet designed.
+- **Demo import/export panel** — lightweight UI on the demo page to
+  serialize the current sentence state to JSON and import it back.
+  Tests and advertises the serialization API. Could be a collapsible
+  panel below the state inspector.
+  Deferred from: chipper/feature/serialization (2026-05-24).
 
 - **Keyword grouping across popup types** — visual separator / groups
   within a single slot's keyword list. Needed for day-of-month (shortcut
