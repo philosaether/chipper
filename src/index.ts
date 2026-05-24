@@ -85,7 +85,7 @@ export { createPalette, extendPalette, type PaletteConfig } from './palette';
 
 // Builder
 export { sentence, builder, chip, repeating } from './builder';
-export type { ClauseBuilder, ChipOptions, TextOptions } from './builder';
+export type { ClauseBuilder, ChipOptions, TextOptions, PuncConfig } from './builder';
 
 // Hooks
 export {

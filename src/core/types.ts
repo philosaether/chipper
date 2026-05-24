@@ -191,7 +191,8 @@ export interface ClauseOverrides {
 /** A text span within a clause (lead text, trailing text, interleaved text). */
 export interface TextSegment {
   type: 'text';
-  value: string;
+  /** Static string or function resolved at render time (e.g., context-aware punctuation). */
+  value: string | ((state: import('./state').SentenceState) => string);
   /** When should this text be visible? Omit = always visible. */
   present?: (context: SentenceContext) => boolean;
 }

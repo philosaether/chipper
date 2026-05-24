@@ -41,6 +41,8 @@ export function Clause({ clauseId }: ClauseProps) {
         </button>
         {clauseDef.segments.map((segment, index) => {
           if (segment.type === 'text') {
+            // Function-valued text (e.g., punctuation) renders empty in dormant mode
+            if (typeof segment.value === 'function') return null;
             return (
               <span key={index} className="chipper-clause__text">
                 {segment.value}
@@ -95,9 +97,13 @@ export function Clause({ clauseId }: ClauseProps) {
           if (segment.present && !segment.present(resolvedContext)) {
             return null;
           }
+          const text = typeof segment.value === 'function'
+            ? segment.value(state)
+            : segment.value;
+          if (!text) return null;
           return (
             <span key={index} className="chipper-clause__text">
-              {segment.value}
+              {text}
             </span>
           );
         }

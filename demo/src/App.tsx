@@ -5,188 +5,12 @@ import {
   builder,
   extendPalette,
   keywordDomain,
-  numberDomain,
   dateDomain,
-  textDomain,
-  keywordOrExpressionDomain,
-  numericExpression,
-  multiSelectDomain,
-  alternativeCoordinateDomain,
 } from 'chipper';
 import type { SentenceState } from 'chipper';
 import 'chipper/styles.css';
 import './demo.css';
-
-//
-//  CHIPPER CONFIG
-//
-
-const praxisPalette = extendPalette({
-  chips: {
-    cadenceMeasure: keywordOrExpressionDomain({
-      color: 'copper',
-      keywords: [
-        { value: 'daily', label: 'day' },
-        { value: 'weekly', label: 'week' },
-        { value: 'monthly', label: 'month' },
-        { value: 'weekday' },
-        { value: 'weekend', label: 'weekend day' },
-      ],
-      expression: numericExpression({
-        min: 1,
-        max: 365,
-        trigger: { label: 'custom interval', default: '2' },
-      }),
-      default: 'weekly',
-    }),
-    cadenceUnit: keywordDomain({
-      color: 'copper',
-      keywords: [
-        { value: 'day', label: 'days' },
-        { value: 'week', label: 'weeks' },
-        { value: 'month', label: 'months' },
-        { value: 'quarter', label: 'quarters' },
-        { value: 'year', label: 'years' },
-      ],
-    }),
-    cadenceOffset: keywordOrExpressionDomain({
-      color: 'copper',
-      keywords: [
-        { value: '0', label: 'immediately' },
-        { value: '1', label: (ctx) => `next ${ctx.cadenceUnit ?? 'month'}` },
-      ],
-      expression: numericExpression({
-        min: 0,
-        max: 52,
-        prefix: 'in',
-        suffix: (ctx) => String(ctx.cadenceUnit ?? 'month') + 's',
-      }),
-    }),
-    dayOfWeek: multiSelectDomain({
-      color: 'sage',
-      options: [
-        { label: 'Mon', value: 'mon' },
-        { label: 'Tue', value: 'tue' },
-        { label: 'Wed', value: 'wed' },
-        { label: 'Thu', value: 'thu' },
-        { label: 'Fri', value: 'fri' },
-        { label: 'Sat', value: 'sat' },
-        { label: 'Sun', value: 'sun' },
-      ],
-      keywords: [
-        { label: 'weekdays', value: ['mon', 'tue', 'wed', 'thu', 'fri'] }
-      ],
-      placeholder: 'one or more days',
-      countLabel: 'days',
-    }),
-    dayOfMonth: alternativeCoordinateDomain({
-      color: 'sage',
-      modes: [
-        {
-          id: 'date',
-          label: 'Date',
-          slots: [{
-            prefix: 'the',
-            keywords: [
-              { label: 'first', value: '1' },
-              { label: '15th', value: '15' },
-              { label: 'last', value: 'last', displayLabel: 'last day' },
-            ],
-          }],
-          compose: (day) => day,
-          decompose: (v) => [v],
-          display: (v) => {
-            if (v === 'last') return 'the last day';
-            const s = ['th', 'st', 'nd', 'rd'];
-            const n = Number(v);
-            const suffix = n > 3 && n < 21 ? 'th' : (s[n % 10] ?? 'th');
-            return `the ${n}${suffix}`;
-          },
-        },
-        {
-          id: 'weekday',
-          label: 'Weekday',
-          slots: [
-            {
-              prefix: 'the',
-              keywords: [
-                { label: 'first', value: 'first' },
-                { label: 'second', value: 'second' },
-                { label: 'third', value: 'third' },
-                { label: 'fourth', value: 'fourth' },
-                { label: 'last', value: 'last' },
-              ],
-            },
-            {
-              keywords: [
-                { label: 'Mon', value: 'monday' },
-                { label: 'Tue', value: 'tuesday' },
-                { label: 'Wed', value: 'wednesday' },
-                { label: 'Thu', value: 'thursday' },
-                { label: 'Fri', value: 'friday' },
-                { label: 'Sat', value: 'saturday' },
-                { label: 'Sun', value: 'sunday' },
-              ],
-            },
-          ],
-          compose: (ordinal, day) => `${ordinal} ${day}`,
-          decompose: (v) => {
-            const parts = v.split(' ');
-            return parts.length === 2 ? parts : [undefined, undefined];
-          },
-          display: (v) => {
-            const [ordinal, day] = v.split(' ');
-            if (!ordinal || !day) return v;
-            return `the ${ordinal} ${day.charAt(0).toUpperCase() + day.slice(1)}`;
-          },
-        },
-      ],
-      placeholder: 'a day',
-    }),
-    monthOfQuarter: keywordDomain({
-      color: 'sage',
-      keywords: [
-        { label: 'first', value: '1' },
-        { label: 'second', value: '2' },
-        { label: 'last', value: '3' },
-      ],
-    }),
-    monthOfYear: keywordDomain({
-      color: 'sage',
-      keywords: [
-        { label: 'Jan', value: 'jan' },
-        { label: 'Feb', value: 'feb' },
-        { label: 'Mar', value: 'mar' },
-        { label: 'Apr', value: 'apr' },
-        { label: 'May', value: 'may' },
-        { label: 'Jun', value: 'jun' },
-        { label: 'Jul', value: 'jul' },
-        { label: 'Aug', value: 'aug' },
-        { label: 'Sep', value: 'sep' },
-        { label: 'Oct', value: 'oct' },
-        { label: 'Nov', value: 'nov' },
-        { label: 'Dec', value: 'dec' },
-      ],
-    }),
-    timeOfDay: numberDomain({
-      color: 'slate',
-      keywords: [
-        { value: '6', label: 'dawn' },
-        { value: '12', label: 'noon' },
-        { value: '18', label: 'dusk' },
-        { value: '24', label: 'midnight' },
-      ],
-      min: 0,
-      max: 24,
-      suffix: ':00',
-      placeholder: 'a specific time of day',
-    }),
-    taskName: textDomain({
-      color: 'rose',
-      placeholder: 'New Task',
-    }),
-  },
-});
+import { praxisPalette } from './praxis-palette';
 
 //
 //  THEME TOGGLE
@@ -341,7 +165,8 @@ const demoSentence = sentence(praxisPalette)
   .clause('cadence', builder()
     .text('Every')
     .chip('cadenceMeasure')
-    .chip('cadenceUnit', { present: (ctx) => !isNaN(Number(ctx.cadenceMeasure)) })
+    .chip('cadenceUnit', 'timeUnit', { present: (ctx) => !isNaN(Number(ctx.cadenceMeasure)) })
+    .punc({ present: (ctx) => ['daily', 'weekday', 'weekend'].includes(ctx.cadenceMeasure as string)})
     .produces({ cadenceMeasure: 'cadenceMeasure', cadenceUnit: 'cadenceUnit' })
   )
   .clause('dayOfWeek', builder()
@@ -353,7 +178,7 @@ const demoSentence = sentence(praxisPalette)
         return ctx.cadenceUnit === 'week';
       return false;
     })
-    .text(',')
+    .punc()
   )
   .clause('dayOfMonth', builder()
     .text('on')
@@ -364,39 +189,51 @@ const demoSentence = sentence(praxisPalette)
         return ['month', 'quarter', 'year'].includes(ctx.cadenceUnit as string);
       return false;
     })
+    .punc()
   )
   .clause('monthOfQuarter', builder()
     .text('of the')
     .chip('monthOfQuarter')
     .text('month')
     .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'quarter')
+    .punc()
   )
-    .clause('monthOfYear', builder()
+  .clause('monthOfYear', builder()
     .text('of')
     .chip('monthOfYear')
     .contingentOn('cadence', (ctx) => ctx.cadenceUnit === 'year')
+    .punc()
   )
   .clause('anchorDate', builder()
     .text('starting')
     .chip('cadenceOffset')
-    .text(',')
     .contingentOn('cadence', (ctx) => {
       if (isNaN(Number(ctx.cadenceMeasure))) return false;
       return ctx.cadenceUnit !== 'day' && ctx.cadenceMeasure > 1
     })
+    .punc()
   )
   .line()
   .clause('timeOfDay', builder()
     .optional()
     .text('at')
     .chip('timeOfDay')
-    .text(',')
+    .punc()
   )
   .line()
   .clause('verb', builder()
     .text('create a task named')
     .chip('taskName')
-    .text('.')
+    .punc()
+  )
+  .line()
+  .clause('dueMeasure', builder()
+    .optional()
+    .text('due')
+    .chip('dueMeasure')
+    .chip('dueUnit', 'timeUnit', { present: (ctx) => !isNaN(Number(ctx.dueMeasure)) })
+    .produces({dueMeasure: 'dueMeasure'})
+    .punc()
   )
   .build();
 

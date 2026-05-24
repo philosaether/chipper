@@ -6,15 +6,16 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **v1 developer documentation** (feature/v1-docs) — single README.md with quick start, domain types, sentence building, theming, API reference.
+- **Context-aware punctuation** — implementing designs/context-punctuation.md on feature/context-punctuation branch. Steps: (1) TextSegment.value union type, (2) Clause.tsx render changes, (3) .punc() builder method + sentinel, (4) post-build binding in sentence(), (5) resolveTrailingPunctuation utility, (6) demo sentence update, (7) tests.
 
 ## Next Session
 
-- **Demo page v0.3 polish** — cadence sentence line 1 is feature-complete (cadenceMeasure, cadenceUnit, dayOfWeek, dayOfMonth, monthOfQuarter, monthOfYear, cadenceOffset, timeOfDay all wired up). Line 2 (create task action: named, due, tagged, described, notify) not yet started. Theme toggle and date expression demo sentences added. Remaining: restore multi-font panels, update explainer text, build action line, overall page polish.
-- **Builder DX wishlist** — remaining items in `.meta/inbox/devex-wishlist.md`: clause definition ergonomics, type-checking helpers for predicates, punctuation method on clause builder.
+- **Context-aware punctuation** (feature/context-punctuation branch exists, no commits yet) — `.punctuation()` on clause builder. Approach sketched: make `TextSegment.value` accept `string | ((state: SentenceState) => string)`, resolve at render time in Clause.tsx. `.punctuation()` is sugar that checks whether any subsequent clause is active. Verb clause in demo needs this — hardcoded `.text('.')` should be `,` when dueMeasure follows, `.` when last.
+- **Demo page v1.0** — intentionally messy right now; will be rebuilt as a cohesive release page. Targeting next week alongside npm publish.
+- **Builder DX wishlist** — remaining items in `.meta/inbox/devex-wishlist.md`: clause definition ergonomics, type-checking helpers for predicates.
 - **Demo tsconfig** — the demo lacks a tsconfig.json, causing IDE diagnostics (implicit-any on lambdas, can't find module 'chipper'). Blocked by `Domain<T>` variance issue.
 
-See `roadmap.md` for deferred items (keyword grouping, context-aware punctuation, time picker, theming engine v2, serialization).
+See `roadmap.md` for deferred items (keyword grouping, time picker, theming engine v2, serialization).
 
 ## Tech Debt
 
@@ -89,7 +90,7 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 - [ ] Demo page v0.3 — action line (create task), multi-font restore, explainer update
 - [ ] Additional themes — "taxes" (institutional) + one fun theme
 - [ ] Killer app demo — TBD (see demo-page.md open questions for candidates)
-- [ ] Documentation — contingency engine examples, cookbook-style docs
+- [x] v1 developer documentation — README.md with quick start, domains, builder, theming, API reference (done 2026-05-22)
 - [ ] Publicity article
 
 ### Integration
@@ -106,9 +107,9 @@ Full assessment: assessments/v1-feature-scope.md. Each item is independently imp
 7. ~~Builder DX + chip-level contingency + line grouping~~ (done)
 8. ~~KOE mode-switching + context-aware display~~ (done)
 9. ~~Riff: dateExpression, theme toggle, dormant display, builder DX~~ (done)
-10. Demo page v0.3 polish + action line
-11. Additional themes
-12. v1 developer documentation (design session + dogfood pass)
+10. Context-aware punctuation
+11. Demo page v1.0 (release page)
+12. Additional themes
 13. Publicity article
 14. npm publish
-14. Embed in Praxis as React island
+15. Embed in Praxis as React island

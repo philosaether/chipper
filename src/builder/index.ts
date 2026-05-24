@@ -19,6 +19,7 @@ import type {
   SentenceDefinition,
 } from '../core/types';
 import type { SentenceState } from '../core/state';
+import { buildClauseContext as buildPuncContext } from '../core/context-resolution';
 import { chipperPalette } from '../palette';
 
 // ---------------------------------------------------------------------------
@@ -53,6 +54,11 @@ export interface TextOptions {
   present?: (context: SentenceContext) => boolean;
 }
 
+export interface PuncConfig {
+  display?: (context: SentenceContext) => string;
+  present?: (context: SentenceContext) => boolean;
+}
+
 export interface ClauseBuilder {
   required(): ClauseBuilder;
   optional(): ClauseBuilder;
@@ -60,6 +66,7 @@ export interface ClauseBuilder {
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
   chip(id: string, domainName?: string, options?: ChipOptions): ClauseBuilder;
+  punc(config?: PuncConfig): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
@@ -112,6 +119,16 @@ export function builder(): ClauseBuilder {
       segments.push({ type: 'chip', chipId: id, present: options?.present });
       return clauseBuilder;
     },
+    punc(config?: PuncConfig) {
+      // Push a sentinel segment — sentence().build() replaces it with a bound resolver.
+      // The sentinel carries the clause ID and optional user config.
+      segments.push({
+        type: 'text',
+        value: '__punctuation_sentinel__',
+        __punctuation: { config },
+      } as ClauseSegment);
+      return clauseBuilder;
+    },
     contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)) {
       contingency = typeof config === 'function'
         ? { superclauseId, present: config }
@@ -156,7 +173,8 @@ export function repeating(
 ): RepeatingClauseConfig {
   const template = clauseBuilder._build('__template__');
   const firstTextSegment = template.segments.find((s) => s.type === 'text');
-  const leadText = firstTextSegment?.type === 'text' ? firstTextSegment.value : '';
+  const rawValue = firstTextSegment?.type === 'text' ? firstTextSegment.value : '';
+  const leadText = typeof rawValue === 'function' ? '' : rawValue;
   return {
     firstLead: leadText,
     restLead: leadText,
@@ -164,6 +182,37 @@ export function repeating(
     max: options.max ?? 5,
     template,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Punctuation resolution
+// ---------------------------------------------------------------------------
+
+/**
+ * Default trailing-clause punctuation resolver.
+ * Comma when any subsequent clause is present+active, period when last.
+ * Returns empty string when owning clause is inactive.
+ */
+function resolveTrailingPunctuation(
+  clauseId: string,
+  definition: SentenceDefinition,
+  state: SentenceState,
+): string {
+  const clauseState = state.clauses[clauseId];
+  if (!clauseState?.present || !clauseState?.active) return '';
+
+  const allClauseIds = definition.lines
+    ? definition.lines.flatMap(l => l.clauseIds)
+    : definition.clauses.map(c => c.id);
+  const clauseIndex = allClauseIds.indexOf(clauseId);
+  const subsequentIds = allClauseIds.slice(clauseIndex + 1);
+
+  const anySubsequentActive = subsequentIds.some(id => {
+    const cs = state.clauses[id];
+    return cs && cs.present && cs.active;
+  });
+
+  return anySubsequentActive ? ',' : '.';
 }
 
 // ---------------------------------------------------------------------------
@@ -246,13 +295,38 @@ export function sentence(palette?: Palette): SentenceBuilder {
         }
       }
 
-      return {
+      const definition: SentenceDefinition = {
         clauses: clauseDefinitions,
         lines: lineDefinitions.length > 0 ? lineDefinitions : undefined,
         palette: resolvedPalette,
         serializer: serializerFn,
         deserializer: deserializerFn,
       };
+
+      // Post-build pass: replace punctuation sentinels with bound resolvers
+      for (const clauseDef of definition.clauses) {
+        for (let i = 0; i < clauseDef.segments.length; i++) {
+          const segment = clauseDef.segments[i] as unknown as Record<string, unknown>;
+          if (segment.__punctuation) {
+            const { config } = segment.__punctuation as { config?: PuncConfig };
+            const clauseId = clauseDef.id;
+            clauseDef.segments[i] = {
+              type: 'text',
+              value: config?.display
+                ? (state: SentenceState) => {
+                    const cs = state.clauses[clauseId];
+                    if (!cs?.present || !cs?.active) return '';
+                    const context = buildPuncContext(clauseId, clauseDef, cs.chips, definition, state.contexts);
+                    return config.display!(context);
+                  }
+                : (state: SentenceState) => resolveTrailingPunctuation(clauseId, definition, state),
+              present: config?.present,
+            };
+          }
+        }
+      }
+
+      return definition;
     },
   };
 

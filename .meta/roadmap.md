@@ -99,16 +99,31 @@ accumulating cost.
 
 - **Demo page v0.3 polish** — restore multi-font panels, update explainer,
   page polish.
-- **Theme toggle demo** — Chipper sentence that switches the page theme.
 - **Additional themes** — "taxes" (institutional) + one fun theme.
 - **Killer app demo** — TBD.
-- **v1 developer documentation** — API reference, getting started guide,
-  cookbook-style examples (contingency engine, context propagation,
-  expression modes, facade domains). Dogfood while building — Phil is
-  already forgetting what's implemented, which makes him a prime test
-  consumer. Design session needed before writing. Trigger: after facade
-  API ships, before npm publish.
 - **Publicity article**
+
+## Punctuation v2
+
+- **Position-aware punctuation display** — `display` callback on
+  `punc()` config receives a `position` flag (`'mid' | 'final'`) so
+  consumers can vary the character based on sentence position (e.g., "?"
+  when final). Currently `display` only receives `SentenceContext` and
+  can't inspect clause activation.
+  Deferred from: chipper/feature/context-punctuation (2026-05-24).
+  Blocker: post-release — v1 uses static `.text()` for exotic cases.
+
+## Builder DX
+
+- **Builder DX wishlist pass** — Address remaining items in
+  `.meta/inbox/devex-wishlist.md`: clause definition ergonomics,
+  type-checking helpers for predicates, `.chip()` positional arg footgun.
+  Plus rename `displayLabel` → `display` across all domain configs
+  (Keyword, alt-coordinate slots) for consistency with the terse naming
+  convention established by `defaultValue` → `default`. Also standardize
+  builder method argument naming — pick one of `config` or `options` and
+  use it consistently (README currently uses both).
+  Deferred from: chipper/feature/context-punctuation (2026-05-24).
 
 ## Integration
 
