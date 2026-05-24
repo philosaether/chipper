@@ -26,8 +26,7 @@ Items that must ship before npm publish.
 
 - **Demo import/export panel** — lightweight UI on the demo page to
   serialize the current sentence state to JSON and import it back.
-  Tests and advertises the serialization API. Could be a collapsible
-  panel below the state inspector.
+  Tests and advertises the serialization API.
   Deferred from: chipper/feature/serialization (2026-05-24).
 
 - **Keyword grouping across popup types** — visual separator / groups

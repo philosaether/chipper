@@ -25,8 +25,12 @@ core/
 ├── state.ts              — Runtime state types: ChipState, ClauseState, SentenceState, ContextScope
 ├── store.ts              — SentenceStore (state + resolved domains), ResolvedDomains type
 ├── initialize.ts         — initializeSentenceState: resolve domains from palette, create initial state,
-│                           derive validity, run initial context pass. Also exports computeDisplayValue
-│                           and buildContextFromChips (shared with actions and context-resolution).
+│                           derive validity, run initial context pass. Accepts optional initialValues
+│                           for deserialization overlay. Also exports computeDisplayValue and
+│                           buildContextFromChips (shared with actions and context-resolution).
+├── serialize.ts          — serialize() + deserialize() utilities, SerializedSentence type.
+│                           Overlay hydration: deserialize calls initializeSentenceState with saved
+│                           values, re-deriving contingency in a single pass.
 ├── context-resolution.ts — Contingency engine: resolveContext (tree walk), evaluateContingency
 │                           (presence, domain reconfiguration, cascade), runInitialContextPass.
 ├── reducer.ts            — sentenceReducer: pure switch over SentenceAction union. Delegates to action handlers.
@@ -164,7 +168,8 @@ tests/
 │   ├── types.test.ts       — Builder smoke tests
 │   ├── initialize.test.ts  — State initialization from definitions
 │   ├── reducer.test.ts     — SET_CHIP_VALUE + stub action tests
-│   └── punctuation.test.ts — punc() builder method: default resolver, contingent clauses, custom display
+│   ├── punctuation.test.ts — punc() builder method: default resolver, contingent clauses, custom display
+│   └── serialize.test.ts   — serialize/deserialize: round-trip, optional clauses, expression mode, custom serializers
 ├── domains/
 │   └── keyword.test.ts     — keywordDomain factory: validate, display, defaults, placeholder
 ├── hooks/

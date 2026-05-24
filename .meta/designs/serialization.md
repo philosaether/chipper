@@ -3,6 +3,9 @@ Status: accepted
 Date: 2026-05-24
 Accepted: 2026-05-24
 Assessment: assessments/serialization.md
+Implemented: 2026-05-24 (feature/serialization)
+Divergences: none
+Deferred: SentenceViewModel (consumer-side pattern, not library code)
 ---
 
 # Serialization / Deserialization — Desired State
