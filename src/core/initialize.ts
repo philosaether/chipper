@@ -109,12 +109,23 @@ export function evaluateVisibleChips(
  * Create a SentenceStore from a sentence definition.
  *
  * Resolves domains from the palette, initializes chip state with
- * default values, and derives clause/sentence validity. Runs an
- * initial context pass so contingent clauses reflect default values.
+ * default values (or initial values if provided), and derives
+ * clause/sentence validity. Runs an initial context pass so contingent
+ * clauses reflect the starting values.
+ *
+ * @param initialValues — Optional saved data to overlay. Keys are chip IDs
+ *   with their values. `__active` maps optional clause IDs to activation state.
+ *   `__expressionMode` maps chip IDs to expression mode flags.
  */
-export function initializeSentenceState(definition: SentenceDefinition): SentenceStore {
+export function initializeSentenceState(
+  definition: SentenceDefinition,
+  initialValues?: Record<string, unknown>,
+): SentenceStore {
   const domains: ResolvedDomains = {};
   const clauses: Record<string, ClauseState> = {};
+
+  const activeOverrides = initialValues?.__active as Record<string, boolean> | undefined;
+  const expressionModeOverrides = initialValues?.__expressionMode as Record<string, boolean> | undefined;
 
   for (const clauseDef of definition.clauses) {
     const chips: Record<string, ChipState> = {};
@@ -123,12 +134,15 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
       const domain = resolveDomain(chipDef.domainName, definition.palette);
       domains[chipDef.id] = domain;
 
-      const isValid = domain.validate(domain.defaultValue);
+      const savedValue = initialValues?.[chipDef.id];
+      const chipValue = savedValue !== undefined ? savedValue : domain.defaultValue;
+      const isValid = domain.validate(chipValue);
       chips[chipDef.id] = {
-        value: domain.defaultValue,
-        displayValue: computeDisplayValue(domain, domain.defaultValue, isValid),
+        value: chipValue,
+        displayValue: computeDisplayValue(domain, chipValue, isValid),
         valid: isValid,
-        dirty: false,
+        dirty: savedValue !== undefined,
+        expressionMode: expressionModeOverrides?.[chipDef.id] ?? undefined,
       };
     }
 
@@ -137,9 +151,16 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
     // pass (runInitialContextPass) will re-evaluate after defaults propagate.
     const visibleChips = evaluateVisibleChips(clauseDef.segments, {});
 
+    // Determine clause activation: explicit override > default behavior
+    const isOptional = clauseDef.necessity === 'optional';
+    const activeDefault = !isOptional; // required = active, optional = inactive
+    const active = isOptional && activeOverrides
+      ? (activeOverrides[clauseDef.id] ?? activeDefault)
+      : activeDefault;
+
     clauses[clauseDef.id] = {
       present: !clauseDef.contingency,
-      active: clauseDef.necessity === 'required',
+      active,
       chips,
       valid: computeClauseValidity(chips, visibleChips),
       visibleChips,
@@ -154,6 +175,6 @@ export function initializeSentenceState(definition: SentenceDefinition): Sentenc
 
   const store: SentenceStore = { state, domains, definition };
 
-  // Run initial context pass so contingent clauses reflect default chip values
+  // Run initial context pass so contingent clauses reflect starting values
   return runInitialContextPass(store);
 }

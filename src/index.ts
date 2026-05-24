@@ -39,6 +39,7 @@ export type {
 export type { SentenceStore, ResolvedDomains } from './core/store';
 export { initializeSentenceState } from './core/initialize';
 export { sentenceReducer, type SentenceAction } from './core/reducer';
+export { serialize, deserialize, type SerializedSentence } from './core/serialize';
 export type { SetChipValueAction } from './core/actions/set-chip-value';
 export type { ToggleClauseAction } from './core/actions/toggle-clause';
 export type { SetContextAction } from './core/actions/set-context';

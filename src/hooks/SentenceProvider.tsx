@@ -14,15 +14,17 @@ import { SentenceContext, closedPopup } from './context';
 
 export interface SentenceProviderProps {
   definition: SentenceDefinition;
+  /** Saved values to restore on mount (from serialize()) */
+  initialValues?: Record<string, unknown>;
   onChange?: (state: SentenceState) => void;
   children: React.ReactNode;
 }
 
-export function SentenceProvider({ definition, onChange, children }: SentenceProviderProps) {
+export function SentenceProvider({ definition, initialValues, onChange, children }: SentenceProviderProps) {
   const [store, dispatch] = useReducer(
     sentenceReducer,
-    definition,
-    initializeSentenceState,
+    undefined,
+    () => initializeSentenceState(definition, initialValues),
   );
 
   const [popupState, setPopupState] = useState<PopupState>(closedPopup);

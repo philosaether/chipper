@@ -19,6 +19,9 @@ export interface ChipperProps {
   /** The sentence definition to render */
   sentence: SentenceDefinition;
 
+  /** Saved values to restore on mount (from serialize()) */
+  initialValues?: Record<string, unknown>;
+
   /** Called on every state change */
   onChange?: (state: SentenceState) => void;
 
@@ -26,9 +29,9 @@ export interface ChipperProps {
   children?: React.ReactNode;
 }
 
-export function Chipper({ sentence, onChange, children }: ChipperProps) {
+export function Chipper({ sentence, initialValues, onChange, children }: ChipperProps) {
   return (
-    <SentenceProvider definition={sentence} onChange={onChange}>
+    <SentenceProvider definition={sentence} initialValues={initialValues} onChange={onChange}>
       {children ?? <Sentence />}
     </SentenceProvider>
   );

@@ -35,6 +35,7 @@ export type {
 export type { SentenceStore, ResolvedDomains } from './src/core/store';
 export { initializeSentenceState } from './src/core/initialize';
 export { sentenceReducer, type SentenceAction } from './src/core/reducer';
+export { serialize, deserialize, type SerializedSentence } from './src/core/serialize';
 
 // Hooks
 export {

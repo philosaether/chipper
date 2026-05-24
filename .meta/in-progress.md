@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Keyboard navigation** — implementing designs/keyboard-navigation.md on feature/keyboard-navigation branch. Steps: (1) useKeyboardNavigation hook, (2) focus trap in ChipPopup, (3) focus restoration in Chip/usePopup, (4) KOE popup keyboard support, (5) MultiSelect popup, (6) AltCoordinate popup, (7) Reference popup, (8) aria-labels on clause toggles, (9) focus-visible CSS, (10) tests.
+- **Serialization** — implementing designs/serialization.md on feature/serialization branch. Steps: (1) SerializedSentence type, (2) serialize() utility, (3) initialValues param on initializeSentenceState, (4) deserialize() utility, (5) initialValues prop on Chipper/SentenceProvider, (6) export from index.ts + headless.ts, (7) tests.
 
 ## Next Session
 

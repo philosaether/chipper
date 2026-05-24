@@ -23,3 +23,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [v1-docs.md](v1-docs.md) | accepted | v1 developer documentation: single README.md with quick start, domain types, sentence building, theming, API reference. |
 | [context-punctuation.md](context-punctuation.md) | accepted | Context-aware punctuation: dynamic TextSegment.value, .punc() builder sugar, default trailing-delimiter resolver. |
 | [keyboard-navigation.md](keyboard-navigation.md) | accepted | Keyboard navigation: useKeyboardNavigation hook, aria-activedescendant, focus trap/restore, AA compliance. |
+| [serialization.md](serialization.md) | accepted | Serialization: serialize/deserialize utilities, initialValues overlay, SerializedSentence format, SentenceViewModel pattern. |

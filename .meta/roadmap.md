@@ -74,6 +74,8 @@ Items that must ship before npm publish.
 - **`useReferenceDisplay` hook** — eager display resolution on chip mount
   for saved reference values. Without it, restored references show raw IDs
   until popup interaction. Needed before async consumer workflows ship.
+  NB: serialization design defers display cache hydration to this hook —
+  `deserialize()` does not pre-populate the cache.
 
 ### Punctuation v2
 
