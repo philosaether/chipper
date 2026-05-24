@@ -6,7 +6,7 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Context-aware punctuation** — implementing designs/context-punctuation.md on feature/context-punctuation branch. Steps: (1) TextSegment.value union type, (2) Clause.tsx render changes, (3) .punc() builder method + sentinel, (4) post-build binding in sentence(), (5) resolveTrailingPunctuation utility, (6) demo sentence update, (7) tests.
+- **Keyboard navigation** — implementing designs/keyboard-navigation.md on feature/keyboard-navigation branch. Steps: (1) useKeyboardNavigation hook, (2) focus trap in ChipPopup, (3) focus restoration in Chip/usePopup, (4) KOE popup keyboard support, (5) MultiSelect popup, (6) AltCoordinate popup, (7) Reference popup, (8) aria-labels on clause toggles, (9) focus-visible CSS, (10) tests.
 
 ## Next Session
 

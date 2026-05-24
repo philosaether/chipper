@@ -41,6 +41,30 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Focus trap: Tab wraps within popup
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab' && popupRef.current) {
+        const focusable = popupRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0]!;
+        const last = focusable[focusable.length - 1]!;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    const el = popupRef.current;
+    el?.addEventListener('keydown', handleKeyDown);
+    return () => el?.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Close on outside click
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -85,6 +109,7 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
             value={value as string[]}
             maxSelections={domain.meta?.maxSelections as number | undefined}
             onSelect={onSelect as (value: string[]) => void}
+            onClose={onClose}
           />
         );
       case 'alternative-coordinate':
@@ -112,11 +137,21 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
     }
   };
 
+  // Move focus into the popup on mount
+  useEffect(() => {
+    if (!popupRef.current) return;
+    const firstFocusable = popupRef.current.querySelector<HTMLElement>(
+      'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    firstFocusable?.focus();
+  }, []);
+
   return (
     <div
       ref={popupRef}
       className="chipper-popup chipper-popup--open"
       role="listbox"
+      aria-label={domain.placeholder ?? domain.type}
     >
       {popupContent()}
     </div>

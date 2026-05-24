@@ -9,6 +9,7 @@
 import type { Keyword } from '../../core/types';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { selectionMatchesKeyword } from '../../domains/multi-select';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 export interface MultiSelectPopupProps {
   options: Keyword<string>[];
@@ -16,6 +17,7 @@ export interface MultiSelectPopupProps {
   value: string[];
   maxSelections?: number;
   onSelect: (value: string[]) => void;
+  onClose?: () => void;
 }
 
 export function MultiSelectPopup({
@@ -24,8 +26,27 @@ export function MultiSelectPopup({
   value,
   maxSelections,
   onSelect,
+  onClose,
 }: MultiSelectPopupProps) {
   const selectedSet = new Set(value);
+
+  // All navigable items: keywords first, then options
+  const allItems = [...keywords.map((k) => ({ type: 'keyword' as const, keyword: k })),
+    ...options.map((o) => ({ type: 'option' as const, option: o }))];
+  const keyboard = useKeyboardNavigation({
+    itemCount: allItems.length,
+    onSelect: (index) => {
+      const item = allItems[index];
+      if (item.type === 'keyword') {
+        handleKeywordSelect(item.keyword.value);
+      } else {
+        handleToggle(item.option.value);
+      }
+    },
+    onClose: onClose ?? (() => {}),
+    closeOnSelect: false,
+    idPrefix: 'chipper-multi-option',
+  });
 
   const handleToggle = (optionValue: string) => {
     if (selectedSet.has(optionValue)) {
@@ -41,22 +62,27 @@ export function MultiSelectPopup({
   };
 
   return (
-    <div className="chipper-multi-select-popup">
+    <div
+      className="chipper-multi-select-popup"
+      onKeyDown={keyboard.handleKeyDown}
+      tabIndex={0}
+      aria-activedescendant={keyboard.activeDescendantId}
+    >
       {keywords.length > 0 && (
         <div className="chipper-multi-select-popup__keywords">
-          {keywords.map((keyword) => {
+          {keywords.map((keyword, index) => {
             const isMatch = selectionMatchesKeyword(selectedSet, value.length, keyword.value);
+            const optionProps = keyboard.getOptionProps(index);
             return (
               <button
                 key={String(keyword.value)}
                 type="button"
-                role="option"
+                {...optionProps}
+                aria-selected={isMatch}
                 className={[
-                  'chipper-popup-option',
+                  optionProps.className,
                   isMatch && 'chipper-popup-option--selected',
                 ].filter(Boolean).join(' ')}
-                aria-selected={isMatch}
-                onClick={() => handleKeywordSelect(keyword.value)}
               >
                 {resolveKeywordLabel(keyword)}
               </button>
@@ -65,23 +91,23 @@ export function MultiSelectPopup({
         </div>
       )}
       <div className="chipper-multi-select-popup__grid">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selectedSet.has(option.value);
           const isDisabled = !isSelected &&
             maxSelections !== undefined &&
             value.length >= maxSelections;
+          const optionProps = keyboard.getOptionProps(keywords.length + index);
           return (
             <button
               key={option.value}
               type="button"
-              role="option"
+              {...optionProps}
+              aria-selected={isSelected}
               className={[
-                'chipper-popup-option',
+                optionProps.className,
                 isSelected && 'chipper-popup-option--selected',
               ].filter(Boolean).join(' ')}
-              aria-selected={isSelected}
               disabled={isDisabled}
-              onClick={() => handleToggle(option.value)}
             >
               {option.label}
             </button>

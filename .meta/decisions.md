@@ -50,3 +50,5 @@ Append-only log. Don't edit old entries.
 2026-05-24: Deferred: builder DX wishlist pass (clause ergonomics, predicate helpers, chip arg footgun, displayLabel → display rename, config/options standardization).
 2026-05-24: Deferred: punctuation v2 — position-aware display callback (post-release).
 2026-05-24: Context-aware punctuation design accepted (designs/context-punctuation.md). TextSegment.value becomes string | ((state: SentenceState) => string). .punc() builder sugar with sentinel+post-build binding. Consumer-facing display/present config takes SentenceContext. Default resolver: comma when subsequent clause active, period when last. Dormant = empty. Position-aware display deferred post-release.
+2026-05-24: Deferred: repeating clauses general solution (blocker: post-release — demo uses handcoded contingency chains).
+2026-05-24: Keyboard navigation design accepted (designs/keyboard-navigation.md). aria-activedescendant pattern (not roving tabindex) for combobox compat. Shared useKeyboardNavigation hook. Focus trap in ChipPopup. Focus restoration via anchorElement. aria-labels on clause toggles and reference drill buttons.

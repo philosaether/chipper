@@ -35,6 +35,7 @@ export function Clause({ clauseId }: ClauseProps) {
         <button
           type="button"
           className="chipper-clause__toggle"
+          aria-label="activate clause"
           onClick={() => dispatch({ type: 'TOGGLE_CLAUSE', clauseId })}
         >
           ↳
@@ -86,6 +87,7 @@ export function Clause({ clauseId }: ClauseProps) {
         <button
           type="button"
           className="chipper-clause__toggle"
+          aria-label="deactivate clause"
           onClick={() => dispatch({ type: 'TOGGLE_CLAUSE', clauseId })}
         >
           ×

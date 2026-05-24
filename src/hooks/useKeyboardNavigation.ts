@@ -1,0 +1,148 @@
+/**
+ * useKeyboardNavigation — shared keyboard navigation for popup option lists.
+ *
+ * Manages active-descendant index tracking, arrow/Home/End navigation,
+ * Enter/Escape delegation, and mouse hover sync. Used by all popup types.
+ *
+ * Uses aria-activedescendant pattern (not roving tabindex) so that
+ * DOM focus can remain on an input element while arrows navigate options.
+ */
+
+import { useCallback, useState } from 'react';
+
+export interface KeyboardNavigationOptions {
+  /** Total number of navigable options */
+  itemCount: number;
+  /** Called when the user presses Enter on the active item */
+  onSelect: (index: number) => void;
+  /** Called when the user presses Escape */
+  onClose: () => void;
+  /** Initial active index (-1 = nothing active) */
+  initialIndex?: number;
+  /** Does selecting an item close the popup? (default true) */
+  closeOnSelect?: boolean;
+  /** Unique prefix for generating option IDs */
+  idPrefix?: string;
+}
+
+export interface KeyboardNavigationResult {
+  /** Currently highlighted option index (-1 = none) */
+  activeIndex: number;
+  /** Set active index imperatively (e.g., on mouse hover) */
+  setActiveIndex: (index: number) => void;
+  /** Attach to the popup container's onKeyDown */
+  handleKeyDown: (event: React.KeyboardEvent) => void;
+  /** Generate props for each option element */
+  getOptionProps: (index: number) => {
+    id: string;
+    role: 'option';
+    'aria-selected': boolean;
+    className: string;
+    onMouseEnter: () => void;
+    onClick: () => void;
+  };
+  /** The ID of the currently active option (for aria-activedescendant) */
+  activeDescendantId: string | undefined;
+}
+
+export function useKeyboardNavigation({
+  itemCount,
+  onSelect,
+  onClose,
+  initialIndex = -1,
+  closeOnSelect = true,
+  idPrefix = 'chipper-option',
+}: KeyboardNavigationOptions): KeyboardNavigationResult {
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+
+  const getOptionId = useCallback(
+    (index: number) => `${idPrefix}-${index}`,
+    [idPrefix],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (itemCount === 0) return;
+
+      switch (event.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': {
+          event.preventDefault();
+          setActiveIndex((prev) =>
+            prev < itemCount - 1 ? prev + 1 : 0,
+          );
+          break;
+        }
+        case 'ArrowUp':
+        case 'ArrowLeft': {
+          event.preventDefault();
+          setActiveIndex((prev) =>
+            prev > 0 ? prev - 1 : itemCount - 1,
+          );
+          break;
+        }
+        case 'Home': {
+          event.preventDefault();
+          setActiveIndex(0);
+          break;
+        }
+        case 'End': {
+          event.preventDefault();
+          setActiveIndex(itemCount - 1);
+          break;
+        }
+        case 'Enter': {
+          if (activeIndex >= 0 && activeIndex < itemCount) {
+            event.preventDefault();
+            onSelect(activeIndex);
+            if (closeOnSelect) onClose();
+          }
+          break;
+        }
+        case ' ': {
+          // Space toggles in multi-select (closeOnSelect = false)
+          if (!closeOnSelect && activeIndex >= 0 && activeIndex < itemCount) {
+            event.preventDefault();
+            onSelect(activeIndex);
+          }
+          break;
+        }
+        case 'Escape': {
+          event.preventDefault();
+          onClose();
+          break;
+        }
+      }
+    },
+    [itemCount, activeIndex, onSelect, onClose, closeOnSelect],
+  );
+
+  const getOptionProps = useCallback(
+    (index: number) => ({
+      id: getOptionId(index),
+      role: 'option' as const,
+      'aria-selected': index === activeIndex,
+      className: [
+        'chipper-popup-option',
+        index === activeIndex && 'chipper-popup-option--active',
+      ].filter(Boolean).join(' '),
+      onMouseEnter: () => setActiveIndex(index),
+      onClick: () => {
+        onSelect(index);
+        if (closeOnSelect) onClose();
+      },
+    }),
+    [getOptionId, activeIndex, onSelect, onClose, closeOnSelect],
+  );
+
+  const activeDescendantId =
+    activeIndex >= 0 ? getOptionId(activeIndex) : undefined;
+
+  return {
+    activeIndex,
+    setActiveIndex,
+    handleKeyDown,
+    getOptionProps,
+    activeDescendantId,
+  };
+}

@@ -22,3 +22,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [koe-facades.md](koe-facades.md) | accepted | KOE facade domains: textDomain, numberDomain, dateDomain, keywordDomain sugar over KOE. enumDomain unification. |
 | [v1-docs.md](v1-docs.md) | accepted | v1 developer documentation: single README.md with quick start, domain types, sentence building, theming, API reference. |
 | [context-punctuation.md](context-punctuation.md) | accepted | Context-aware punctuation: dynamic TextSegment.value, .punc() builder sugar, default trailing-delimiter resolver. |
+| [keyboard-navigation.md](keyboard-navigation.md) | accepted | Keyboard navigation: useKeyboardNavigation hook, aria-activedescendant, focus trap/restore, AA compliance. |

@@ -49,9 +49,15 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     if (!isInteractive || !triggerRef.current) return;
     if (showPopup) {
       close();
+      triggerRef.current.focus();
     } else {
       open(clauseId, chipId, triggerRef.current);
     }
+  };
+
+  const handleClose = () => {
+    close();
+    triggerRef.current?.focus();
   };
 
   const triggerClasses = [
@@ -92,7 +98,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
           expressionActive={expressionMode}
           context={popupContext}
           onSelect={setValue}
-          onClose={close}
+          onClose={handleClose}
         />
       )}
     </span>

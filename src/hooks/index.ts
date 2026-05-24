@@ -9,4 +9,5 @@ export { SentenceProvider, type SentenceProviderProps } from './SentenceProvider
 export { useSentence } from './useSentence';
 export { useChip } from './useChip';
 export { usePopup } from './usePopup';
+export { useKeyboardNavigation, type KeyboardNavigationOptions, type KeyboardNavigationResult } from './useKeyboardNavigation';
 export type { SentenceContextValue, PopupState } from './context';

@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ExpressionMode, Keyword, SentenceContext } from '../../core/types';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { TRIGGER_SENTINEL } from '../../core/mode-switching';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { NumericInput } from './NumericInput';
 
 export interface KeywordOrExpressionPopupProps {
@@ -64,6 +65,25 @@ export function KeywordOrExpressionPopup({
   // Track whether a keyword was clicked (skip auto-save in that case)
   const keywordSelected = useRef(false);
 
+  // Keyboard navigation for keyword options (+ trigger pill if present)
+  const totalOptions = keywords.length + (hasTrigger && !expressionActive ? 1 : 0);
+  const selectedIndex = keywords.findIndex((k) => k.value === value && !expressionActive);
+  const keyboard = useKeyboardNavigation({
+    itemCount: totalOptions,
+    initialIndex: selectedIndex >= 0 ? selectedIndex : -1,
+    onSelect: (index) => {
+      if (index < keywords.length) {
+        keywordSelected.current = true;
+        onSelect(keywords[index]!.value);
+      } else {
+        // Trigger pill
+        onSelect(TRIGGER_SENTINEL);
+      }
+    },
+    onClose,
+    idPrefix: 'chipper-koe-option',
+  });
+
   // Ref tracks latest inputValue for the unmount cleanup (avoids stale closure)
   const inputValueRef = useRef(inputValue);
   inputValueRef.current = inputValue;
@@ -96,27 +116,22 @@ export function KeywordOrExpressionPopup({
 
   const keywordsSection = keywords.length > 0 && (
     <div className="chipper-koe-popup__keywords">
-      {keywords.map((keyword) => (
-        <button
-          key={keyword.value}
-          type="button"
-          role="option"
-          className={[
-            'chipper-popup-option',
-            keyword.value === value && !expressionActive && 'chipper-popup-option--selected',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          aria-selected={keyword.value === value && !expressionActive}
-          onClick={() => {
-            keywordSelected.current = true;
-            onSelect(keyword.value);
-            onClose();
-          }}
-        >
-          {resolveKeywordLabel(keyword, context)}
-        </button>
-      ))}
+      {keywords.map((keyword, index) => {
+        const optionProps = keyboard.getOptionProps(index);
+        return (
+          <button
+            key={keyword.value}
+            type="button"
+            {...optionProps}
+            className={[
+              optionProps.className,
+              keyword.value === value && !expressionActive && 'chipper-popup-option--selected',
+            ].filter(Boolean).join(' ')}
+          >
+            {resolveKeywordLabel(keyword, context)}
+          </button>
+        );
+      })}
     </div>
   );
 
@@ -124,12 +139,7 @@ export function KeywordOrExpressionPopup({
     <div className="chipper-koe-popup__trigger">
       <button
         type="button"
-        role="option"
-        className="chipper-popup-option"
-        onClick={() => {
-          onSelect(TRIGGER_SENTINEL);
-          onClose();
-        }}
+        {...keyboard.getOptionProps(keywords.length)}
       >
         {triggerLabel}
       </button>
@@ -188,11 +198,23 @@ export function KeywordOrExpressionPopup({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSubmit();
+              if (e.key === 'Enter') {
+                // Highlighted keyword takes priority over input submission
+                if (keyboard.activeIndex >= 0 && keyboard.activeIndex < keywords.length) {
+                  keyboard.handleKeyDown(e);
+                } else {
+                  handleSubmit();
+                }
+              } else {
+                keyboard.handleKeyDown(e);
+              }
             }}
             placeholder={expressionMode!.label}
             maxLength={maxLength}
             autoFocus={keywords.length === 0}
+            aria-activedescendant={keyboard.activeDescendantId}
+            role="combobox"
+            aria-expanded={true}
           />
         )}
         {expressionMode!.suffix && (
@@ -207,7 +229,12 @@ export function KeywordOrExpressionPopup({
   );
 
   return (
-    <div className="chipper-koe-popup">
+    <div
+      className="chipper-koe-popup"
+      onKeyDown={!showExpression ? keyboard.handleKeyDown : undefined}
+      tabIndex={!showExpression ? 0 : undefined}
+      aria-activedescendant={!showExpression ? keyboard.activeDescendantId : undefined}
+    >
       {expressionAbove ? (
         <>
           {expressionSection}
