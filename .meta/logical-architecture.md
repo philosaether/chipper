@@ -125,6 +125,9 @@ hooks/
 ├── usePopup.ts           — Singleton popup open/close (one popup per sentence)
 ├── useKeyboardNavigation.ts — Shared arrow/Home/End/Enter/Escape nav for popup option lists.
 │                              aria-activedescendant pattern. Internal only (not re-exported from index.ts).
+├── useReferenceDisplay.ts — Eager display resolution for reference chips on mount.
+│                              Calls source.resolveDisplay(), populates displayCache, re-dispatches.
+│                              Internal only (not re-exported from index.ts).
 └── index.ts              — Re-exports all hooks + SentenceProvider
 ```
 

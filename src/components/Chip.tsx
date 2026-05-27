@@ -9,6 +9,7 @@ import { useMemo, useRef } from 'react';
 import { useChip } from '../hooks/useChip';
 import { useSentence } from '../hooks/useSentence';
 import { usePopup } from '../hooks/usePopup';
+import { useReferenceDisplay } from '../hooks/useReferenceDisplay';
 import { buildClauseContext } from '../core/context-resolution';
 import { ChipPopup } from './ChipPopup';
 
@@ -20,8 +21,9 @@ export interface ChipProps {
 export function Chip({ clauseId, chipId }: ChipProps) {
   const { displayValue, valid, domain, chipDefinition, value, expressionMode, setValue } =
     useChip(clauseId, chipId);
-  const { definition, state, clauseById } = useSentence();
+  const { definition, state, clauseById, dispatch } = useSentence();
   const { open, close, isOpen } = usePopup();
+  useReferenceDisplay(domain, value, clauseId, chipId, dispatch);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Resolve context for dynamic prefix/suffix (only when expression mode has function affixes)
