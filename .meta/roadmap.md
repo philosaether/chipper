@@ -15,6 +15,8 @@ Items that must ship before npm publish.
 - **Demo page v1.0** — restore multi-font panels, update explainer,
   rebuild as a cohesive release page. Includes killer app showcase
   (praxis demo sentence as hero, many fun examples throughout).
+  NB: validate and demonstrate error behavior (aria-invalid, visual
+  error states, invalid-on-submit).
 
 - **Theming engine v2 — runtime theme switching** — the demo's theme
   toggle (praxis/midnight/terminal) works by applying CSS custom property
@@ -25,6 +27,11 @@ Items that must ship before npm publish.
   fragility.
 
 ### Riffs
+
+- **Readonly + live chip modes** — implement readonly and live chip
+  rendering. Types and reducer stubs exist; needs component rendering,
+  live source fetching (polling + one-shot), loading/error states.
+  Deferred from: chipper/meta/architecture-refresh (2026-05-27).
 
 - **Screen reader support** — aria-live, aria-invalid, role=option.
   Keyboard nav infrastructure is in place; this is the ARIA semantic layer.
@@ -38,13 +45,6 @@ Items that must ship before npm publish.
   `.meta/inbox/devex-wishlist.md`: clause definition ergonomics,
   type-checking helpers for predicates, `.chip()` positional arg footgun.
   Standardize `config` vs `options` argument naming.
-
-### Session tasks
-
-- **Architecture doc refresh** — chipper-architecture.md §3 and §4 are
-  stale (still show `clause()`, `domains:`, no mention of lines,
-  `displayLabel`, `default`, expression helpers, chip-level contingency,
-  mode-switching, context-aware display). Mechanical reconciliation.
 
 ### Gate
 
@@ -87,9 +87,7 @@ Items that must ship before npm publish.
 
 ### Future Chip Modes
 
-- **Readonly mode**
 - **Computed mode** — derived from sentence state.
-- **Live mode** — external data fetching + SET_LIVE_VALUE.
 
 ### Demo & Docs
 
