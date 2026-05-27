@@ -13,7 +13,7 @@
 // ---------------------------------------------------------------------------
 
 /** A named preset value within a domain. */
-export interface Keyword<T = unknown> {
+export interface Keyword<T = any> {
   /** Display label shown in the popup. Function receives sentence context. */
   label: string | ((context: SentenceContext) => string);
 
@@ -31,7 +31,7 @@ export interface Keyword<T = unknown> {
 }
 
 /** One way for a user to specify a value within a domain's value space. */
-export interface ExpressionMode<T = unknown> {
+export interface ExpressionMode<T = any> {
   /** Unique identifier for this mode */
   id: string;
 
@@ -76,7 +76,7 @@ export interface ExpressionMode<T = unknown> {
  * A domain defines the kind of data a chip accepts.
  * Every chip has exactly one domain.
  */
-export interface Domain<T = unknown> {
+export interface Domain<T = any> {
   /** Unique identifier for this domain type */
   type: string;
 
