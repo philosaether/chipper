@@ -39,20 +39,6 @@ Items that must ship before npm publish.
   type-checking helpers for predicates, `.chip()` positional arg footgun.
   Standardize `config` vs `options` argument naming.
 
-- **Tech debt sweep** — Four items in one riff:
-  - `Domain<T>` variance — covariant redesign or branded approach.
-    Blocks demo tsconfig strict mode.
-  - Clause definition index — precompute maps, replace repeated
-    `.find()`/`.filter()` in reducer and context resolution.
-  - `useReferenceDisplay` hook — eager display resolution on mount
-    for saved reference values. Restored references show raw IDs
-    without it.
-  - `displayLabel` → `display` rename across all domain configs.
-    Deferred from: chipper/feature/keyword-grouping (2026-05-27).
-  - Strict-mode stragglers: `headless.ts` stale `clause` export,
-    `keyword.label` function narrowing in multi-select/reference display,
-    `PopupState` missing import in SentenceProvider.
-
 ### Session tasks
 
 - **Architecture doc refresh** — chipper-architecture.md §3 and §4 are

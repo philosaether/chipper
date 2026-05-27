@@ -23,11 +23,13 @@ core/
 ├── types.ts              — Definition types: Domain, Keyword, ExpressionMode, ChipDefinition,
 │                           ClauseDefinition, SentenceDefinition, Palette, ChipMode, etc.
 ├── state.ts              — Runtime state types: ChipState, ClauseState, SentenceState, ContextScope
-├── store.ts              — SentenceStore (state + resolved domains), ResolvedDomains type
+├── store.ts              — SentenceStore (state + resolved domains + clause indices), ResolvedDomains type.
+│                           Precomputed clauseById and clausesBySuper maps for O(1) clause lookup.
 ├── initialize.ts         — initializeSentenceState: resolve domains from palette, create initial state,
-│                           derive validity, run initial context pass. Accepts optional initialValues
-│                           for deserialization overlay. Also exports computeDisplayValue and
-│                           buildContextFromChips (shared with actions and context-resolution).
+│                           derive validity, precompute clause indices (clauseById, clausesBySuper),
+│                           run initial context pass. Accepts optional initialValues for deserialization
+│                           overlay. Also exports computeDisplayValue and buildContextFromChips
+│                           (shared with actions and context-resolution).
 ├── serialize.ts          — serialize() + deserialize() utilities, SerializedSentence type.
 │                           Overlay hydration: deserialize calls initializeSentenceState with saved
 │                           values, re-deriving contingency in a single pass.
