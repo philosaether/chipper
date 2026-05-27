@@ -49,5 +49,5 @@ export {
 } from './src/hooks';
 
 // Re-export builders and palette
-export { sentence, clause, chip, repeating } from './src/builder';
+export { sentence, builder, chip, repeating } from './src/builder';
 export { createPalette, extendPalette } from './src/palette';
