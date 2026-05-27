@@ -50,6 +50,10 @@ Domain archetype factories. Each factory takes volatile config and returns a `Do
 ```
 domains/
 ├── create-domain.ts           — createDomain<T>(): internal base, fills defaults, passes through config
+│                                 Accepts optional keywordGroups for grouped popup rendering.
+├── normalize-keywords.ts      — KeywordConfig, KeywordGroup, KeywordGroupItem, NormalizedKeywordGroup types.
+│                                 normalizeKeywords() (flat), normalizeKeywordGroups() (grouped + flat).
+│                                 buildDisplayMap(), resolveDefault(), isKeywordGroup().
 ├── facades.ts                 — Sugar factories: textDomain, numberDomain, dateDomain, keywordDomain
 │                                 All delegate to keywordOrExpressionDomain
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
@@ -57,6 +61,7 @@ domains/
 │                                 inputType: 'text' | 'number' | 'date'
 ├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
 ├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
+│                                 ResolvedAlternativeCoordinateMode, ResolvedModeSlot for normalized slot keywords.
 ├── reference.ts               — referenceDomain(): external data, navigation/search popup, display cache
 └── index.ts                   — Re-exports all archetype factories + facades
 ```
@@ -98,6 +103,8 @@ components/
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
 ├── popups/
+│   ├── KeywordGroupList.tsx — Shared rendering for grouped keywords: labels, prefixes, flow/grid layout.
+│   │                          Used by KOE, multi-select, and alt-coordinate popups.
 │   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains (also handles keywords-only)
 │   ├── MultiSelectPopup.tsx — Toggle grid for multi-select domains (stays open)
 │   ├── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
@@ -171,11 +178,13 @@ tests/
 │   ├── punctuation.test.ts — punc() builder method: default resolver, contingent clauses, custom display
 │   └── serialize.test.ts   — serialize/deserialize: round-trip, optional clauses, expression mode, custom serializers
 ├── domains/
-│   └── keyword.test.ts     — keywordDomain factory: validate, display, defaults, placeholder
+│   ├── keyword.test.ts     — keywordDomain factory: validate, display, defaults, placeholder
+│   └── keyword-grouping.test.ts — normalizeKeywordGroups, isKeywordGroup, grouped domain factories
 ├── hooks/
 │   └── hooks.test.tsx      — useSentence, useChip, usePopup, SentenceProvider onChange
 ├── components/
-│   └── components.test.tsx  — Chipper auto-render, popup interaction, selection, onChange
+│   ├── components.test.tsx  — Chipper auto-render, popup interaction, selection, onChange
+│   └── keyword-group-list.test.tsx — KeywordGroupList: rendering, layout, flat index, selected/disabled
 └── fixtures/
     └── month-keywords.ts   — Shared test fixture: month keyword subsets for enum domain tests
 ```

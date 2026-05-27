@@ -55,3 +55,8 @@ Append-only log. Don't edit old entries.
 2026-05-24: Deferred: screen reader UAT (post-release — coordinating with native SR user).
 2026-05-24: Serialization design accepted (designs/serialization.md). serialize(definition, state) + deserialize(definition, data) as standalone utilities. initialValues overlay in initializeSentenceState (option c — single-pass, no reducer replay). Default format: flat { chipId: value } + __active/__expressionMode meta-keys. Inactive clause values excluded. Custom serializer/deserializer pair supported. SentenceViewModel is a consumer-side pattern, not library code.
 2026-05-24: Deferred: demo import/export panel (pre-release — tests and advertises serialization API).
+2026-05-27: Deferred: roadmap-inbox association (to philset — link inbox items to roadmap entries, suppress from /hello scan).
+2026-05-27: Roadmap audit — struck publicity article (superseded by organic writing), rolled killer app demo into demo page v1.0. Promoted all three tech debt items to pre-release as a single riff. Categorized pre-release: 3 drafts, 4 riffs, 1 session task, 1 gate.
+2026-05-27: Deferred: displayLabel → display rename (moved from builder DX wishlist riff to tech debt sweep riff).
+2026-05-27: Deferred: KOE slots (post-release — generalize alt-coordinate slots to KOE domain).
+2026-05-27: Keyword grouping design accepted (designs/keyword-grouping.md). Pattern B (group wrapper): KeywordGroup<T> alongside KeywordConfig<T>, per-group layout (flow/grid), columns, prefix, group label. Dual fields on Domain<T> (flat keywords + keywordGroups). Flat keyboard nav. Applies to KOE, multi-select, and alt-coordinate popups.

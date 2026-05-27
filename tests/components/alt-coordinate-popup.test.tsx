@@ -5,11 +5,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { AlternativeCoordinatePopup } from '../../src/components/popups/AlternativeCoordinatePopup';
-import type { AlternativeCoordinateMode } from '../../src/domains/alternative-coordinate';
+import type { ResolvedAlternativeCoordinateMode } from '../../src/domains/alternative-coordinate';
 
 afterEach(cleanup);
 
-const dateMode: AlternativeCoordinateMode = {
+const dateMode: ResolvedAlternativeCoordinateMode = {
   id: 'date',
   label: 'Date',
   slots: [
@@ -30,7 +30,7 @@ const dateMode: AlternativeCoordinateMode = {
   },
 };
 
-const weekdayMode: AlternativeCoordinateMode = {
+const weekdayMode: ResolvedAlternativeCoordinateMode = {
   id: 'weekday',
   label: 'Weekday',
   slots: [

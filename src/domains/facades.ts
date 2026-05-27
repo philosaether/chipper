@@ -9,7 +9,7 @@
  */
 
 import type { Domain, SentenceContext } from '../core/types';
-import type { KeywordConfig } from './normalize-keywords';
+import type { KeywordGroupItem } from './normalize-keywords';
 import {
   keywordOrExpressionDomain,
   textExpression,
@@ -35,8 +35,8 @@ export interface TextDomainConfig {
   validate?: (value: string) => boolean;
   /** Format value for chip trigger display */
   display?: (value: string) => string;
-  /** Optional preset values as keyword pills */
-  keywords?: KeywordConfig<string>[];
+  /** Optional preset values as keyword pills. Accepts groups for visual grouping. */
+  keywords?: KeywordGroupItem<string>[];
 }
 
 /**
@@ -90,8 +90,8 @@ export interface NumberDomainConfig {
   validate?: (value: string) => boolean;
   /** Format value for chip trigger display */
   display?: (value: string) => string;
-  /** Optional preset values as keyword pills */
-  keywords?: KeywordConfig<string>[];
+  /** Optional preset values as keyword pills. Accepts groups for visual grouping. */
+  keywords?: KeywordGroupItem<string>[];
 }
 
 /**
@@ -141,8 +141,8 @@ export interface DateDomainConfig {
   validate?: (value: string) => boolean;
   /** Format date for chip trigger display */
   display?: (value: string) => string;
-  /** Optional preset values (e.g., "tomorrow", "next Monday") */
-  keywords?: KeywordConfig<string>[];
+  /** Optional preset values (e.g., "tomorrow", "next Monday"). Accepts groups for visual grouping. */
+  keywords?: KeywordGroupItem<string>[];
 }
 
 /**
@@ -177,8 +177,8 @@ export function dateDomain(config: DateDomainConfig): Domain<string> {
 export interface KeywordDomainConfig {
   /** Semantic color key */
   color: string;
-  /** The complete set of allowed values */
-  keywords: KeywordConfig<string>[];
+  /** The complete set of allowed values. Accepts groups for visual grouping. */
+  keywords: KeywordGroupItem<string>[];
   /** Default value (defaults to first keyword value) */
   default?: string;
   /** Text shown in chip trigger when value is invalid */

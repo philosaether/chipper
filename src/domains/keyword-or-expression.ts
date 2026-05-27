@@ -12,7 +12,15 @@
 
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
-import { normalizeKeywords, buildDisplayMap, resolveDefault, type KeywordConfig } from './normalize-keywords';
+import {
+  normalizeKeywords,
+  normalizeKeywordGroups,
+  buildDisplayMap,
+  resolveDefault,
+  isKeywordGroup,
+  type KeywordConfig,
+  type KeywordGroupItem,
+} from './normalize-keywords';
 
 /** Configuration for a trigger keyword that enters expression mode. */
 export interface ExpressionTrigger {
@@ -114,8 +122,8 @@ export interface KeywordOrExpressionDomainConfig {
   /** Semantic color key */
   color: string;
 
-  /** Preset values shown as keyword pills in the popup */
-  keywords?: KeywordConfig<string>[] | Keyword<string>[];
+  /** Preset values shown as keyword pills in the popup. Accepts groups for visual grouping. */
+  keywords?: KeywordGroupItem<string>[] | Keyword<string>[];
 
   /** Expression mode configuration. Omit for keywords-only domains. */
   expression?: ExpressionConfig;
@@ -162,9 +170,12 @@ export interface KeywordOrExpressionDomainConfig {
 export function keywordOrExpressionDomain(
   config: KeywordOrExpressionDomainConfig,
 ): Domain<string> {
-  const keywords: Keyword<string>[] = normalizeKeywords(
-    (config.keywords ?? []) as KeywordConfig<string>[],
-  );
+  const rawKeywords = (config.keywords ?? []) as KeywordGroupItem<string>[];
+  const hasGroups = rawKeywords.some(isKeywordGroup);
+
+  const { flat: keywords, groups: keywordGroups } = hasGroups
+    ? normalizeKeywordGroups(rawKeywords)
+    : { flat: normalizeKeywords(rawKeywords as KeywordConfig<string>[]), groups: undefined };
 
   const validKeywordValues = new Set<string>(keywords.map((k) => k.value));
   const displayByValue = buildDisplayMap(keywords);
@@ -231,6 +242,7 @@ export function keywordOrExpressionDomain(
     type: 'keyword-or-expression',
     color: config.color,
     keywords,
+    keywordGroups: keywordGroups ?? undefined,
     expressionModes,
     defaultValue,
     placeholder: config.placeholder,

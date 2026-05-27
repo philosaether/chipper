@@ -8,7 +8,8 @@
 
 import { useEffect, useRef } from 'react';
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
-import type { AlternativeCoordinateMode } from '../domains/alternative-coordinate';
+import type { ResolvedAlternativeCoordinateMode } from '../domains/alternative-coordinate';
+import type { NormalizedKeywordGroup } from '../domains/normalize-keywords';
 import type { ExpressionTrigger } from '../domains/keyword-or-expression';
 import type { ReferenceSource } from '../domains/reference';
 import { KeywordOrExpressionPopup } from './popups/KeywordOrExpressionPopup';
@@ -90,6 +91,7 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
         return (
           <KeywordOrExpressionPopup
             keywords={domain.keywords as Keyword<string>[]}
+            keywordGroups={domain.keywordGroups as NormalizedKeywordGroup<string>[] | undefined}
             value={value as string}
             expressionMode={expressionMode}
             expressionActive={expressionActive}
@@ -105,6 +107,7 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
         return (
           <MultiSelectPopup
             options={domain.meta?.options as Keyword<string>[]}
+            optionGroups={domain.meta?.optionGroups as NormalizedKeywordGroup<string>[] | undefined}
             keywords={domain.keywords as Keyword<string[]>[]}
             value={value as string[]}
             maxSelections={domain.meta?.maxSelections as number | undefined}
@@ -115,7 +118,7 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
       case 'alternative-coordinate':
         return (
           <AlternativeCoordinatePopup
-            modes={domain.meta?.modes as AlternativeCoordinateMode[]}
+            modes={domain.meta?.modes as ResolvedAlternativeCoordinateMode[]}
             value={value as string}
             onSelect={onSelect as (value: string) => void}
             onClose={onClose}

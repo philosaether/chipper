@@ -10,24 +10,11 @@ item should say *why* it was deferred and *what* would trigger picking it up.
 
 Items that must ship before npm publish.
 
-- **Screen reader support** — aria-live, aria-invalid, role=option.
-
-- **Architecture doc refresh** — chipper-architecture.md §3 and §4 are
-  stale (still show `clause()`, `domains:`, no mention of lines,
-  `displayLabel`, `default`, expression helpers, chip-level contingency,
-  mode-switching, context-aware display).
+### Drafts
 
 - **Demo page v1.0** — restore multi-font panels, update explainer,
-  rebuild as a cohesive release page.
-
-- **Killer app demo** — TBD. Differentiator for npm page.
-
-- **Publicity article**
-
-- **Demo import/export panel** — lightweight UI on the demo page to
-  serialize the current sentence state to JSON and import it back.
-  Tests and advertises the serialization API.
-  Deferred from: chipper/feature/serialization (2026-05-24).
+  rebuild as a cohesive release page. Includes killer app showcase
+  (praxis demo sentence as hero, many fun examples throughout).
 
 - **Keyword grouping across popup types** — visual separator / groups
   within a single slot's keyword list. Needed for day-of-month (shortcut
@@ -41,11 +28,40 @@ Items that must ship before npm publish.
   theme contract. (3) Font token `inherit` default. (4) Theme restoration
   fragility.
 
-- **Builder DX wishlist riff** — Address remaining items in
+### Riffs
+
+- **Screen reader support** — aria-live, aria-invalid, role=option.
+  Keyboard nav infrastructure is in place; this is the ARIA semantic layer.
+
+- **Demo import/export panel** — lightweight UI on the demo page to
+  serialize the current sentence state to JSON and import it back.
+  Tests and advertises the serialization API.
+  Deferred from: chipper/feature/serialization (2026-05-24).
+
+- **Builder DX wishlist** — Address remaining items in
   `.meta/inbox/devex-wishlist.md`: clause definition ergonomics,
   type-checking helpers for predicates, `.chip()` positional arg footgun.
-  Plus rename `displayLabel` → `display` across all domain configs
-  and standardize `config` vs `options` argument naming.
+  Standardize `config` vs `options` argument naming.
+
+- **Tech debt sweep** — Four items in one riff:
+  - `Domain<T>` variance — covariant redesign or branded approach.
+    Blocks demo tsconfig strict mode.
+  - Clause definition index — precompute maps, replace repeated
+    `.find()`/`.filter()` in reducer and context resolution.
+  - `useReferenceDisplay` hook — eager display resolution on mount
+    for saved reference values. Restored references show raw IDs
+    without it.
+  - `displayLabel` → `display` rename across all domain configs.
+    Deferred from: chipper/feature/keyword-grouping (2026-05-27).
+
+### Session tasks
+
+- **Architecture doc refresh** — chipper-architecture.md §3 and §4 are
+  stale (still show `clause()`, `domains:`, no mention of lines,
+  `displayLabel`, `default`, expression helpers, chip-level contingency,
+  mode-switching, context-aware display). Mechanical reconciliation.
+
+### Gate
 
 - **npm publish**
 
@@ -59,25 +75,6 @@ Items that must ship before npm publish.
   works for now; proper time picker deserves a design pass. Deferred from
   riff/demo-task-sentence (2026-05-21). Trigger: consumer needing
   minute-level granularity.
-
-### Tech Debt
-
-- **`Domain<T>` variance** — `Domain<string>` not assignable to
-  `Domain<unknown>` because `ExpressionMode<T>` has contravariant
-  positions. Blocks demo tsconfig (strict mode). Needs investigation —
-  covariant redesign or branded approach.
-
-- **Clause definition index** — `definition.clauses.find()` and
-  `.filter()` called repeatedly in reducer and context resolution.
-  Precompute `Map<clauseId, ClauseDefinition>` and
-  `Map<superclauseId, ClauseDefinition[]>` on the store. Not urgent at
-  sentence scale (5–15 clauses).
-
-- **`useReferenceDisplay` hook** — eager display resolution on chip mount
-  for saved reference values. Without it, restored references show raw IDs
-  until popup interaction. Needed before async consumer workflows ship.
-  NB: serialization design defers display cache hydration to this hook —
-  `deserialize()` does not pre-populate the cache.
 
 ### Punctuation v2
 
@@ -119,6 +116,14 @@ Items that must ship before npm publish.
   acceptance testing of keyboard navigation implementation. Roll findings
   into fixes. Schedules take time to coordinate.
   Deferred from: chipper/feature/keyboard-navigation (2026-05-24).
+
+### Domain Enhancements
+
+- **KOE slots** — Add slot support to keywordOrExpressionDomain for
+  multi-DOF keyword selection (currently alt-coordinate only). Slots
+  are orthogonal to the tab-switching that defines alt-coordinate —
+  any keyword-accepting domain with > 1 degree of freedom could use them.
+  Deferred from: chipper/feature/keyword-grouping (2026-05-27).
 
 ### Integration
 

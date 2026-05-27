@@ -120,8 +120,45 @@
 
 .chipper-koe-popup__keywords {
   display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+// Keyword groups — shared across popup types -----------------------------------
+
+.chipper-keyword-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.chipper-keyword-group__separator {
+  border: none;
+  border-top: 1px solid;
+  margin: 0;
+}
+
+.chipper-keyword-group__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chipper-keyword-group__prefix {
+  white-space: nowrap;
+  align-self: center;
+}
+
+.chipper-keyword-group__items--flow {
+  display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
+}
+
+.chipper-keyword-group__items--grid {
+  display: grid;
+  grid-template-columns: repeat(var(--chipper-group-columns, 7), 1fr);
+  gap: 0.25rem;
 }
 
 // Multi-select popup ----------------------------------------------------------

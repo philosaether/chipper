@@ -10,15 +10,22 @@
 
 import type { Domain, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
-import { normalizeKeywords, buildDisplayMap, type KeywordConfig } from './normalize-keywords';
+import {
+  normalizeKeywords,
+  normalizeKeywordGroups,
+  buildDisplayMap,
+  isKeywordGroup,
+  type KeywordConfig,
+  type KeywordGroupItem,
+} from './normalize-keywords';
 
 /** Configuration for a multi-select domain. */
 export interface MultiSelectDomainConfig {
   /** Semantic color key */
   color: string;
 
-  /** Available options (rendered as toggle pills in the popup) */
-  options: KeywordConfig<string>[] | Keyword<string>[];
+  /** Available options (rendered as toggle pills in the popup). Accepts groups for visual grouping. */
+  options: KeywordGroupItem<string>[] | Keyword<string>[];
 
   /**
    * Group keywords — shortcuts that set multiple options at once.
@@ -92,7 +99,13 @@ export function selectionMatchesKeyword(
  * ```
  */
 export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<string[]> {
-  const options = normalizeKeywords(config.options as KeywordConfig<string>[]);
+  const rawOptions = config.options as KeywordGroupItem<string>[];
+  const hasOptionGroups = rawOptions.some(isKeywordGroup);
+
+  const { flat: options, groups: optionGroups } = hasOptionGroups
+    ? normalizeKeywordGroups(rawOptions)
+    : { flat: normalizeKeywords(rawOptions as KeywordConfig<string>[]), groups: undefined };
+
   const groupKeywords = config.keywords
     ? normalizeKeywords(config.keywords as KeywordConfig<string[]>[])
     : [];
@@ -141,6 +154,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     onContextChange: config.onContextChange,
     meta: {
       options,
+      optionGroups: optionGroups ?? undefined,
       maxSelections: config.maxSelections,
     },
   });

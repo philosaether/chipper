@@ -17,7 +17,12 @@ export {
   type ExpressionConfig,
   type ExpressionTrigger,
 } from './keyword-or-expression';
-export { type KeywordConfig } from './normalize-keywords';
+export {
+  type KeywordConfig,
+  type KeywordGroup,
+  type KeywordGroupItem,
+  type NormalizedKeywordGroup,
+} from './normalize-keywords';
 export {
   textDomain,
   numberDomain,
@@ -37,6 +42,8 @@ export {
   alternativeCoordinateDomain,
   type AlternativeCoordinateDomainConfig,
   type AlternativeCoordinateMode,
+  type ResolvedAlternativeCoordinateMode,
+  type ResolvedModeSlot,
   type ModeSlot,
 } from './alternative-coordinate';
 export {

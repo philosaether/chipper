@@ -86,6 +86,9 @@ export interface Domain<T = unknown> {
   /** Named presets. Full keywords collapse all DOF; partial keywords leave some open. */
   keywords: Keyword<T>[];
 
+  /** Grouped keywords for popup rendering. When present, popups render from this instead of keywords. */
+  keywordGroups?: import('../domains/normalize-keywords').NormalizedKeywordGroup<T>[];
+
   /** Available ways to specify a value (besides keywords) */
   expressionModes: ExpressionMode<T>[];
 

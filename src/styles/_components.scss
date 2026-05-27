@@ -157,6 +157,20 @@
   border-top-color: var(--chipper-border-subtle);
 }
 
+// Keyword groups — shared across popup types ----------------------------------
+
+.chipper-keyword-group__separator {
+  border-top-color: var(--chipper-border-subtle);
+}
+
+.chipper-keyword-group__label {
+  color: var(--chipper-text-muted);
+}
+
+.chipper-keyword-group__prefix {
+  color: var(--chipper-text-muted);
+}
+
 .chipper-koe-popup__affix {
   color: var(--chipper-text-muted);
   white-space: nowrap;

@@ -7,12 +7,13 @@
  */
 
 import { useState } from 'react';
-import type { AlternativeCoordinateMode } from '../../domains/alternative-coordinate';
+import type { ResolvedAlternativeCoordinateMode } from '../../domains/alternative-coordinate';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { KeywordGroupList } from './KeywordGroupList';
 
 export interface AlternativeCoordinatePopupProps {
-  modes: AlternativeCoordinateMode[];
+  modes: ResolvedAlternativeCoordinateMode[];
   value: string;
   onSelect: (value: string) => void;
   onClose: () => void;
@@ -22,7 +23,7 @@ export interface AlternativeCoordinatePopupProps {
  * Determine which mode matches the current value (for initial tab).
  * Tries decompose on each mode; falls back to first mode.
  */
-function findMatchingModeIndex(modes: AlternativeCoordinateMode[], value: string): number {
+function findMatchingModeIndex(modes: ResolvedAlternativeCoordinateMode[], value: string): number {
   if (value === '') return 0;
 
   for (let i = 0; i < modes.length; i++) {
@@ -48,7 +49,7 @@ function findMatchingModeIndex(modes: AlternativeCoordinateMode[], value: string
  * Initialize slot selections from decompose if the current value matches.
  */
 function initSlotSelections(
-  mode: AlternativeCoordinateMode,
+  mode: ResolvedAlternativeCoordinateMode,
   value: string,
 ): (string | undefined)[] {
   if (mode.decompose && value !== '') {
@@ -108,10 +109,10 @@ export function AlternativeCoordinatePopup({
   };
 
   // Flatten all slot keywords for arrow-key navigation
-  const flatKeywords: { slotIndex: number; keyword: typeof activeMode.slots[0]['keywords'][0] }[] = [];
+  const flatKeywords: { slotIndex: number; keywordIndex: number }[] = [];
   for (let s = 0; s < activeMode.slots.length; s++) {
-    for (const kw of activeMode.slots[s]!.keywords) {
-      flatKeywords.push({ slotIndex: s, keyword: kw });
+    for (let k = 0; k < activeMode.slots[s]!.keywords.length; k++) {
+      flatKeywords.push({ slotIndex: s, keywordIndex: k });
     }
   }
 
@@ -119,7 +120,8 @@ export function AlternativeCoordinatePopup({
     itemCount: flatKeywords.length,
     onSelect: (index) => {
       const item = flatKeywords[index]!;
-      handleSlotSelect(item.slotIndex, item.keyword.value);
+      const keyword = activeMode.slots[item.slotIndex]!.keywords[item.keywordIndex]!;
+      handleSlotSelect(item.slotIndex, keyword.value);
     },
     onClose,
     closeOnSelect: false, // multi-slot modes stay open until all filled
@@ -170,6 +172,26 @@ export function AlternativeCoordinatePopup({
         {activeMode.slots.map((slot, slotIndex) => {
           const slotStartIndex = flatIndexOffset;
           flatIndexOffset += slot.keywords.length;
+
+          // Use grouped rendering if slot has keywordGroups
+          if (slot.keywordGroups) {
+            return (
+              <div key={slotIndex} className="chipper-alt-coord-popup__slot">
+                {slot.prefix && !slot.keywordGroups.some((g) => g.prefix) && (
+                  <span className="chipper-alt-coord-popup__slot-prefix">
+                    {slot.prefix}
+                  </span>
+                )}
+                <KeywordGroupList
+                  groups={slot.keywordGroups}
+                  getOptionProps={(index) => keyboard.getOptionProps(slotStartIndex + index)}
+                  isSelected={(kw) => slotSelections[slotIndex] === kw.value}
+                />
+              </div>
+            );
+          }
+
+          // Flat rendering (no groups)
           return (
             <div key={slotIndex} className="chipper-alt-coord-popup__slot">
               <div className="chipper-alt-coord-popup__slot-keywords">
