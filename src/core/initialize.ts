@@ -173,7 +173,22 @@ export function initializeSentenceState(
     valid: computeSentenceValidity(clauses),
   };
 
-  const store: SentenceStore = { state, domains, definition };
+  // Precompute clause lookup indices
+  const clauseById = new Map(definition.clauses.map((c) => [c.id, c]));
+  const clausesBySuper = new Map<string, import('./types').ClauseDefinition[]>();
+  for (const clause of definition.clauses) {
+    if (clause.contingency) {
+      const superId = clause.contingency.superclauseId;
+      const existing = clausesBySuper.get(superId);
+      if (existing) {
+        existing.push(clause);
+      } else {
+        clausesBySuper.set(superId, [clause]);
+      }
+    }
+  }
+
+  const store: SentenceStore = { state, domains, definition, clauseById, clausesBySuper };
 
   // Run initial context pass so contingent clauses reflect starting values
   return runInitialContextPass(store);

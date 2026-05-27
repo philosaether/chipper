@@ -18,5 +18,6 @@ export function useSentence() {
     dispatch: context.dispatch,
     definition: context.definition,
     domains: context.store.domains,
+    clauseById: context.store.clauseById,
   };
 }

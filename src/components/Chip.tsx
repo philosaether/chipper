@@ -20,7 +20,7 @@ export interface ChipProps {
 export function Chip({ clauseId, chipId }: ChipProps) {
   const { displayValue, valid, domain, chipDefinition, value, expressionMode, setValue } =
     useChip(clauseId, chipId);
-  const { definition, state } = useSentence();
+  const { definition, state, clauseById } = useSentence();
   const { open, close, isOpen } = usePopup();
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -31,14 +31,14 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     ),
     [domain.expressionModes],
   );
-  const clauseDef = needsContext ? definition.clauses.find((c) => c.id === clauseId) : undefined;
+  const clauseDef = needsContext ? clauseById.get(clauseId) : undefined;
   const clauseState = needsContext ? state.clauses[clauseId] : undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const popupContext = useMemo(
     () => needsContext && clauseDef && clauseState
-      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, definition, state.contexts)
+      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, clauseById, state.contexts)
       : undefined,
-    [needsContext, clauseId, clauseDef, clauseState, definition, state.contexts],
+    [needsContext, clauseId, clauseDef, clauseState, clauseById, state.contexts],
   );
 
   const isInteractive = chipDefinition.mode.type === 'interactive';

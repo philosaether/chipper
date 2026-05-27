@@ -6,7 +6,7 @@
  * so the reducer can call validate/display without re-resolving from the palette.
  */
 
-import type { Domain, SentenceDefinition } from './types';
+import type { ClauseDefinition, Domain, SentenceDefinition } from './types';
 import type { SentenceState } from './state';
 
 /** Resolved domains keyed by chip ID. */
@@ -18,4 +18,8 @@ export interface SentenceStore {
   domains: ResolvedDomains;
   /** Static sentence definition — stored for reducer access to contingency config. */
   definition: SentenceDefinition;
+  /** Clause lookup by ID — precomputed at init, avoids repeated .find() calls. */
+  clauseById: Map<string, ClauseDefinition>;
+  /** Contingent clauses grouped by superclause ID — precomputed at init. */
+  clausesBySuper: Map<string, ClauseDefinition[]>;
 }
