@@ -9,12 +9,14 @@
  */
 
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
+import type { NormalizedKeywordGroup } from './normalize-keywords';
 
 /** Fields accepted by the internal createDomain function. */
 export interface BaseDomainConfig<T> {
   type: string;
   color: string;
   keywords?: Keyword<T>[];
+  keywordGroups?: NormalizedKeywordGroup<T>[];
   expressionModes?: ExpressionMode<T>[];
   defaultValue: T;
   placeholder?: string;
@@ -32,6 +34,7 @@ export function createDomain<T>(config: BaseDomainConfig<T>): Domain<T> {
     type: config.type,
     color: config.color,
     keywords: config.keywords ?? [],
+    keywordGroups: config.keywordGroups,
     expressionModes: config.expressionModes ?? [],
     defaultValue: config.defaultValue,
     placeholder: config.placeholder,

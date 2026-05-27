@@ -7,7 +7,12 @@
  *   { value: 'daily', label: 'day', display: 'day of the week' }
  *                                                → label='day', displayLabel='day of the week'
  *
- * See builder-dx.md §4.
+ * Grouping (keyword-grouping.md):
+ *   Keywords arrays accept KeywordGroup objects alongside plain configs.
+ *   Groups carry label, layout, columns, prefix. Ungrouped keywords
+ *   collect into one implicit group at the top.
+ *
+ * See builder-dx.md §4, keyword-grouping.md.
  */
 
 import type { Keyword } from '../core/types';
@@ -20,6 +25,41 @@ export interface KeywordConfig<T = string> {
   partial?: boolean;
 }
 
+/** A named group of keywords rendered as a visual section in the popup. */
+export interface KeywordGroup<T = string> {
+  /** Display label rendered above the keywords (omit for unlabeled group) */
+  label?: string;
+
+  /** Keywords in this group */
+  keywords: KeywordConfig<T>[];
+
+  /** Layout mode: 'flow' (default flex-wrap) or 'grid' (CSS grid) */
+  layout?: 'flow' | 'grid';
+
+  /** Grid column count (required when layout is 'grid') */
+  columns?: number;
+
+  /** Text rendered before the keyword pills (e.g., "the") */
+  prefix?: string;
+}
+
+/** A keyword config or a group of keyword configs. */
+export type KeywordGroupItem<T = string> = KeywordConfig<T> | KeywordGroup<T>;
+
+/** Normalized group ready for popup rendering. */
+export interface NormalizedKeywordGroup<T = string> {
+  label?: string;
+  layout: 'flow' | 'grid';
+  columns?: number;
+  prefix?: string;
+  keywords: Keyword<T>[];
+}
+
+/** Type guard: is this item a KeywordGroup (has a `keywords` array, no `value`)? */
+export function isKeywordGroup<T>(item: KeywordGroupItem<T>): item is KeywordGroup<T> {
+  return 'keywords' in item && Array.isArray((item as KeywordGroup<T>).keywords) && !('value' in item);
+}
+
 /** Normalize shorthand keyword configs into full Keyword<T> objects. */
 export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] {
   return configs.map((config) => ({
@@ -28,6 +68,55 @@ export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] 
     value: config.value,
     partial: config.partial,
   }));
+}
+
+/**
+ * Normalize a mixed keywords array into grouped form.
+ *
+ * Returns both a flat keyword list (for validation, display, keyboard nav)
+ * and a grouped list (for popup rendering).
+ *
+ * Ungrouped KeywordConfig items are collected into a single implicit group
+ * placed before any explicit groups. If all items are ungrouped, the result
+ * is a single group with default config.
+ */
+export function normalizeKeywordGroups<T>(
+  items: KeywordGroupItem<T>[],
+): { flat: Keyword<T>[]; groups: NormalizedKeywordGroup<T>[] } {
+  const ungrouped: KeywordConfig<T>[] = [];
+  const explicitGroups: KeywordGroup<T>[] = [];
+
+  for (const item of items) {
+    if (isKeywordGroup(item)) {
+      explicitGroups.push(item);
+    } else {
+      ungrouped.push(item);
+    }
+  }
+
+  const groups: NormalizedKeywordGroup<T>[] = [];
+
+  if (ungrouped.length > 0) {
+    groups.push({
+      layout: 'flow',
+      keywords: normalizeKeywords(ungrouped),
+    });
+  }
+
+  for (const group of explicitGroups) {
+    if (group.keywords.length === 0) continue;
+    groups.push({
+      label: group.label,
+      layout: group.layout ?? 'flow',
+      columns: group.columns,
+      prefix: group.prefix,
+      keywords: normalizeKeywords(group.keywords),
+    });
+  }
+
+  const flat = groups.flatMap((g) => g.keywords);
+
+  return { flat, groups };
 }
 
 /**

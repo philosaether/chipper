@@ -12,13 +12,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { ExpressionMode, Keyword, SentenceContext } from '../../core/types';
+import type { NormalizedKeywordGroup } from '../../domains/normalize-keywords';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { TRIGGER_SENTINEL } from '../../core/mode-switching';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { NumericInput } from './NumericInput';
+import { KeywordGroupList } from './KeywordGroupList';
 
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
+  keywordGroups?: NormalizedKeywordGroup<string>[];
   value: string;
   expressionMode?: ExpressionMode<string>;
   /** Is the chip currently in trigger-gated expression mode? */
@@ -38,6 +41,7 @@ function isKeywordValue(value: string, keywords: Keyword<string>[]): boolean {
 
 export function KeywordOrExpressionPopup({
   keywords,
+  keywordGroups,
   value,
   expressionMode,
   expressionActive,
@@ -115,24 +119,35 @@ export function KeywordOrExpressionPopup({
   const expressionAbove = expressionMode?.position === 'above';
 
   const keywordsSection = keywords.length > 0 && (
-    <div className="chipper-koe-popup__keywords">
-      {keywords.map((keyword, index) => {
-        const optionProps = keyboard.getOptionProps(index);
-        return (
-          <button
-            key={keyword.value}
-            type="button"
-            {...optionProps}
-            className={[
-              optionProps.className,
-              keyword.value === value && !expressionActive && 'chipper-popup-option--selected',
-            ].filter(Boolean).join(' ')}
-          >
-            {resolveKeywordLabel(keyword, context)}
-          </button>
-        );
-      })}
-    </div>
+    keywordGroups ? (
+      <div className="chipper-koe-popup__keywords chipper-koe-popup__keywords--grouped">
+        <KeywordGroupList
+          groups={keywordGroups}
+          context={context}
+          getOptionProps={keyboard.getOptionProps}
+          isSelected={(kw) => kw.value === value && !expressionActive}
+        />
+      </div>
+    ) : (
+      <div className="chipper-koe-popup__keywords">
+        {keywords.map((keyword, index) => {
+          const optionProps = keyboard.getOptionProps(index);
+          return (
+            <button
+              key={keyword.value}
+              type="button"
+              {...optionProps}
+              className={[
+                optionProps.className,
+                keyword.value === value && !expressionActive && 'chipper-popup-option--selected',
+              ].filter(Boolean).join(' ')}
+            >
+              {resolveKeywordLabel(keyword, context)}
+            </button>
+          );
+        })}
+      </div>
+    )
   );
 
   const triggerSection = hasTrigger && !expressionActive && (

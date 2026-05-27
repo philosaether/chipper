@@ -15,11 +15,15 @@
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import type { ExpressionConfig } from './keyword-or-expression';
 import { createDomain } from './create-domain';
+import {
+  normalizeKeywordGroups,
+  type KeywordGroupItem,
+} from './normalize-keywords';
 
 /** One selection dimension within a mode. */
 export interface ModeSlot {
-  /** Keywords for this slot */
-  keywords: Keyword<string>[];
+  /** Keywords for this slot. Accepts groups for visual grouping within a slot. */
+  keywords: KeywordGroupItem<string>[] | Keyword<string>[];
 
   /** Prefix text rendered before the keywords (e.g., "the") */
   prefix?: string;
@@ -52,6 +56,18 @@ export interface AlternativeCoordinateMode {
   expression?: ExpressionConfig;
 }
 
+/** Resolved mode with normalized slot keywords — used by popup rendering. */
+export interface ResolvedAlternativeCoordinateMode extends Omit<AlternativeCoordinateMode, 'slots'> {
+  slots: ResolvedModeSlot[];
+}
+
+/** Resolved slot with flat keywords and optional groups. */
+export interface ResolvedModeSlot {
+  keywords: Keyword<string>[];
+  keywordGroups?: import('./normalize-keywords').NormalizedKeywordGroup<string>[];
+  prefix?: string;
+}
+
 /** Configuration for an alternative-coordinate domain. */
 export interface AlternativeCoordinateDomainConfig {
   /** Semantic color key */
@@ -77,11 +93,35 @@ export interface AlternativeCoordinateDomainConfig {
 }
 
 /**
- * Collect all keyword values across all slots in a mode.
+ * Resolve a ModeSlot's keywords (which may contain groups) into flat + grouped form.
+ */
+function resolveSlot(slot: ModeSlot): ResolvedModeSlot {
+  const rawKeywords = slot.keywords as KeywordGroupItem<string>[];
+  const { flat, groups } = normalizeKeywordGroups(rawKeywords);
+  const hasGroups = groups.length > 1 || groups.some((g) => g.label || g.layout === 'grid' || g.prefix);
+  return {
+    keywords: flat,
+    keywordGroups: hasGroups ? groups : undefined,
+    prefix: slot.prefix,
+  };
+}
+
+/**
+ * Resolve all modes: normalize slot keywords into flat + grouped form.
+ */
+function resolveModes(modes: AlternativeCoordinateMode[]): ResolvedAlternativeCoordinateMode[] {
+  return modes.map((mode) => ({
+    ...mode,
+    slots: mode.slots.map(resolveSlot),
+  }));
+}
+
+/**
+ * Collect all keyword values across all slots in a resolved mode.
  * For single-slot modes, values are direct. For multi-slot modes,
  * we need compose to map slot values to domain values.
  */
-function collectAllKeywordValues(mode: AlternativeCoordinateMode): Set<string> {
+function collectAllKeywordValues(mode: ResolvedAlternativeCoordinateMode): Set<string> {
   const values = new Set<string>();
   if (mode.slots.length === 1) {
     for (const keyword of mode.slots[0]!.keywords) {
@@ -94,10 +134,10 @@ function collectAllKeywordValues(mode: AlternativeCoordinateMode): Set<string> {
 }
 
 /**
- * Build a label lookup from slot keywords across all modes.
+ * Build a label lookup from slot keywords across all resolved modes.
  * For single-slot modes, maps value → label directly.
  */
-function buildLabelByValue(modes: AlternativeCoordinateMode[]): Map<string, string> {
+function buildLabelByValue(modes: ResolvedAlternativeCoordinateMode[]): Map<string, string> {
   const labelByValue = new Map<string, string>();
   for (const mode of modes) {
     if (mode.slots.length === 1) {
@@ -156,12 +196,12 @@ function buildLabelByValue(modes: AlternativeCoordinateMode[]): Map<string, stri
 export function alternativeCoordinateDomain(
   config: AlternativeCoordinateDomainConfig,
 ): Domain<string> {
-  const modes = config.modes;
-  const labelByValue = buildLabelByValue(modes);
+  const resolvedModes = resolveModes(config.modes);
+  const labelByValue = buildLabelByValue(resolvedModes);
 
   // Collect single-slot keyword values for fast validation
   const allSingleSlotValues = new Set<string>();
-  for (const mode of modes) {
+  for (const mode of resolvedModes) {
     for (const value of collectAllKeywordValues(mode)) {
       allSingleSlotValues.add(value);
     }
@@ -174,7 +214,7 @@ export function alternativeCoordinateDomain(
     if (allSingleSlotValues.has(value)) return true;
 
     // Check each mode: custom validate, multi-slot decompose, expression
-    for (const mode of modes) {
+    for (const mode of resolvedModes) {
       if (mode.validate) {
         if (mode.validate(value)) return true;
       } else if (mode.slots.length > 1 && mode.decompose) {
@@ -197,7 +237,7 @@ export function alternativeCoordinateDomain(
     if (label !== undefined) return label;
 
     // Check each mode's custom display and expression display
-    for (const mode of modes) {
+    for (const mode of resolvedModes) {
       if (mode.display) {
         const result = mode.display(value);
         if (result !== value) return result;
@@ -212,7 +252,7 @@ export function alternativeCoordinateDomain(
   };
 
   // Build expressionModes from modes that have expression configs
-  const expressionModes: ExpressionMode<string>[] = modes
+  const expressionModes: ExpressionMode<string>[] = resolvedModes
     .filter((m) => m.expression)
     .map((m) => ({
       id: m.id,
@@ -226,7 +266,7 @@ export function alternativeCoordinateDomain(
   // Flatten all slot keywords into the domain's keywords array
   // (single-slot modes only — multi-slot keywords aren't directly selectable)
   const keywords: Keyword<string>[] = [];
-  for (const mode of modes) {
+  for (const mode of resolvedModes) {
     if (mode.slots.length === 1) {
       keywords.push(...mode.slots[0]!.keywords);
     }
@@ -244,6 +284,6 @@ export function alternativeCoordinateDomain(
     consumes: config.consumes,
     produces: config.produces,
     onContextChange: config.onContextChange,
-    meta: { modes },
+    meta: { modes: resolvedModes },
   });
 }

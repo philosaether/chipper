@@ -7,12 +7,15 @@
  */
 
 import type { Keyword } from '../../core/types';
+import type { NormalizedKeywordGroup } from '../../domains/normalize-keywords';
 import { resolveKeywordLabel } from '../../core/resolve-keyword-label';
 import { selectionMatchesKeyword } from '../../domains/multi-select';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { KeywordGroupList } from './KeywordGroupList';
 
 export interface MultiSelectPopupProps {
   options: Keyword<string>[];
+  optionGroups?: NormalizedKeywordGroup<string>[];
   keywords: Keyword<string[]>[];
   value: string[];
   maxSelections?: number;
@@ -22,6 +25,7 @@ export interface MultiSelectPopupProps {
 
 export function MultiSelectPopup({
   options,
+  optionGroups,
   keywords,
   value,
   maxSelections,
@@ -31,12 +35,14 @@ export function MultiSelectPopup({
   const selectedSet = new Set(value);
 
   // All navigable items: keywords first, then options
-  const allItems = [...keywords.map((k) => ({ type: 'keyword' as const, keyword: k })),
-    ...options.map((o) => ({ type: 'option' as const, option: o }))];
+  const allItems: ({ type: 'keyword'; keyword: Keyword<string[]> } | { type: 'option'; option: Keyword<string> })[] = [
+    ...keywords.map((k) => ({ type: 'keyword' as const, keyword: k })),
+    ...options.map((o) => ({ type: 'option' as const, option: o })),
+  ];
   const keyboard = useKeyboardNavigation({
     itemCount: allItems.length,
     onSelect: (index) => {
-      const item = allItems[index];
+      const item = allItems[index]!;
       if (item.type === 'keyword') {
         handleKeywordSelect(item.keyword.value);
       } else {
@@ -60,6 +66,9 @@ export function MultiSelectPopup({
   const handleKeywordSelect = (keywordValue: string[]) => {
     onSelect(keywordValue);
   };
+
+  // Option index offset: keywords come first in the flat nav list
+  const optionIndexOffset = keywords.length;
 
   return (
     <div
@@ -90,30 +99,43 @@ export function MultiSelectPopup({
           })}
         </div>
       )}
-      <div className="chipper-multi-select-popup__grid">
-        {options.map((option, index) => {
-          const isSelected = selectedSet.has(option.value);
-          const isDisabled = !isSelected &&
-            maxSelections !== undefined &&
-            value.length >= maxSelections;
-          const optionProps = keyboard.getOptionProps(keywords.length + index);
-          return (
-            <button
-              key={option.value}
-              type="button"
-              {...optionProps}
-              aria-selected={isSelected}
-              className={[
-                optionProps.className,
-                isSelected && 'chipper-popup-option--selected',
-              ].filter(Boolean).join(' ')}
-              disabled={isDisabled}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+      {optionGroups ? (
+        <div className="chipper-multi-select-popup__grid">
+          <KeywordGroupList
+            groups={optionGroups}
+            getOptionProps={(index) => keyboard.getOptionProps(optionIndexOffset + index)}
+            isSelected={(kw) => selectedSet.has(kw.value)}
+            isDisabled={(kw) => !selectedSet.has(kw.value) &&
+              maxSelections !== undefined &&
+              value.length >= maxSelections}
+          />
+        </div>
+      ) : (
+        <div className="chipper-multi-select-popup__grid">
+          {options.map((option, index) => {
+            const isSelected = selectedSet.has(option.value);
+            const isDisabled = !isSelected &&
+              maxSelections !== undefined &&
+              value.length >= maxSelections;
+            const optionProps = keyboard.getOptionProps(optionIndexOffset + index);
+            return (
+              <button
+                key={option.value}
+                type="button"
+                {...optionProps}
+                aria-selected={isSelected}
+                className={[
+                  optionProps.className,
+                  isSelected && 'chipper-popup-option--selected',
+                ].filter(Boolean).join(' ')}
+                disabled={isDisabled}
+              >
+                {resolveKeywordLabel(option)}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

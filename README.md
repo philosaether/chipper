@@ -394,6 +394,46 @@ Labels can be context-aware functions:
 { value: '1', label: (ctx) => `next ${ctx.unit ?? 'month'}` }
 ```
 
+### Keyword Groups
+
+Keywords can be organized into visual groups with labels, separators, and
+layout control. Mix plain keywords and groups freely — ungrouped keywords
+collect into an implicit group at the top:
+
+```ts
+keywordDomain({
+  color: 'sage',
+  keywords: [
+    { value: '1', label: '1st' },
+    { value: '15', label: '15th' },
+    { value: 'last', label: 'last day' },
+    {
+      label: 'date',
+      layout: 'grid',
+      columns: 7,
+      keywords: Array.from({ length: 31 }, (_, i) => ({
+        value: String(i + 1),
+        label: String(i + 1),
+      })),
+    },
+  ],
+})
+```
+
+Group options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `label` | `string` | — | Header text above the group |
+| `keywords` | `KeywordConfig[]` | *required* | Keywords in this group |
+| `layout` | `'flow' \| 'grid'` | `'flow'` | Layout mode |
+| `columns` | `number` | `7` | Grid columns (only with `layout: 'grid'`) |
+| `prefix` | `string` | — | Text before keyword pills (e.g., "the") |
+
+Grouping works across all keyword-accepting domains: `keywordDomain`,
+`textDomain`, `numberDomain`, `dateDomain`, `keywordOrExpressionDomain`,
+`multiSelectDomain` (options), and `alternativeCoordinateDomain` (slot keywords).
+
 ## Reading State
 
 The `onChange` callback receives a `SentenceState` on every change:
@@ -486,7 +526,7 @@ The main entry point. Wraps `SentenceProvider` + `Sentence`:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `color` | `string` | *required* | Semantic color key |
-| `keywords` | `KeywordConfig[]` | *required* | Allowed values: `{ value, label?, display? }` |
+| `keywords` | `KeywordGroupItem[]` | *required* | Values: `{ value, label?, display? }` or groups: `{ label?, keywords, layout?, columns?, prefix? }` |
 | `default` | `string` | first keyword | Initial value |
 | `placeholder` | `string` | — | Chip text when value is invalid |
 
@@ -534,7 +574,7 @@ The main entry point. Wraps `SentenceProvider` + `Sentence`:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `color` | `string` | *required* | Semantic color key |
-| `keywords` | `KeywordConfig[]` | `[]` | Preset values |
+| `keywords` | `KeywordGroupItem[]` | `[]` | Preset values (plain or grouped) |
 | `expression` | `ExpressionConfig` | — | Freeform input config (omit for keywords-only) |
 | `default` | `string` | first keyword or `''` | Initial value |
 | `placeholder` | `string` | — | Chip text when value is invalid |
@@ -552,7 +592,7 @@ Same as `keywordOrExpressionDomain` but `expression` is required and
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `color` | `string` | *required* | Semantic color key |
-| `options` | `{ value, label? }[]` | *required* | Individual toggle items |
+| `options` | `KeywordGroupItem[]` | *required* | Individual toggle items (plain or grouped) |
 | `keywords` | `{ label, value: string[] }[]` | `[]` | Group shortcuts |
 | `default` | `string[]` | `[]` | Initially selected values |
 | `placeholder` | `string` | — | Chip text when empty |
