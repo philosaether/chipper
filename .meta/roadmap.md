@@ -53,6 +53,9 @@ Items that must ship before npm publish.
     without it.
   - `displayLabel` → `display` rename across all domain configs.
     Deferred from: chipper/feature/keyword-grouping (2026-05-27).
+  - Strict-mode stragglers: `headless.ts` stale `clause` export,
+    `keyword.label` function narrowing in multi-select/reference display,
+    `PopupState` missing import in SentenceProvider.
 
 ### Session tasks
 
