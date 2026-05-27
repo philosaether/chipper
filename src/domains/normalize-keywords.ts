@@ -2,10 +2,10 @@
  * Shared keyword normalization and domain utilities.
  *
  * Consumers can provide keyword shorthand:
- *   { value: 'daily' }                          → label='daily', displayLabel=undefined
- *   { value: 'daily', label: 'day' }            → label='day', displayLabel=undefined
+ *   { value: 'daily' }                          → label='daily', display=undefined
+ *   { value: 'daily', label: 'day' }            → label='day', display=undefined
  *   { value: 'daily', label: 'day', display: 'day of the week' }
- *                                                → label='day', displayLabel='day of the week'
+ *                                                → label='day', display='day of the week'
  *
  * Grouping (keyword-grouping.md):
  *   Keywords arrays accept KeywordGroup objects alongside plain configs.
@@ -64,7 +64,7 @@ export function isKeywordGroup<T>(item: KeywordGroupItem<T>): item is KeywordGro
 export function normalizeKeywords<T>(configs: KeywordConfig<T>[]): Keyword<T>[] {
   return configs.map((config) => ({
     label: config.label ?? String(config.value),
-    displayLabel: config.display,
+    display: config.display,
     value: config.value,
     partial: config.partial,
   }));
@@ -121,11 +121,11 @@ export function normalizeKeywordGroups<T>(
 
 /**
  * Build a value → display text map from normalized keywords.
- * Uses displayLabel if present, falls back to label.
+ * Uses display if present, falls back to label.
  */
 export function buildDisplayMap<T>(keywords: Keyword<T>[]): Map<T, string> {
   return new Map(keywords.map((k) => {
-    const label = k.displayLabel ?? (typeof k.label === 'string' ? k.label : undefined);
+    const label = k.display ?? (typeof k.label === 'string' ? k.label : undefined);
     return label ? [k.value, label] as const : undefined;
   }).filter((entry): entry is [T, string] => entry !== undefined));
 }

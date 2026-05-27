@@ -126,7 +126,7 @@ export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<strin
     const valueSet = new Set(value);
     for (const keyword of groupKeywords) {
       if (selectionMatchesKeyword(valueSet, value.length, keyword.value)) {
-        return keyword.displayLabel ?? keyword.label;
+        return keyword.display ?? (typeof keyword.label === 'string' ? keyword.label : String(keyword.value));
       }
     }
 

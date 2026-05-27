@@ -10,7 +10,7 @@ import type { SentenceDefinition } from '../core/types';
 import type { SentenceState } from '../core/state';
 import { sentenceReducer } from '../core/reducer';
 import { initializeSentenceState } from '../core/initialize';
-import { SentenceContext, closedPopup } from './context';
+import { SentenceContext, closedPopup, type PopupState } from './context';
 
 export interface SentenceProviderProps {
   definition: SentenceDefinition;

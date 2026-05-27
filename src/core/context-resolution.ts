@@ -22,10 +22,10 @@ export function buildClauseContext(
   clauseId: string,
   clauseDef: ClauseDefinition,
   clauseChips: Record<string, ChipState>,
-  definition: SentenceDefinition,
+  clauseById: Map<string, ClauseDefinition>,
   contexts: ContextScope[],
 ): SentenceContext {
-  const ctx = resolveContext(clauseId, definition, contexts);
+  const ctx = resolveContext(clauseId, clauseById, contexts);
   if (clauseDef.contextProductions) {
     for (const [key, srcChipId] of Object.entries(clauseDef.contextProductions)) {
       const cs = clauseChips[srcChipId];
@@ -41,14 +41,14 @@ export function buildClauseContext(
  */
 export function resolveContext(
   clauseId: string,
-  definition: SentenceDefinition,
+  clauseById: Map<string, ClauseDefinition>,
   contexts: ContextScope[],
 ): SentenceContext {
   const resolved: SentenceContext = {};
   let currentId: string | undefined = clauseId;
 
   while (currentId) {
-    const clauseDef = definition.clauses.find((c) => c.id === currentId);
+    const clauseDef = clauseById.get(currentId);
     const superclauseId = clauseDef?.contingency?.superclauseId;
 
     if (superclauseId) {
@@ -73,9 +73,9 @@ export function resolveContext(
  */
 function findParentScopeId(
   clauseId: string,
-  definition: SentenceDefinition,
+  clauseById: Map<string, ClauseDefinition>,
 ): string | null {
-  const clauseDef = definition.clauses.find((c) => c.id === clauseId);
+  const clauseDef = clauseById.get(clauseId);
   return clauseDef?.contingency?.superclauseId ?? null;
 }
 
@@ -89,11 +89,11 @@ export function evaluateContingency(
   clauseId: string,
   values: SentenceContext,
 ): SentenceStore {
-  const { definition } = store;
+  const { clauseById, clausesBySuper } = store;
 
   // Update this clause's context scope
   const existingIndex = store.state.contexts.findIndex((s) => s.clauseId === clauseId);
-  const parentScopeId = findParentScopeId(clauseId, definition);
+  const parentScopeId = findParentScopeId(clauseId, clauseById);
   const newScope: ContextScope = { clauseId, values, parentScopeId };
   let newContexts = existingIndex >= 0
     ? store.state.contexts.map((s, i) => i === existingIndex ? newScope : s)
@@ -103,12 +103,10 @@ export function evaluateContingency(
   let newDomains = { ...store.domains };
 
   // Find all clauses contingent on this one
-  const contingentDefs = definition.clauses.filter(
-    (c) => c.contingency?.superclauseId === clauseId,
-  );
+  const contingentDefs = clausesBySuper.get(clauseId) ?? [];
 
   for (const contingentDef of contingentDefs) {
-    const context = resolveContext(contingentDef.id, definition, newContexts);
+    const context = resolveContext(contingentDef.id, clauseById, newContexts);
 
     // Evaluate presence
     const shouldBePresent = contingentDef.contingency!.present
@@ -152,7 +150,7 @@ export function evaluateContingency(
     // Revalidate and recompute display for chips (domains or context may have changed)
     if (shouldBePresent) {
       const revalContext = buildClauseContext(
-        contingentDef.id, contingentDef, newClauses[contingentDef.id]!.chips, definition, newContexts,
+        contingentDef.id, contingentDef, newClauses[contingentDef.id]!.chips, clauseById, newContexts,
       );
       newClauses = revalidateClauseChips(contingentDef, store, newDomains, newClauses, revalContext);
     } else {
@@ -164,7 +162,7 @@ export function evaluateContingency(
       const clauseForVisibility = newClauses[contingentDef.id];
       if (clauseForVisibility) {
         const segmentContext = buildClauseContext(
-          contingentDef.id, contingentDef, clauseForVisibility.chips, definition, newContexts,
+          contingentDef.id, contingentDef, clauseForVisibility.chips, clauseById, newContexts,
         );
         const visibleChips = evaluateVisibleChips(contingentDef.segments, segmentContext);
         newClauses = {
@@ -197,7 +195,7 @@ export function evaluateContingency(
     // Latent clause: remove context scope and cascade latency
     if (!shouldBePresent) {
       newContexts = newContexts.filter((s) => s.clauseId !== contingentDef.id);
-      const cascaded = cascadeLatency(contingentDef.id, definition, newClauses, newContexts);
+      const cascaded = cascadeLatency(contingentDef.id, store.clausesBySuper, newClauses, newContexts);
       newClauses = cascaded.clauses;
       newContexts = cascaded.contexts;
     }
@@ -268,21 +266,21 @@ function revalidateClauseChips(
  */
 function cascadeLatency(
   latentClauseId: string,
-  definition: SentenceDefinition,
+  clausesBySuper: Map<string, ClauseDefinition[]>,
   clauses: Record<string, ClauseState>,
   contexts: ContextScope[],
 ): { clauses: Record<string, ClauseState>; contexts: ContextScope[] } {
   let newClauses = clauses;
   let newContexts = contexts;
 
-  for (const child of definition.clauses) {
-    if (child.contingency?.superclauseId !== latentClauseId) continue;
+  const children = clausesBySuper.get(latentClauseId) ?? [];
+  for (const child of children) {
     const childState = newClauses[child.id];
     if (childState?.present) {
       newClauses = { ...newClauses, [child.id]: { ...childState, present: false } };
       newContexts = newContexts.filter((s) => s.clauseId !== child.id);
       // Recurse into grandchildren
-      const cascaded = cascadeLatency(child.id, definition, newClauses, newContexts);
+      const cascaded = cascadeLatency(child.id, clausesBySuper, newClauses, newContexts);
       newClauses = cascaded.clauses;
       newContexts = cascaded.contexts;
     }

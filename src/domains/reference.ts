@@ -105,7 +105,11 @@ export interface ReferenceDomainConfig {
  */
 export function referenceDomain(config: ReferenceDomainConfig): Domain<string> {
   const keywords = config.keywords ?? [];
-  const labelByKeyword = new Map(keywords.map((k) => [k.value, k.label]));
+  const labelByKeyword = new Map(
+    keywords
+      .filter((k): k is typeof k & { label: string } => typeof k.label === 'string')
+      .map((k) => [k.value, k.label] as const),
+  );
   const displayCache = new Map<string, string>();
 
   return createDomain<string>({

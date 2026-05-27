@@ -53,12 +53,12 @@ export function handleSetChipValue(
   }
 
   const isValid = domain.validate(effectiveValue);
-  const clauseDef = store.definition.clauses.find((c) => c.id === clauseId);
+  const clauseDef = store.clauseById.get(clauseId);
 
   // Build clause context (ancestor + own productions) for display and segment visibility
   const pendingChips = { ...clause.chips, [chipId]: { ...clause.chips[chipId]!, value: effectiveValue } };
   const clauseContext = clauseDef
-    ? buildClauseContext(clauseId, clauseDef, pendingChips, store.definition, store.state.contexts)
+    ? buildClauseContext(clauseId, clauseDef, pendingChips, store.clauseById, store.state.contexts)
     : undefined;
 
   const newChipState: ChipState = {
@@ -80,7 +80,7 @@ export function handleSetChipValue(
     );
     if (hasSegmentPredicates) {
       const fullContext = clauseContext ?? buildClauseContext(
-        clauseId, clauseDef, newChips, store.definition, store.state.contexts,
+        clauseId, clauseDef, newChips, store.clauseById, store.state.contexts,
       );
       visibleChips = evaluateVisibleChips(clauseDef.segments, fullContext);
     }

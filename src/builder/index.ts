@@ -300,7 +300,8 @@ export function sentence(palette?: Palette): SentenceBuilder {
       };
 
       // Post-build pass: replace punctuation sentinels with bound resolvers
-      // Precompute clause ordering once for all punc resolvers
+      // Precompute clause lookup + ordering once for all punc resolvers
+      const clauseByIdMap = new Map(definition.clauses.map((c) => [c.id, c]));
       const allClauseIds = definition.lines
         ? definition.lines.flatMap(l => l.clauseIds)
         : definition.clauses.map(c => c.id);
@@ -319,7 +320,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 ? (state: SentenceState) => {
                     const cs = state.clauses[clauseId];
                     if (!cs?.present || !cs?.active) return '';
-                    const context = buildPuncContext(clauseId, clauseDef, cs.chips, definition, state.contexts);
+                    const context = buildPuncContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
                     return config.display!(context);
                   }
                 : (state: SentenceState) => resolveDefaultPunctuation(clauseId, subsequentIds, state),

@@ -9,6 +9,7 @@ import { useMemo, useRef } from 'react';
 import { useChip } from '../hooks/useChip';
 import { useSentence } from '../hooks/useSentence';
 import { usePopup } from '../hooks/usePopup';
+import { useReferenceDisplay } from '../hooks/useReferenceDisplay';
 import { buildClauseContext } from '../core/context-resolution';
 import { ChipPopup } from './ChipPopup';
 
@@ -20,8 +21,9 @@ export interface ChipProps {
 export function Chip({ clauseId, chipId }: ChipProps) {
   const { displayValue, valid, domain, chipDefinition, value, expressionMode, setValue } =
     useChip(clauseId, chipId);
-  const { definition, state } = useSentence();
+  const { definition, state, clauseById, dispatch } = useSentence();
   const { open, close, isOpen } = usePopup();
+  useReferenceDisplay(domain, value, clauseId, chipId, dispatch);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Resolve context for dynamic prefix/suffix (only when expression mode has function affixes)
@@ -31,14 +33,14 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     ),
     [domain.expressionModes],
   );
-  const clauseDef = needsContext ? definition.clauses.find((c) => c.id === clauseId) : undefined;
+  const clauseDef = needsContext ? clauseById.get(clauseId) : undefined;
   const clauseState = needsContext ? state.clauses[clauseId] : undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const popupContext = useMemo(
     () => needsContext && clauseDef && clauseState
-      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, definition, state.contexts)
+      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, clauseById, state.contexts)
       : undefined,
-    [needsContext, clauseId, clauseDef, clauseState, definition, state.contexts],
+    [needsContext, clauseId, clauseDef, clauseState, clauseById, state.contexts],
   );
 
   const isInteractive = chipDefinition.mode.type === 'interactive';

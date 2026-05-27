@@ -17,8 +17,8 @@ export interface ClauseProps {
 }
 
 export function Clause({ clauseId }: ClauseProps) {
-  const { definition, state, dispatch, domains } = useSentence();
-  const clauseDef = definition.clauses.find((c) => c.id === clauseId);
+  const { state, dispatch, domains, clauseById } = useSentence();
+  const clauseDef = clauseById.get(clauseId);
   const clauseState = state.clauses[clauseId];
 
   if (!clauseDef) return null;
@@ -77,8 +77,8 @@ export function Clause({ clauseId }: ClauseProps) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const resolvedContext = useMemo(() => {
     if (!hasTextPredicates || !clauseState) return {};
-    return buildClauseContext(clauseId, clauseDef, clauseState.chips, definition, state.contexts);
-  }, [hasTextPredicates, clauseId, clauseDef, clauseState, definition, state.contexts]);
+    return buildClauseContext(clauseId, clauseDef, clauseState.chips, clauseById, state.contexts);
+  }, [hasTextPredicates, clauseId, clauseDef, clauseState, clauseById, state.contexts]);
 
   // Active clause: render segments with optional × toggle
   return (
