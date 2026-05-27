@@ -85,7 +85,7 @@ export const praxisPalette = extendPalette({
             keywords: [
               { label: 'first', value: '1' },
               { label: '15th', value: '15' },
-              { label: 'last', value: 'last', displayLabel: 'last day' },
+              { label: 'last', value: 'last', display: 'last day' },
               {
                 label: 'date',
                 layout: 'grid',

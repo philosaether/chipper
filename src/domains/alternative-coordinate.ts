@@ -145,7 +145,7 @@ function buildLabelByValue(modes: ResolvedAlternativeCoordinateMode[]): Map<stri
       const prefix = slot.prefix ? `${slot.prefix} ` : '';
       for (const keyword of slot.keywords) {
         if (!labelByValue.has(keyword.value)) {
-          const text = keyword.displayLabel ?? (typeof keyword.label === 'string' ? keyword.label : keyword.value);
+          const text = keyword.display ?? (typeof keyword.label === 'string' ? keyword.label : keyword.value);
           labelByValue.set(keyword.value, `${prefix}${text}`);
         }
       }

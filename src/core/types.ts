@@ -18,7 +18,7 @@ export interface Keyword<T = unknown> {
   label: string | ((context: SentenceContext) => string);
 
   /** Display text shown in the chip trigger (defaults to label) */
-  displayLabel?: string;
+  display?: string;
 
   /** The value this keyword represents */
   value: T;
