@@ -80,15 +80,18 @@ A **domain** defines the kind of data a chip accepts. Every chip has exactly one
 ### Domain Interface
 
 ```typescript
-interface Domain<T = unknown> {
+interface Domain<T = any> {
   /** Unique identifier for this domain type */
   type: string;
 
   /** Semantic color key (maps to CSS custom property) */
   color: string;
 
-  /** All named presets. Full keywords collapse all DOF; partial keywords leave some open */
+  /** Named presets. Full keywords collapse all DOF; partial keywords leave some open */
   keywords: Keyword<T>[];
+
+  /** Grouped keywords for popup rendering (visual sections, grid layouts) */
+  keywordGroups?: NormalizedKeywordGroup<T>[];
 
   /** Available ways to specify a value (besides keywords) */
   expressionModes: ExpressionMode<T>[];
@@ -102,16 +105,24 @@ interface Domain<T = unknown> {
   /** Validate a value */
   validate: (value: T) => boolean;
 
-  /** Format a value for display in the chip trigger */
-  display: (value: T) => string;
+  /** Format a value for display in the chip trigger. Context available from reducer. */
+  display: (value: T, context?: SentenceContext) => string;
 
   /** Default value (may or may not be valid) */
   defaultValue: T;
 
+  /** Text shown in the chip trigger when the current value is invalid */
+  placeholder?: string;
+
   /** Reconfigure based on sentence context changes */
   onContextChange?: (ctx: SentenceContext) => Partial<Domain<T>>;
+
+  /** Archetype-specific configuration passed through to popup rendering */
+  meta?: Record<string, unknown>;
 }
 ```
+
+**Variance note:** `T` defaults to `any` (not `unknown`) so that `Domain<string>` is assignable to `Domain` in palette and store contexts. Type safety is preserved by the domain factories which constrain `T`. See decisions.md 2026-05-27.
 
 ### The Six Domain Archetypes
 
@@ -202,101 +213,71 @@ interface Palette {
 ### Creating a Palette
 
 ```typescript
-import { createPalette, enumDomain, multiSelectDomain, keywordOrExpressionDomain } from 'chipper';
+import { extendPalette, keywordDomain, textDomain, numberDomain } from 'chipper';
 
-export const myPalette = createPalette({
-  domains: {
-    priority: enumDomain({
-      color: 'blue',
-      keywords: [
-        { label: 'low', value: 'low' },
-        { label: 'medium', value: 'medium' },
-        { label: 'high', value: 'high' },
-      ],
+export const myPalette = extendPalette({
+  chips: {
+    priority: keywordDomain({
+      color: 'rose',
+      keywords: [{ value: 'low' }, { value: 'medium' }, { value: 'high' }],
     }),
-    timeOfDay: keywordOrExpressionDomain({
-      color: 'orange',
-      keywords: [
-        { label: 'morning', value: '09:00' },
-        { label: 'afternoon', value: '12:00' },
-        { label: 'evening', value: '17:00' },
-      ],
-      expression: { type: 'time', label: 'specific time' },
+    taskName: textDomain({
+      color: 'rose',
+      placeholder: 'a task name',
     }),
-    tags: multiSelectDomain({
-      color: 'gray',
-      options: ['urgent', 'review', 'followup'],
-      allowCreate: true,
+    interval: numberDomain({
+      color: 'copper',
+      min: 1,
+      max: 365,
+      suffix: 'days',
     }),
   },
 });
 ```
+
+`extendPalette` is the standard entry point. It accepts a `PaletteConfig` with `chips` (domain map) and optional `patterns` (clause templates). `createPalette` exists for building from scratch but is rarely needed.
 
 ### Palette Extension
 
-Extension is **composition via spread**, not class inheritance. A child palette merges with a parent, overriding or adding entries.
+Extension is **composition via shallow merge**. A child palette merges with a parent, overriding or adding entries.
 
 ```typescript
 import { extendPalette } from 'chipper';
-import { praxisPalette } from '@praxis/chipper-palette';
+import { basePalette } from './base-palette';
 
-export const scrumPalette = extendPalette(praxisPalette, {
-  domains: {
-    // Override: add 'sprint' to the cadence domain's period list
-    cadence: praxisPalette.domains.cadence.withPeriod({
-      name: 'sprint',
-      durationRule: config('sprint_length_weeks', { default: 2 }),
-    }),
-    // Add: new domain not in the parent
-    velocity: numericDomain({
-      color: 'teal',
-      min: 0,
-      max: 100,
-      keywords: [{ label: 'nominal', value: 50 }],
-    }),
+export const extendedPalette = extendPalette(basePalette, {
+  chips: {
+    velocity: numberDomain({ color: 'teal', min: 0, max: 100 }),
   },
 });
 ```
 
-The `extendPalette` function does a shallow merge of `domains` and `clauseTemplates`. No deep inheritance chains — if you need to modify a parent domain, you call a builder method on it (like `.withPeriod()`), which returns a new domain instance.
+The two-argument form extends a specific base palette. The one-argument form extends `chipperPalette` (which is empty by default — domains come from the consumer).
 
 ### Volatile Config Boundary
 
-The palette is Chipper's **volatility boundary**. Core domain machinery (expression modes, DOF decomposition, context propagation, popup rendering) is stable library code. The palette is volatile application config — what periods exist, what keywords are available, what colors to use.
+The palette is Chipper's **volatility boundary**. Core domain machinery (expression modes, DOF decomposition, context propagation, popup rendering) is stable library code. The palette is volatile application config — what keywords exist, what colors to use, what validation rules apply.
 
-Consumer applications register their vocabulary through the palette. Chipper core never knows what a "sprint" or "priority" is; it knows the structural patterns (enum, composite, reference) and renders them.
+Consumer applications register their vocabulary through the palette. Chipper core never knows what a "sprint" or "priority" is; it knows the structural patterns (keyword, text, number, multi-select, reference, alternative-coordinate) and renders them.
 
-### Default Palette
+### Domain Factories
 
-Chipper ships with a **built-in default palette** (`chipperPalette`) containing general-purpose domains that cover common use cases out of the box:
+Chipper provides facade factories for common chip types and power-user factories for advanced cases:
 
-- **Temporal:** cadence (day/week/month/quarter/year periods), time_of_day, time_offset, day_set, calendar_day, date_ref
-- **Text:** free_text, template_text
-- **Data:** numeric, enum, multi_select
-- **Meta:** duration, date_range
+**Facade factories** (sugar over `keywordOrExpressionDomain`):
+- `keywordDomain` — fixed set of options
+- `textDomain` — free-text input (default maxLength 140)
+- `numberDomain` — numeric stepper with min/max/step
+- `dateDomain` — calendar date picker (YYYY-MM-DD)
 
-This palette is designed so new users can build useful sentences immediately, without defining any domains. `extendPalette()` defaults to extending `chipperPalette` when no base is specified:
+**Power-user factories:**
+- `keywordOrExpressionDomain` — keywords + freeform expression input, trigger-gated mode switching
+- `expressionDomain` — expression-only (no keywords)
+- `multiSelectDomain` — toggle grid with group keyword shortcuts
+- `alternativeCoordinateDomain` — tabbed modes with slot-based selection
+- `referenceDomain` — hierarchical navigation + search for external data
 
-```typescript
-// These are equivalent:
-const myPalette = extendPalette({ domains: { priority: enumDomain({...}) } });
-const myPalette = extendPalette(chipperPalette, { domains: { priority: enumDomain({...}) } });
-```
-
-The docs and examples always show `extendPalette()` as the entry point, not `createPalette()`. Building from scratch is possible but never encouraged.
-
-### Palette Presets
-
-Beyond the default palette, Chipper ships preset palettes for common application patterns:
-
-| Preset | Extends | Adds |
-|--------|---------|------|
-| `chipperPalette` | (base) | General-purpose temporal, text, and data domains |
-| `scrumPalette` | chipperPalette | sprint period, velocity (numeric), story_points, team_ref |
-| `crmPalette` | chipperPalette | contact_ref, deal_stage (enum), follow_up_interval, revenue (numeric) |
-| `notificationPalette` | chipperPalette | channel (enum: email/slack/sms), urgency_level, recipient_ref |
-
-Presets are lightweight — each adds 3-6 domains. They serve as both real starting points and documentation-by-example of how to build your own palette.
+All keyword-accepting factories support **keyword grouping** — visual sections with labels, flow/grid layout, and prefix text. See designs/keyword-grouping.md.
 
 ---
 
@@ -307,150 +288,138 @@ The **builder** is how consumers define sentences. It's imperative — you compo
 ### Sentence Builder
 
 ```typescript
-import { sentence, clause, chip, repeating } from 'chipper';
+import { sentence, builder, repeating } from 'chipper';
 import { myPalette } from './palette';
 
 const scheduleSentence = sentence(myPalette)
   // Required clause: "Every [cadence]"
-  .clause('trigger', clause()
-    .required()
-    .lead('Every')
-    .chip('cadence', 'cadence')           // domain name from palette
-    .produces({ period: 'cadence.period' }) // write to sentence context
+  .clause('trigger', builder()
+    .text('Every')
+    .chip('cadence')                        // chip ID = domain name in palette
+    .produces('cadence')                    // write chip value to sentence context
   )
+  // Line break — subsequent clauses render on a new row
+  .line()
   // Optional clause: "at [time]"
-  .clause('time', clause()
+  .clause('time', builder()
     .optional()
-    .lead('at')
+    .text('at')
     .placeholder('any time')
-    .chip('time', 'timeOfDay')
+    .chip('time', 'timeOfDay')              // explicit domain name when different from chip ID
   )
-  // Optional repeating clause: "when [condition], and [condition], ..."
-  .clause('conditions', repeating(clause()
-    .optional()
-    .leads('when', 'and')                 // first instance gets "when", rest get "and"
-    .chip('condition', 'conditionExpr')
-  , { min: 0, max: 5 }))
   // Required clause: "create a task named [name]"
-  .clause('action', clause()
-    .required()
-    .lead('create a task named')
-    .chip('taskName', 'freeText')
+  .clause('action', builder()
+    .text('create a task named')
+    .chip('taskName')
+    .punc()                                 // context-aware trailing punctuation
   )
   // Optional clause: "due [offset]"
-  .clause('due', clause()
+  .clause('due', builder()
     .optional()
-    .lead('due')
+    .text('due')
     .placeholder('end of day')
-    .chip('due', 'timeOffset')
+    .chip('due')
   )
+  .build();
+```
+
+**Key conventions:**
+- `builder()` creates a clause (renamed from `clause()` in builder-dx.md)
+- `.text()` adds text segments (renamed from `.lead()`)
+- `.chip('id')` looks up the domain by chip ID in the palette. If the domain name differs from the chip ID, pass it explicitly: `.chip('myChip', 'domainName')`
+- Clauses are required by default — `.optional()` makes them user-toggleable
+- `.produces('key')` is shorthand for `.produces({ key: 'key' })`
+- `.punc()` adds context-aware punctuation (comma when followed by active clause, period when last)
+
+### Lines
+
+Clauses after `.line()` render on a new row. Lines with all-optional or all-contingent clauses auto-indent:
+
+```typescript
+sentence(palette)
+  .clause('trigger', builder().text('Every').chip('cadence').produces('cadence'))
+  .line()
+  .clause('detail', builder().optional().text('at').chip('time'))
   .build();
 ```
 
 ### Contingency
 
-Contingency is declared on the dependent clause:
+Contingency is declared on the dependent clause. **Lambda shorthand** for presence-only:
 
 ```typescript
-.clause('startDate', clause()
+.clause('weekday', builder()
+  .text('on').chip('day')
+  .contingentOn('trigger', (ctx) => ctx.cadence === 'weekly')
+)
+```
+
+**Object form** for cases that also need domain reconfiguration:
+
+```typescript
+.clause('startDate', builder()
   .optional()
-  .lead('starting')
+  .text('starting').chip('start')
   .contingentOn('trigger', {
-    // Present only when cadence is in custom mode
-    present: (ctx) => ctx.period !== undefined,
-    // Configuration changes based on period
+    present: (ctx) => ctx.cadence !== undefined,
     configure: (ctx) => ({
-      chipOverrides: {
-        start: { unitLabel: ctx.period }
-      }
+      chipOverrides: { start: { keywords: getOptionsFor(ctx.cadence) } }
     })
   })
 )
 ```
 
-The contingency callback receives the sentence context, not direct access to the superclause. This keeps clauses decoupled — they react to context keys, not to each other.
+The contingency callback receives **sentence context** (tree-scoped), not direct access to the superclause. Clauses react to context keys, not to each other.
 
-### RepeatingClause
+### Chip-Level Contingency
+
+Individual chips within a clause can be shown/hidden based on context:
+
+```typescript
+builder()
+  .text('Every')
+  .chip('measure')
+  .chip('unit', { present: (ctx) => !isNaN(Number(ctx.measure)) })
+```
+
+Hidden chips are excluded from context production. All visible chips produce simultaneously (no left-to-right ordering).
+
+### Context-Aware Text and Keywords
+
+Text segments can be dynamic:
+
+```typescript
+// Dynamic text (e.g., punctuation that varies by position)
+.punc({ display: (ctx) => ctx.isLast ? '.' : ',' })
+
+// Dynamic keyword labels that update with context
+{ value: '1', label: (ctx) => `next ${ctx.unit ?? 'month'}` }
+```
+
+### Repeating Clauses
 
 The `repeating()` wrapper creates a clause group where instances are chained:
 
-- Instance N+1 is present only if instance N is active
-- The first instance uses `leads[0]` ("when"), subsequent instances use `leads[1]` ("and")
-- `min` and `max` control bounds
-- Each instance is independently optional (the user can deactivate the last one to shrink the chain)
-
-### Clause Composition Helpers
-
-Since consumers will reuse the same clause patterns across many sentences, Chipper should make it easy to define **clause composition helpers** — functions that return pre-configured clause groups.
-
 ```typescript
-// Define a reusable helper
-function every() {
-  return [
-    clause('trigger')
-      .required()
-      .lead('Every')
-      .chip('cadence', 'cadence')
-      .produces({ period: 'cadence.period' }),
-    clause('time')
-      .optional()
-      .lead('at')
-      .placeholder('any time')
-      .chip('time', 'timeOfDay'),
-  ];
-}
-
-// Use it in sentence definitions
-const scheduledTask = sentence()
-  .clauses(every())                         // spread the helper's clauses
-  .clause('action', clause()
-    .required()
-    .lead('create a task named')
-    .chip('taskName', 'freeText')
-  )
-  .build();
-
-const scheduledCollation = sentence()
-  .clauses(every())                         // same trigger pattern, different action
-  .clause('action', clause()
-    .required()
-    .lead('collate')
-    .chip('target', 'collateTarget')
-  )
-  .build();
+.clause('conditions', repeating(builder()
+  .optional()
+  .leads('when', 'and')
+  .chip('condition')
+, { min: 0, max: 5 }))
 ```
 
-A clause helper is just a function that returns an array of `ClauseDefinition` objects. No special API — the pattern falls out naturally from the builder being composable. The `.clauses()` method (plural) accepts an array and spreads it into the sentence.
-
-Chipper ships helpers for common patterns alongside each preset palette (e.g., `every()`, `whenever()`, `dueIn()`). Consumers write their own following the same pattern.
+- Instance N+1 is present only if instance N is active
+- First instance uses `leads[0]` ("when"), rest use `leads[1]` ("and")
+- `min` and `max` control bounds (defaults: 0, 5)
 
 ### Live and Computed Chips
 
-Chips with non-interactive modes are declared in the builder:
+Chips with non-interactive modes are declared in the builder. These are typed but not yet implemented (stubs in the reducer):
 
 ```typescript
-// Live chip: fetches from a URL
-.chip('downloads', 'numeric', {
-  mode: 'live',
-  source: {
-    url: 'https://api.npmjs.org/downloads/point/last-week/chipper',
-    extract: 'downloads',
-    interval: 60_000,
-    format: (n) => n.toLocaleString(),
-  }
-})
-
-// Computed chip: derived from sibling state
-.chip('nextOccurrence', 'dateRef', {
-  mode: 'computed',
-  source: {
-    compute: (state) => calculateNextFire(state.chips.cadence.value),
-    dependencies: ['cadence'],
-  }
-})
-
-// Readonly chip: value set programmatically, not by user
-.chip('owner', 'userRef', { mode: 'readonly' })
+.chip('owner', 'userRef', { mode: { type: 'readonly' } })
+.chip('downloads', 'numeric', { mode: { type: 'live', source: { ... } } })
+.chip('next', 'dateRef', { mode: { type: 'computed', source: { ... } } })
 ```
 
 ---
@@ -504,27 +473,27 @@ interface SentenceState {
 }
 
 interface ClauseState {
-  active: boolean;
+  present: boolean;               // engine-controlled (contingency)
+  active: boolean;                // user-controlled (optional toggle)
   chips: Record<string, ChipState>;
-  valid: boolean;                 // derived: all chips valid
+  valid: boolean;                 // derived: all visible chips valid
+  visibleChips?: string[];        // chip-level contingency (undefined = all visible)
 }
 
-interface ChipState<T = unknown> {
-  value: T;
+interface ChipState {
+  value: unknown;
   displayValue: string;           // formatted for chip trigger
   valid: boolean;
   dirty: boolean;                 // changed from initial
-  loading?: boolean;              // live chips only
-  error?: string;                 // live/computed chips only
+  expressionMode?: boolean;       // true when in trigger-gated expression mode
 }
 ```
 
 The reducer handles:
-- `SET_CHIP_VALUE` — update a chip, revalidate, propagate context changes
+- `SET_CHIP_VALUE` — update a chip, revalidate, recompute display, propagate context, cascade contingency
 - `TOGGLE_CLAUSE` — activate/deactivate an optional clause
-- `SET_CLAUSE_CONFIG` — when a chip change triggers clause reconfiguration
-- `SET_CONTEXT` — when a producer updates a scoped context key (propagates to contingent descendants)
-- `SET_LIVE_VALUE` — when a live chip receives new data
+- `SET_CONTEXT` — delegate to contingency engine for presence + reconfiguration
+- `SET_LIVE_VALUE` — (stub) update live chip from external source
 
 **Flow:** Chip interaction → dispatch action → reducer updates state → context propagation → contingent clauses reconfigure → React re-renders affected components.
 
@@ -557,15 +526,15 @@ cadenceDomain({
 Consumers who want Chipper's state management but their own UI can use the hooks directly without importing any components or styles:
 
 ```typescript
-import { useSentence, useClause, useChip } from 'chipper/headless';
+import { SentenceProvider, useSentence, useChip, usePopup } from 'chipper/headless';
 
-function MyCustomChip({ sentenceId, clauseId, chipId }) {
-  const { value, setValue, domain, valid } = useChip(sentenceId, clauseId, chipId);
+function MyCustomChip({ clauseId, chipId }) {
+  const { value, setValue, domain, valid, displayValue } = useChip(clauseId, chipId);
   // render your own UI
 }
 ```
 
-The headless API exports the same hooks the built-in components use internally. No separate abstraction layer.
+The headless API exports the same hooks the built-in components use internally. No separate abstraction layer. Hooks: `useSentence` (sentence-level state), `useChip` (chip state + setValue), `usePopup` (singleton open/close).
 
 ---
 
@@ -759,84 +728,29 @@ Consumers who don't import the CSS get unstyled components. Combined with the he
 
 ## 8. Package Structure
 
+See `.meta/logical-architecture.md` for the detailed, authoritative map.
+High-level layout:
+
 ```
 chipper/
-├── package.json              — npm package config, peer dep on react
-├── tsconfig.json
-├── LICENSE                   — MIT
-├── README.md                 — Quick start, API overview, links to docs
-│
 ├── src/
-│   ├── index.ts              — Public API: components, hooks, builders, types
-│   │
-│   ├── core/                 — Framework-agnostic data model
-│   │   ├── types.ts          — SentenceDefinition, ClauseDefinition, ChipDefinition, Domain
-│   │   ├── state.ts          — SentenceState, ClauseState, ChipState
-│   │   ├── reducer.ts        — State reducer (pure function, no React dependency)
-│   │   ├── context-propagation.ts — Sentence context read/write logic
-│   │   └── serialize.ts      — serialize/deserialize helpers
-│   │
-│   ├── domains/              — Domain archetype implementations
-│   │   ├── index.ts          — Re-exports all domain factories
-│   │   ├── enum.ts           — enumDomain()
-│   │   ├── keyword-expr.ts   — keywordOrExpressionDomain()
-│   │   ├── multi-select.ts   — multiSelectDomain()
-│   │   ├── composite.ts      — compositeDomain()
-│   │   ├── reference.ts      — referenceDomain()
-│   │   ├── alt-coordinate.ts — alternativeCoordinateDomain()
-│   │   └── live.ts           — Live source fetching logic
-│   │
-│   ├── palette/              — Palette creation and extension
-│   │   ├── index.ts          — createPalette(), extendPalette()
-│   │   └── types.ts          — Palette, ClauseTemplate
-│   │
-│   ├── builder/              — Sentence builder API
-│   │   ├── index.ts          — sentence(), clause(), chip(), repeating()
-│   │   └── types.ts          — Builder option types
-│   │
-│   ├── components/           — React components
-│   │   ├── Chipper.tsx       — Auto-rendering top-level component
-│   │   ├── Sentence.tsx      — Sentence container + provider
-│   │   ├── Clause.tsx        — Clause wrapper (handles toggle, lead, terminator)
-│   │   ├── Chip.tsx          — Chip trigger + popup anchor
-│   │   ├── ChipPopup.tsx     — Popup container (positioning, open/close)
-│   │   ├── ClauseToggle.tsx  — ↳/× toggle button
-│   │   └── popups/           — Archetype-specific popup content
-│   │       ├── EnumPopup.tsx
-│   │       ├── KeywordExprPopup.tsx
-│   │       ├── MultiSelectPopup.tsx
-│   │       ├── CompositePopup.tsx
-│   │       ├── ReferencePopup.tsx
-│   │       └── AltCoordinatePopup.tsx
-│   │
-│   ├── hooks/                — React hooks (also the headless API)
-│   │   ├── index.ts          — Re-exports
-│   │   ├── useSentence.ts    — Sentence-level state + dispatch
-│   │   ├── useClause.ts      — Clause activation, validity
-│   │   ├── useChip.ts        — Chip value, display, interactions
-│   │   ├── usePopup.ts       — Popup open/close, singleton management
-│   │   └── useLiveSource.ts  — Polling/fetch for live chips
-│   │
-│   └── styles/
-│       ├── chipper.scss      — Entry: base + components + praxis theme
-│       ├── chipper-base.scss — Entry: base + components, no theme
-│       ├── _base.scss        — Structural layout only
-│       ├── _tokens.scss      — Token contract (custom property defaults)
-│       ├── _mixins.scss      — SASS helpers (chip-colors mixin)
-│       ├── _components.scss  — BEM visual rules referencing tokens
-│       └── themes/
-│           ├── _praxis.scss      — Praxis theme values
-│           └── praxis-theme.scss — Entry for standalone theme CSS
-│
-├── headless.ts               — Package entry point: 'chipper/headless'
-│
-└── demo/                     — Standalone demo app (Vite + React)
-    ├── package.json
-    ├── src/
-    │   ├── App.tsx           — Demo page layout
-    │   ├── examples/         — Example sentences
-    │   └── palette.ts        — Demo palette
-    └── index.html
+│   ├── index.ts              — Public API surface
+│   ├── core/                 — Framework-agnostic: types, state, store, reducer,
+│   │   │                       initialize, context-resolution, serialize, actions/
+│   │   └── actions/          — One file per reducer action handler
+│   ├── domains/              — Domain factories: facades, KOE, multi-select,
+│   │                           alt-coordinate, reference, normalize-keywords
+│   ├── palette/              — createPalette(), extendPalette()
+│   ├── builder/              — sentence(), builder(), chip(), repeating(), punc()
+│   ├── components/           — Chipper, Sentence, Clause, Chip, ChipPopup,
+│   │   └── popups/           — KOE, MultiSelect, AltCoordinate, Reference,
+│   │                           KeywordGroupList (shared group rendering)
+│   ├── hooks/                — SentenceProvider, useSentence, useChip, usePopup,
+│   │                           useKeyboardNavigation, useReferenceDisplay (internal)
+│   └── styles/               — SASS: base, tokens, mixins, components, themes/
+├── headless.ts               — Package entry: 'chipper/headless'
+├── demo/                     — Standalone demo app (Vite + React)
+└── tests/                    — Mirrors src/ structure
 ```
 
 ### Exports
