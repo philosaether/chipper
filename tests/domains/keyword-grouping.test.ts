@@ -21,7 +21,7 @@ describe('isKeywordGroup', () => {
 
   it('returns true for group objects', () => {
     expect(isKeywordGroup({ keywords: [{ value: 'a' }] })).toBe(true);
-    expect(isKeywordGroup({ group: 'test', keywords: [] })).toBe(true);
+    expect(isKeywordGroup({ label: 'test', keywords: [] })).toBe(true);
   });
 });
 
@@ -47,11 +47,11 @@ describe('normalizeKeywordGroups', () => {
   it('normalizes explicit groups', () => {
     const items: KeywordGroupItem<string>[] = [
       {
-        group: 'shortcuts',
+        label: 'shortcuts',
         keywords: [{ value: '1', label: '1st' }, { value: '15', label: '15th' }],
       },
       {
-        group: 'grid',
+        label: 'grid',
         layout: 'grid',
         columns: 7,
         keywords: [{ value: '1' }, { value: '2' }, { value: '3' }],
@@ -75,7 +75,7 @@ describe('normalizeKeywordGroups', () => {
   it('collects ungrouped keywords into one implicit group before explicit groups', () => {
     const items: KeywordGroupItem<string>[] = [
       { value: 'stray1' },
-      { group: 'named', keywords: [{ value: 'grouped' }] },
+      { label: 'named', keywords: [{ value: 'grouped' }] },
       { value: 'stray2' },
     ];
     const { groups } = normalizeKeywordGroups(items);
@@ -89,7 +89,7 @@ describe('normalizeKeywordGroups', () => {
 
   it('handles group with prefix', () => {
     const items: KeywordGroupItem<string>[] = [
-      { group: 'dates', prefix: 'the', keywords: [{ value: '1', label: '1st' }] },
+      { label: 'dates', prefix: 'the', keywords: [{ value: '1', label: '1st' }] },
     ];
     const { groups } = normalizeKeywordGroups(items);
 
@@ -111,8 +111,8 @@ describe('normalizeKeywordGroups', () => {
   it('produces correct flat list from mixed input', () => {
     const items: KeywordGroupItem<string>[] = [
       { value: 'plain' },
-      { group: 'g1', keywords: [{ value: 'a' }, { value: 'b' }] },
-      { group: 'g2', keywords: [{ value: 'c' }] },
+      { label: 'g1', keywords: [{ value: 'a' }, { value: 'b' }] },
+      { label: 'g2', keywords: [{ value: 'c' }] },
     ];
     const { flat } = normalizeKeywordGroups(items);
 
@@ -126,11 +126,11 @@ describe('domain factories with keyword groups', () => {
       color: 'sage',
       keywords: [
         {
-          group: 'shortcuts',
+          label: 'shortcuts',
           keywords: [{ value: '1', label: '1st' }, { value: '15', label: '15th' }],
         },
         {
-          group: 'all',
+          label: 'all',
           layout: 'grid',
           columns: 7,
           keywords: Array.from({ length: 5 }, (_, i) => ({ value: String(i + 1) })),
@@ -166,7 +166,7 @@ describe('domain factories with keyword groups', () => {
       color: 'copper',
       keywords: [
         {
-          group: 'presets',
+          label: 'presets',
           keywords: [{ value: '5', label: '5 days' }, { value: '10', label: '10 days' }],
         },
       ],

@@ -27,8 +27,8 @@ export interface KeywordConfig<T = string> {
 
 /** A named group of keywords rendered as a visual section in the popup. */
 export interface KeywordGroup<T = string> {
-  /** Group label rendered above the keywords (omit for unlabeled group) */
-  group?: string;
+  /** Display label rendered above the keywords (omit for unlabeled group) */
+  label?: string;
 
   /** Keywords in this group */
   keywords: KeywordConfig<T>[];
@@ -105,7 +105,7 @@ export function normalizeKeywordGroups<T>(
 
   for (const group of explicitGroups) {
     groups.push({
-      label: group.group,
+      label: group.label,
       layout: group.layout ?? 'flow',
       columns: group.columns,
       prefix: group.prefix,

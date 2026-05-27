@@ -9,6 +9,13 @@ import {
   alternativeCoordinateDomain,
 } from 'chipper';
 
+/** Format a number as an ordinal string: 1→"1st", 2→"2nd", 3→"3rd", 11→"11th", etc. */
+function ordinal(n: number): string {
+  const suffixes = ['th', 'st', 'nd', 'rd'];
+  const suffix = n > 3 && n < 21 ? 'th' : (suffixes[n % 10] ?? 'th');
+  return `${n}${suffix}`;
+}
+
 export const praxisPalette = extendPalette({
   chips: {
     cadenceMeasure: keywordOrExpressionDomain({
@@ -79,6 +86,16 @@ export const praxisPalette = extendPalette({
               { label: 'first', value: '1' },
               { label: '15th', value: '15' },
               { label: 'last', value: 'last', displayLabel: 'last day' },
+              {
+                label: 'date',
+                layout: 'grid',
+                columns: 7,
+                keywords: Array.from({ length: 31 }, (_, i) => ({
+                  value: String(i + 1),
+                  label: String(i + 1),
+                  display: `${ordinal(i + 1)}`,
+                })),
+              },
             ],
           }],
           compose: (day) => day,

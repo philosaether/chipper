@@ -53,7 +53,7 @@ const dayOfMonth = keywordDomain({
   color: 'sage',
   keywords: [
     {
-      group: 'shortcuts',
+      label: 'shortcuts',
       keywords: [
         { value: '1', label: '1st' },
         { value: '15', label: '15th' },
@@ -61,7 +61,7 @@ const dayOfMonth = keywordDomain({
       ],
     },
     {
-      group: 'date',
+      label: 'date',
       layout: 'grid',
       columns: 7,
       keywords: Array.from({ length: 31 }, (_, i) => ({
@@ -145,8 +145,8 @@ New type alongside `KeywordConfig`:
 ```typescript
 /** A named group of keywords rendered as a visual section in the popup. */
 interface KeywordGroup<T = string> {
-  /** Group label rendered above the keywords (omit for separator-only) */
-  group?: string;
+  /** Display label rendered above the keywords (omit for unlabeled group) */
+  label?: string;
 
   /** Keywords in this group */
   keywords: KeywordConfig<T>[];
