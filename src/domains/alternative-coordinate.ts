@@ -16,11 +16,8 @@ import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/t
 import type { ExpressionConfig } from './keyword-or-expression';
 import { createDomain } from './create-domain';
 import {
-  normalizeKeywords,
   normalizeKeywordGroups,
-  isKeywordGroup,
   type KeywordGroupItem,
-  type KeywordConfig,
 } from './normalize-keywords';
 
 /** One selection dimension within a mode. */
@@ -100,15 +97,11 @@ export interface AlternativeCoordinateDomainConfig {
  */
 function resolveSlot(slot: ModeSlot): ResolvedModeSlot {
   const rawKeywords = slot.keywords as KeywordGroupItem<string>[];
-  const hasGroups = rawKeywords.some(isKeywordGroup);
-
-  if (hasGroups) {
-    const { flat, groups } = normalizeKeywordGroups(rawKeywords);
-    return { keywords: flat, keywordGroups: groups, prefix: slot.prefix };
-  }
-
+  const { flat, groups } = normalizeKeywordGroups(rawKeywords);
+  const hasGroups = groups.length > 1 || groups.some((g) => g.label || g.layout === 'grid' || g.prefix);
   return {
-    keywords: normalizeKeywords(rawKeywords as KeywordConfig<string>[]),
+    keywords: flat,
+    keywordGroups: hasGroups ? groups : undefined,
     prefix: slot.prefix,
   };
 }

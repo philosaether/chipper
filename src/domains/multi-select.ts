@@ -14,7 +14,6 @@ import {
   normalizeKeywords,
   normalizeKeywordGroups,
   buildDisplayMap,
-  isKeywordGroup,
   type KeywordConfig,
   type KeywordGroupItem,
 } from './normalize-keywords';
@@ -100,11 +99,9 @@ export function selectionMatchesKeyword(
  */
 export function multiSelectDomain(config: MultiSelectDomainConfig): Domain<string[]> {
   const rawOptions = config.options as KeywordGroupItem<string>[];
-  const hasOptionGroups = rawOptions.some(isKeywordGroup);
-
-  const { flat: options, groups: optionGroups } = hasOptionGroups
-    ? normalizeKeywordGroups(rawOptions)
-    : { flat: normalizeKeywords(rawOptions as KeywordConfig<string>[]), groups: undefined };
+  const { flat: options, groups: rawOptionGroups } = normalizeKeywordGroups(rawOptions);
+  const optionGroups = rawOptionGroups.length > 1 || rawOptionGroups.some((g) => g.label || g.layout === 'grid' || g.prefix)
+    ? rawOptionGroups : undefined;
 
   const groupKeywords = config.keywords
     ? normalizeKeywords(config.keywords as KeywordConfig<string[]>[])

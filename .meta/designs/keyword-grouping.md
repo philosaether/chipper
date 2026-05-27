@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-27
 Accepted: 2026-05-27
+Implemented: 2026-05-27 (feature/keyword-grouping)
+Divergences: group separator uses dedicated class (chipper-keyword-group__separator) instead of reusing chipper-koe-popup__separator — intentional
+Deferred: none
 Assessment: assessments/keyword-grouping.md
 ---
 

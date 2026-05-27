@@ -16,10 +16,6 @@ Items that must ship before npm publish.
   rebuild as a cohesive release page. Includes killer app showcase
   (praxis demo sentence as hero, many fun examples throughout).
 
-- **Keyword grouping across popup types** — visual separator / groups
-  within a single slot's keyword list. Needed for day-of-month (shortcut
-  row + full 1–28 grid), likely useful for multi-select and KOE too.
-
 - **Theming engine v2 — runtime theme switching** — the demo's theme
   toggle (praxis/midnight/terminal) works by applying CSS custom property
   overrides via JS. This should be a first-class library feature, not

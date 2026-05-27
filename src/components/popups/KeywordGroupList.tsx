@@ -76,7 +76,7 @@ export function KeywordGroupList({
                     {...optionProps}
                     aria-selected={selected || undefined}
                     className={[
-                      (optionProps as Record<string, string>).className,
+                      (optionProps as { className?: string }).className,
                       selected && 'chipper-popup-option--selected',
                     ].filter(Boolean).join(' ')}
                     disabled={disabled}

@@ -13,12 +13,9 @@
 import type { Domain, ExpressionMode, Keyword, SentenceContext } from '../core/types';
 import { createDomain } from './create-domain';
 import {
-  normalizeKeywords,
   normalizeKeywordGroups,
   buildDisplayMap,
   resolveDefault,
-  isKeywordGroup,
-  type KeywordConfig,
   type KeywordGroupItem,
 } from './normalize-keywords';
 
@@ -171,11 +168,10 @@ export function keywordOrExpressionDomain(
   config: KeywordOrExpressionDomainConfig,
 ): Domain<string> {
   const rawKeywords = (config.keywords ?? []) as KeywordGroupItem<string>[];
-  const hasGroups = rawKeywords.some(isKeywordGroup);
-
-  const { flat: keywords, groups: keywordGroups } = hasGroups
-    ? normalizeKeywordGroups(rawKeywords)
-    : { flat: normalizeKeywords(rawKeywords as KeywordConfig<string>[]), groups: undefined };
+  const { flat: keywords, groups } = normalizeKeywordGroups(rawKeywords);
+  // Only set keywordGroups when there are multiple groups or non-default config
+  const keywordGroups = groups.length > 1 || groups.some((g) => g.label || g.layout === 'grid' || g.prefix)
+    ? groups : undefined;
 
   const validKeywordValues = new Set<string>(keywords.map((k) => k.value));
   const displayByValue = buildDisplayMap(keywords);

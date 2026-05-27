@@ -55,9 +55,9 @@ export interface NormalizedKeywordGroup<T = string> {
   keywords: Keyword<T>[];
 }
 
-/** Type guard: is this item a KeywordGroup (has a `keywords` array)? */
+/** Type guard: is this item a KeywordGroup (has a `keywords` array, no `value`)? */
 export function isKeywordGroup<T>(item: KeywordGroupItem<T>): item is KeywordGroup<T> {
-  return 'keywords' in item && Array.isArray((item as KeywordGroup<T>).keywords);
+  return 'keywords' in item && Array.isArray((item as KeywordGroup<T>).keywords) && !('value' in item);
 }
 
 /** Normalize shorthand keyword configs into full Keyword<T> objects. */
@@ -104,6 +104,7 @@ export function normalizeKeywordGroups<T>(
   }
 
   for (const group of explicitGroups) {
+    if (group.keywords.length === 0) continue;
     groups.push({
       label: group.label,
       layout: group.layout ?? 'flow',
