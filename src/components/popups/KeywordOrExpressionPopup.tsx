@@ -120,7 +120,7 @@ export function KeywordOrExpressionPopup({
 
   const keywordsSection = keywords.length > 0 && (
     keywordGroups ? (
-      <div className="chipper-koe-popup__keywords">
+      <div className="chipper-koe-popup__keywords chipper-koe-popup__keywords--grouped">
         <KeywordGroupList
           groups={keywordGroups}
           context={context}
