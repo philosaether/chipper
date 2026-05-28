@@ -64,8 +64,8 @@
   }
 
   &--expanded {
-    border-color: var(--chipper-accent);
-    box-shadow: 0 0 0 2px var(--chipper-accent-glow);
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
   }
 
   &--display {
@@ -95,17 +95,17 @@
 // Info popup (display chips) -----------------------------------------------
 
 .chipper-chip-info {
-  background: var(--chipper-bg-elevated);
-  border: 1px solid var(--chipper-border);
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+  border: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(77, 70, 53, 0.08);
-  color: var(--chipper-text-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  color: var(--chip-trigger-color-text, var(--chipper-text-secondary));
 }
 
 .chipper-chip-info__caret {
-  background: var(--chipper-bg-elevated);
-  border-top: 1px solid var(--chipper-border);
-  border-left: 1px solid var(--chipper-border);
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+  border-top: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
+  border-left: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
 }
 
 // Popup --------------------------------------------------------------------
@@ -114,7 +114,7 @@
   background: var(--chipper-bg-elevated);
   border: 1px solid var(--chipper-border);
   border-radius: 1rem;
-  box-shadow: 0 12px 32px rgba(77, 70, 53, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 0.75rem;
   font-size: var(--chipper-popup-font-size);
 }
