@@ -69,7 +69,8 @@
   z-index: 100;
   padding: 0.5rem 0.75rem;
   font-size: var(--chipper-popup-font-size, 0.875rem);
-  white-space: nowrap;
+  width: max-content;
+  max-width: var(--chipper-popup-max-width, 20rem);
 }
 
 .chipper-chip-info__caret {
@@ -79,10 +80,6 @@
   width: 10px;
   height: 10px;
   transform: rotate(45deg);
-}
-
-.chipper-chip-info__content {
-  white-space: pre-line;
 }
 
 .chipper-popup {
