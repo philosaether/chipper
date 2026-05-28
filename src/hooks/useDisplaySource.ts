@@ -57,7 +57,10 @@ export function useDisplaySource(
       dispatch({ type: 'SET_DISPLAY_VALUE', chipId, value: undefined, loading: true });
       try {
         const response = await fetch(source.url);
-        const data = await response.json();
+        const contentType = response.headers.get('content-type') ?? '';
+        const data = contentType.includes('application/json')
+          ? await response.json()
+          : await response.text();
         const value = source.extract(data);
         if (active) dispatch({ type: 'SET_DISPLAY_VALUE', chipId, value });
       } catch (e) {
