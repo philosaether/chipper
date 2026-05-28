@@ -178,9 +178,11 @@ export function ReferencePopup({
   const totalNavItems = keywords.length + (isLoading ? 0 : displayItems.length);
   const keyboard = useKeyboardNavigation({
     itemCount: totalNavItems,
+    closeOnSelect: false,
     onSelect: (index) => {
       if (index < keywords.length) {
         onSelect(keywords[index]!.value);
+        onClose();
       } else {
         const item = displayItems[index - keywords.length]!;
         const isSelectable = item.selectable !== false;
@@ -290,12 +292,14 @@ export function ReferencePopup({
             const optionProps = keyboard.getOptionProps(keywords.length + index);
 
             if (!isSelectable && isDrillable) {
-              // Non-selectable drillable: entire row is a drill target
+              // Non-selectable drillable: entire row is a drill target.
+              // Override onClick from optionProps — drill, don't close.
               return (
                 <button
                   key={item.id}
                   type="button"
                   {...optionProps}
+                  onClick={() => handleDrill(item)}
                   className={[
                     'chipper-reference-popup__item chipper-reference-popup__item--non-selectable',
                     optionProps.className,
