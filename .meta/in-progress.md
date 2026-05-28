@@ -6,55 +6,36 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Keyword grouping** — implementing designs/keyword-grouping.md.
-  Branch: feature/keyword-grouping.
+- [ ] Display chip mode implementation (feature/readonly-chip-mode)
+      Design: designs/display-chip-mode.md
+      Steps: types → reducer → builder DX → rendering → info popup → visual states → demo
+
+## Done This Session (2026-05-27)
+
+- [x] Roadmap audit — categorized pre-release items (3 drafts, 5 riffs, 1 gate)
+- [x] Keyword grouping — design + implementation + review (feature/keyword-grouping)
+- [x] Tech debt sweep — all 5 items (riff/tech-debt-sweep):
+      Domain<T> variance, clause index, useReferenceDisplay, displayLabel rename, strict-mode
+- [x] Architecture doc refresh — §2–§5, §8 (meta/architecture-refresh)
 
 ## Next Session
 
 Pick from pre-release roadmap. Likely candidates:
 
-- **Screen reader support** — aria-live, aria-invalid, role=option. Keyboard
-  nav infrastructure is in place; this is the ARIA semantic layer on top.
-- **Demo page v1.0** — rebuild as cohesive release page. Multi-font panels,
-  explainer update, import/export panel (tests serialization API).
-- **Builder DX wishlist riff** — clause ergonomics, predicate helpers,
-  `.chip()` footgun, `displayLabel` → `display`, config/options naming.
-- **Keyword grouping** — visual separator / groups in popup keyword lists.
-- **Theming engine v2** — runtime theme switching as first-class library feature.
+- **Demo page v1.0** (draft) — cohesive release page, error behavior validation
+- **Screen reader support** (riff) — ARIA semantic layer on keyboard nav
+- **Readonly + live chip modes** (riff) — types exist, needs rendering + fetching
+- **Builder DX wishlist** (riff) — clause ergonomics, `.chip()` footgun, config naming
+- **Theming engine v2** (draft) — runtime theme switching
 
-See `roadmap.md` for full pre-release and post-release item lists.
+See `roadmap.md` for full list.
 
 ## Tech Debt
 
-- Architecture doc refresh — chipper-architecture.md §3 and §4 are stale.
-  logical-architecture.md is current.
-- `Domain<T>` variance — blocks demo tsconfig (strict mode).
-- Clause definition index — repeated `.find()`/`.filter()` in reducer. Not
-  urgent at sentence scale.
-- `useReferenceDisplay` hook — restored references show raw IDs until popup
-  interaction. Serialization design defers cache hydration to this hook.
+- Test files have strict-mode errors (implicit any, missing `!` assertions).
+  Not blocking — tests pass at runtime. Low priority.
 
 ## v1.0 Feature Inventory
 
-Full assessment: assessments/v1-feature-scope.md.
-
-### Done This Session (2026-05-24)
-- [x] Context-aware punctuation — `.punc()` builder method (done 2026-05-24)
-- [x] Keyboard navigation — useKeyboardNavigation hook, focus trap/restore,
-      all popup types, aria-labels, focus-visible CSS (done 2026-05-24)
-- [x] Serialization/deserialization — serialize/deserialize utilities,
-      initialValues overlay, custom serializer support (done 2026-05-24)
-- [x] Reference domain demo — genre tree sentence on demo page (done 2026-05-24)
-- [x] praxisPalette extracted to separate file (done 2026-05-24)
-
-### Previously Done
-- All domain archetypes (KOE, multiSelect, altCoordinate, reference, composite)
-- Core engine (contingency, context propagation, chip-level contingency,
-  line grouping, mode-switching, context-aware display)
-- Builder DX (rename clause→builder, chip/produces shorthands, expression
-  helpers, keyword displayLabel, default cascade, contingentOn lambda)
-- Theming engine + praxis theme
-- v1 developer documentation (README.md)
-
-### Remaining for v1.0
-See `roadmap.md` Pre-Release section.
+See `roadmap.md` Pre-Release section for remaining items.
+See `archive/rearview.md` for completed items.

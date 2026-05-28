@@ -9,14 +9,14 @@ import type { SentenceStore } from './store';
 import { handleSetChipValue, type SetChipValueAction } from './actions/set-chip-value';
 import { handleToggleClause, type ToggleClauseAction } from './actions/toggle-clause';
 import { handleSetContext, type SetContextAction } from './actions/set-context';
-import { handleSetLiveValue, type SetLiveValueAction } from './actions/set-live-value';
+import { handleSetDisplayValue, type SetDisplayValueAction } from './actions/set-display-value';
 
 /** Union of all sentence actions. */
 export type SentenceAction =
   | SetChipValueAction
   | ToggleClauseAction
   | SetContextAction
-  | SetLiveValueAction;
+  | SetDisplayValueAction;
 
 /** Reduce a sentence action into a new store. */
 export function sentenceReducer(
@@ -30,7 +30,7 @@ export function sentenceReducer(
       return handleToggleClause(store, action);
     case 'SET_CONTEXT':
       return handleSetContext(store, action);
-    case 'SET_LIVE_VALUE':
-      return handleSetLiveValue(store, action);
+    case 'SET_DISPLAY_VALUE':
+      return handleSetDisplayValue(store, action);
   }
 }

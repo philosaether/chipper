@@ -190,6 +190,11 @@ export const praxisPalette = extendPalette({
       color: 'rose',
       placeholder: 'New Task',
     }),
+    project: keywordDomain({
+      color: 'slate',
+      keywords: [{ value: 'praxis', label: 'Praxis' }],
+      default: 'praxis',
+    }),
     dueMeasure: keywordOrExpressionDomain({
       color: 'copper',
       keywords: [

@@ -118,41 +118,56 @@ export interface Domain<T = any> {
 }
 
 // ---------------------------------------------------------------------------
-// Chip modes
+// Chip modes — display sources
 // ---------------------------------------------------------------------------
 
-/** Configuration for a live data source (polling or one-shot fetch). */
-export interface LiveSource {
-  /** URL to fetch from */
-  url: string;
-
-  /** Extract value from response — JSONPath string or function */
-  extract: string | ((response: unknown) => unknown);
-
-  /** Poll interval in ms. If omitted, fetch once on mount. */
-  interval?: number;
-
-  /** Format the extracted value for display */
-  format?: (value: unknown) => string;
+/** A display chip whose value is fixed at definition time. */
+export interface StaticDisplaySource<T = unknown> {
+  type: 'static';
+  value: T;
 }
 
-/**
- * Configuration for a computed chip whose value derives from sibling state.
- * Uses import('...') to avoid circular dependency with state.ts.
- */
-export interface ComputedSource<T = unknown> {
-  /** Derive value from current sentence state */
-  compute: (state: import('./state').SentenceState) => T;
+/** A display chip whose value derives from sentence context or state. */
+export interface DerivedDisplaySource<T = unknown> {
+  type: 'derived';
+  compute: (context: SentenceContext, state: import('./state').SentenceState) => T;
+}
 
-  /** Which chip IDs to watch for changes */
-  dependencies: string[];
+/** A display chip whose value is fetched from a URL. */
+export interface RemoteDisplaySource<T = unknown> {
+  type: 'remote';
+  /** URL to fetch from */
+  url: string;
+  /** Extract value from JSON response */
+  extract: (response: unknown) => T;
+  /** Poll interval in ms. If omitted, fetch once on mount. */
+  interval?: number;
+}
+
+/** A display chip whose value is pushed by a consumer-managed subscription. */
+export interface ExternalDisplaySource<T = unknown> {
+  type: 'external';
+  /** Subscribe to value updates. Returns an unsubscribe cleanup function. */
+  subscribe: (callback: (value: T) => void) => (() => void);
+}
+
+/** Source strategy for a display chip. */
+export type DisplaySource<T = unknown> =
+  | StaticDisplaySource<T>
+  | DerivedDisplaySource<T>
+  | RemoteDisplaySource<T>
+  | ExternalDisplaySource<T>;
+
+/** Configuration for a display chip's info popup. */
+export interface DisplayConfig<T = unknown> {
+  source: DisplaySource<T>;
+  /** Content shown in info popup. Omit for no popup. */
+  info?: string | ((value: T, state: import('./state').SentenceState) => string);
 }
 
 export type ChipMode =
   | { type: 'interactive' }
-  | { type: 'readonly' }
-  | { type: 'live'; source: LiveSource }
-  | { type: 'computed'; source: ComputedSource };
+  | { type: 'display'; source: DisplaySource; info?: DisplayConfig['info'] };
 
 // ---------------------------------------------------------------------------
 // Chips, Clauses, Sentences

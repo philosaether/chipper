@@ -25,3 +25,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [keyboard-navigation.md](keyboard-navigation.md) | accepted | Keyboard navigation: useKeyboardNavigation hook, aria-activedescendant, focus trap/restore, AA compliance. |
 | [serialization.md](serialization.md) | accepted | Serialization: serialize/deserialize utilities, initialValues overlay, SerializedSentence format, SentenceViewModel pattern. |
 | [keyword-grouping.md](keyword-grouping.md) | accepted | Keyword grouping: visual groups within popup keyword lists, group wrapper pattern, grid/flow layout per group. |
+| [display-chip-mode.md](display-chip-mode.md) | accepted | Display chip mode: unified readonly/live/computed, source strategies, info popup for provenance. |

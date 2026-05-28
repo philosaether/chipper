@@ -13,3 +13,8 @@
 - **Architecture doc refresh** — chipper-architecture.md §2–§5, §8 updated
   to reflect current API (builder, facades, hooks, state types, package structure).
   Completed: 2026-05-27 (meta/architecture-refresh).
+
+- **Readonly + live chip modes** — unified into display chip mode with
+  four source strategies (static, derived, remote, external). Includes
+  info popup, serialization rules, visual states, and builder DX sugar.
+  Completed: 2026-05-28 (feature/readonly-chip-mode).

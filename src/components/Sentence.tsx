@@ -19,7 +19,8 @@ import { Clause } from './Clause';
 /**
  * Determine whether a line should be indented.
  * Explicit indent on the LineDefinition takes precedence.
- * Otherwise, indent if every clause on the line is optional or contingent.
+ * Otherwise, indent if every clause on the line is optional or contingent
+ * AND at least one clause is optional (i.e., has a toggle icon).
  */
 function shouldIndent(
   line: LineDefinition,
@@ -27,11 +28,15 @@ function shouldIndent(
 ): boolean {
   if (line.indent !== undefined) return line.indent;
 
-  return line.clauseIds.every((id) => {
+  let hasOptional = false;
+  const allNonRequired = line.clauseIds.every((id) => {
     const clauseDef = clausesByIds.get(id);
     if (!clauseDef) return false;
+    if (clauseDef.necessity === 'optional') hasOptional = true;
     return clauseDef.necessity === 'optional' || !!clauseDef.contingency;
   });
+
+  return allNonRequired && hasOptional;
 }
 
 function Line({ line, clausesByIds }: {

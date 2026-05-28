@@ -28,11 +28,6 @@ Items that must ship before npm publish.
 
 ### Riffs
 
-- **Readonly + live chip modes** — implement readonly and live chip
-  rendering. Types and reducer stubs exist; needs component rendering,
-  live source fetching (polling + one-shot), loading/error states.
-  Deferred from: chipper/meta/architecture-refresh (2026-05-27).
-
 - **Screen reader support** — aria-live, aria-invalid, role=option.
   Keyboard nav infrastructure is in place; this is the ARIA semantic layer.
 
