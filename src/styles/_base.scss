@@ -53,8 +53,36 @@
   cursor: pointer;
 }
 
-.chipper-chip-trigger--readonly {
+.chipper-chip-trigger--display {
   cursor: default;
+}
+
+.chipper-chip-trigger--loading {
+  cursor: wait;
+}
+
+// Info popup — read-only provenance display for display chips
+.chipper-chip-info {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 100;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--chipper-popup-font-size, 0.875rem);
+  white-space: nowrap;
+}
+
+.chipper-chip-info__caret {
+  position: absolute;
+  top: -6px;
+  left: 1rem;
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+}
+
+.chipper-chip-info__content {
+  white-space: pre-line;
 }
 
 .chipper-popup {

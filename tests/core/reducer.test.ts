@@ -226,14 +226,16 @@ describe('sentenceReducer — SET_CONTEXT', () => {
     expect(second.state.contexts[0]!.values).toEqual({ month: 'october' });
   });
 
-  it('SET_LIVE_VALUE returns store unchanged', () => {
+  it('SET_DISPLAY_VALUE updates chip value and displayValue', () => {
     const store = createStore();
     const next = sentenceReducer(store, {
-      type: 'SET_LIVE_VALUE',
+      type: 'SET_DISPLAY_VALUE',
       chipId: 'month',
-      value: 'test',
+      value: 'september',
     });
 
-    expect(next).toBe(store);
+    expect(next).not.toBe(store);
+    expect(next.state.clauses['when']!.chips['month']!.value).toBe('september');
+    expect(next.state.clauses['when']!.chips['month']!.displayValue).toBe('September');
   });
 });

@@ -63,3 +63,5 @@ Append-only log. Don't edit old entries.
 2026-05-27: KeywordGroup field renamed from `group` to `label` — purely cosmetic display label, not an identifier. isKeywordGroup discriminates by `keywords` array presence. No risk from unnamed groups; label is optional.
 2026-05-27: Architecture doc refreshed (§2–§5, §8) to reflect current API: builder(), .text(), .punc(), Domain<T=any>, keywordGroups, facade factories, current hooks.
 2026-05-27: Promoted readonly + live chip modes from post-release to pre-release riff. Computed mode remains post-release.
+2026-05-28: Deferred: /suspend, /restore, /pivot skills (to philset — workstream parking and switching).
+2026-05-28: Display chip mode design accepted (designs/display-chip-mode.md). Unify readonly/live/computed into single display mode with four source strategies (static, derived, remote, external). display key on ChipOptions replaces mode key. Click-to-reveal info popup for provenance. Static chips serialize, others don't. Function-only extract for remote sources.

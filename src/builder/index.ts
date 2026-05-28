@@ -12,6 +12,7 @@ import type {
   ClauseDefinition,
   ClauseSegment,
   ContingencyConfig,
+  DisplaySource,
   LineDefinition,
   Palette,
   RepeatingClauseConfig,
@@ -26,18 +27,58 @@ import { chipperPalette } from '../palette';
 // Chip builder
 // ---------------------------------------------------------------------------
 
+/** Display shorthand accepted by the builder `display` key on ChipOptions. */
+export type DisplayShorthand<T = unknown> =
+  | T
+  | ((state: import('../core/state').SentenceState) => T)
+  | { url: string; extract: (response: unknown) => T; interval?: number }
+  | { subscribe: (callback: (value: T) => void) => (() => void) };
+
+/** Resolve builder `display` shorthand into a DisplaySource. */
+function resolveDisplaySource(display: DisplayShorthand): DisplaySource {
+  if (typeof display === 'function') {
+    return { type: 'derived', compute: display as (state: import('../core/state').SentenceState) => unknown };
+  }
+  if (typeof display === 'object' && display !== null) {
+    const obj = display as Record<string, unknown>;
+    if ('url' in obj && typeof obj.url === 'string') {
+      return {
+        type: 'remote',
+        url: obj.url,
+        extract: obj.extract as (response: unknown) => unknown,
+        interval: obj.interval as number | undefined,
+      };
+    }
+    if ('subscribe' in obj) {
+      return {
+        type: 'external',
+        subscribe: obj.subscribe as (callback: (value: unknown) => void) => (() => void),
+      };
+    }
+  }
+  // Primitive value — static source
+  return { type: 'static', value: display };
+}
+
 /**
  * Define a chip within a clause.
  */
 export function chip(
   id: string,
   domainName?: string,
-  options?: { mode?: ChipMode },
+  options?: ChipOptions,
 ): ChipDefinition {
+  let mode: ChipMode = { type: 'interactive' };
+  if (options?.display !== undefined) {
+    const source = resolveDisplaySource(options.display);
+    mode = { type: 'display', source, info: options.info };
+  } else if (options?.mode) {
+    mode = options.mode;
+  }
   return {
     id,
     domainName: domainName ?? id,
-    mode: options?.mode ?? { type: 'interactive' },
+    mode,
   };
 }
 
@@ -46,6 +87,11 @@ export function chip(
 // ---------------------------------------------------------------------------
 
 export interface ChipOptions {
+  /** Make this a display chip. Accepts a value, function, or source config. */
+  display?: DisplayShorthand;
+  /** Info popup content for display chips. */
+  info?: string | ((value: unknown, state: import('../core/state').SentenceState) => string);
+  /** Legacy mode key — prefer `display` for non-interactive chips. */
   mode?: ChipMode;
   present?: (context: SentenceContext) => boolean;
 }
@@ -65,7 +111,7 @@ export interface ClauseBuilder {
   text(text: string, options?: TextOptions): ClauseBuilder;
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
-  chip(id: string, domainName?: string, options?: ChipOptions): ClauseBuilder;
+  chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions): ClauseBuilder;
   punc(config?: PuncConfig): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
