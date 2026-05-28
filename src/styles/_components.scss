@@ -70,10 +70,10 @@
 
   &--readonly {
     border-color: transparent;
-    opacity: 0.7;
+    background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
 
     &:hover {
-      border-color: transparent;
+      background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
     }
   }
 }
