@@ -96,7 +96,7 @@
 
 .chipper-chip-info {
   background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
-  border: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
+  border: none;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
   color: var(--chip-trigger-color-text, var(--chipper-text-secondary));
@@ -104,8 +104,6 @@
 
 .chipper-chip-info__caret {
   background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
-  border-top: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
-  border-left: 1px solid var(--chip-trigger-color-text, var(--chipper-border));
 }
 
 // Popup --------------------------------------------------------------------
