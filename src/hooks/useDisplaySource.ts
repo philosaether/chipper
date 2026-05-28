@@ -8,9 +8,9 @@
  * - external: subscribes to consumer-managed data stream
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { ChipDefinition, ClauseDefinition } from '../core/types';
-import type { SentenceState, ContextScope } from '../core/state';
+import type { SentenceState } from '../core/state';
 import type { SentenceAction } from '../core/reducer';
 import { buildClauseContext } from '../core/context-resolution';
 
@@ -24,18 +24,15 @@ export function useDisplaySource(
   dispatch: Dispatch,
 ): void {
   const mode = chipDefinition.mode;
-  if (mode.type !== 'display') return;
-
-  const source = mode.source;
+  const source = mode.type === 'display' ? mode.source : null;
   const chipId = chipDefinition.id;
 
   // Track previous derived value to avoid dispatch loops
   const prevDerivedRef = useRef<unknown>(undefined);
 
   // Derived source: recompute on state change, skip if unchanged
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (source.type !== 'derived') return;
+    if (!source || source.type !== 'derived') return;
     const clauseDef = clauseById.get(clauseId);
     const clauseState = state.clauses[clauseId];
     const context = clauseDef && clauseState
@@ -48,9 +45,8 @@ export function useDisplaySource(
   }, [source, state, dispatch, chipId, clauseId, clauseById]);
 
   // Remote source: fetch + optional polling
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (source.type !== 'remote') return;
+    if (!source || source.type !== 'remote') return;
     let active = true;
 
     const fetchValue = async () => {
@@ -74,9 +70,8 @@ export function useDisplaySource(
   }, [source, chipId, dispatch]);
 
   // External source: subscribe
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (source.type !== 'external') return;
+    if (!source || source.type !== 'external') return;
     const unsubscribe = source.subscribe((value: unknown) => {
       dispatch({ type: 'SET_DISPLAY_VALUE', chipId, value });
     });

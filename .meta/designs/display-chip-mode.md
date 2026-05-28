@@ -2,6 +2,9 @@
 Status: accepted
 Date: 2026-05-28
 Accepted: 2026-05-28
+Implemented: 2026-05-28 (feature/readonly-chip-mode)
+Divergences: derived compute signature is (context, state) => T, not (state) => T
+Deferred: stale-data visual state (dimmed bg, info popup staleness indicator)
 Supersedes: chipper-architecture.md §2 "Chip Modes" (readonly/live/computed split)
 ---
 
@@ -27,7 +30,7 @@ type ChipMode =
 
 type DisplaySource<T = unknown> =
   | { type: 'static'; value: T }
-  | { type: 'derived'; compute: (state: SentenceState) => T }
+  | { type: 'derived'; compute: (context: SentenceContext, state: SentenceState) => T }
   | { type: 'remote'; url: string; extract: (response: unknown) => T; interval?: number }
   | { type: 'external'; subscribe: (callback: (value: T) => void) => (() => void) };
 ```
@@ -57,9 +60,9 @@ unsubscribe cleanup.
 // Static — shortest form, debugging escape hatch
 .chip('project', 'projectName', { display: 'Praxis' })
 
-// Derived from sentence state
+// Derived from context — same ctx pattern as contingency lambdas
 .chip('cost', 'currency', {
-  display: (state) => lookupPrice(state.clauses['item']?.chips['item']?.value)
+  display: (ctx) => lookupPrice(ctx.item)
 })
 
 // Remote fetch
@@ -175,19 +178,22 @@ No runtime machinery. Value set during initialization, never changes.
 A `useDisplaySource` hook subscribes to sentence state and recomputes:
 
 ```typescript
-function useDisplaySource(chipDef: ChipDefinition, state: SentenceState, dispatch: Dispatch) {
+function useDisplaySource(chipDef: ChipDefinition, clauseId: string, state: SentenceState, clauseById: Map, dispatch: Dispatch) {
   const source = chipDef.mode.type === 'display' ? chipDef.mode.source : null;
 
   useEffect(() => {
-    if (source?.type !== 'derived') return;
-    const newValue = source.compute(state);
+    if (!source || source.type !== 'derived') return;
+    const context = buildClauseContext(clauseId, ...);
+    const newValue = source.compute(context, state);
     dispatch({ type: 'SET_DISPLAY_VALUE', chipId: chipDef.id, value: newValue });
-  }, [source, state, dispatch, chipDef.id]);
+  }, [source, state, dispatch, chipDef.id, clauseId, clauseById]);
 }
 ```
 
-Memoization: the hook should compare the computed result to the previous
-value and skip the dispatch if unchanged, to avoid render loops.
+The hook receives `clauseId` and `clauseById` to build clause context
+for the compute function, matching the contingency lambda pattern.
+Memoization: the hook compares the computed result to the previous
+value and skips the dispatch if unchanged, to avoid render loops.
 
 ### Remote
 

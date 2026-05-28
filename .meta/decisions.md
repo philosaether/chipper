@@ -64,4 +64,9 @@ Append-only log. Don't edit old entries.
 2026-05-27: Architecture doc refreshed (§2–§5, §8) to reflect current API: builder(), .text(), .punc(), Domain<T=any>, keywordGroups, facade factories, current hooks.
 2026-05-27: Promoted readonly + live chip modes from post-release to pre-release riff. Computed mode remains post-release.
 2026-05-28: Deferred: /suspend, /restore, /pivot skills (to philset — workstream parking and switching).
+2026-05-28: Deferred: Chipper developer docs page (to html/philbas.com).
 2026-05-28: Display chip mode design accepted (designs/display-chip-mode.md). Unify readonly/live/computed into single display mode with four source strategies (static, derived, remote, external). display key on ChipOptions replaces mode key. Click-to-reveal info popup for provenance. Static chips serialize, others don't. Function-only extract for remote sources.
+2026-05-28: Expanded chip elevation: replaced accent glow (gold) on expanded chips with elevation box-shadow. All popups share the same shadow so chip + popup read as one raised surface.
+2026-05-28: Expression input focus color: text, numeric, and reference search inputs use chip domain pastel color for focus border instead of page accent gold.
+2026-05-28: Derived display chip compute signature: (context, state) => T. Context-first matches the contingency lambda pattern consumers already know.
+2026-05-28: Auto-indent rule tightened: lines only auto-indent when at least one clause is optional (has toggle icon). Lines of only contingent/display clauses stay flush left.

@@ -8,7 +8,7 @@
  * Display chips optionally open a read-only info popup.
  */
 
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useChip } from '../hooks/useChip';
 import { useSentence } from '../hooks/useSentence';
 import { usePopup } from '../hooks/usePopup';
@@ -50,8 +50,8 @@ export function Chip({ clauseId, chipId }: ChipProps) {
   );
 
   const isInteractive = chipDefinition.mode.type === 'interactive';
-  const isDisplay = chipDefinition.mode.type === 'display';
   const displayMode = chipDefinition.mode.type === 'display' ? chipDefinition.mode : undefined;
+  const isDisplay = displayMode != null;
   const hasInfoPopup = displayMode?.info != null;
   const showPopup = isOpen(chipId);
   const showPlaceholder = !valid;
@@ -67,10 +67,10 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     }
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     close();
     triggerRef.current?.focus();
-  };
+  }, [close]);
 
   const triggerClasses = [
     'chipper-chip-trigger',

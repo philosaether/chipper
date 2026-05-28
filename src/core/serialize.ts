@@ -51,9 +51,10 @@ export function serialize(
       activeFlags[clauseDef.id] = true;
     }
 
-    // Serialize chip values (skip non-static display chips — their values are ephemeral)
+    // Serialize chip values — ephemeral display chips (derived, remote, external) are excluded
     for (const chipDef of clauseDef.chips) {
-      if (chipDef.mode.type === 'display' && chipDef.mode.source.type !== 'static') continue;
+      const isEphemeralDisplay = chipDef.mode.type === 'display' && chipDef.mode.source.type !== 'static';
+      if (isEphemeralDisplay) continue;
       const chipState = clauseState.chips[chipDef.id];
       if (chipState) {
         result[chipDef.id] = chipState.value;
