@@ -434,6 +434,77 @@ Grouping works across all keyword-accepting domains: `keywordDomain`,
 `textDomain`, `numberDomain`, `dateDomain`, `keywordOrExpressionDomain`,
 `multiSelectDomain` (options), and `alternativeCoordinateDomain` (slot keywords).
 
+## Display Chips
+
+Not every chip needs user input. **Display chips** show values from
+external sources — fixed strings, derived computations, remote APIs,
+or live subscriptions. Add `display` to any `.chip()` call:
+
+```ts
+// Static value — debugging, scaffolding, or contextually fixed data
+.chip('project', 'projectName', { display: 'Praxis' })
+
+// Derived from sentence state — recomputes when chips change
+.chip('cost', 'currency', {
+  display: (state) => lookupPrice(state.clauses['item']?.chips['item']?.value)
+})
+
+// Remote fetch — one-shot or polling
+.chip('weather', 'text', {
+  display: { url: '/api/weather', extract: (r: any) => r.temp, interval: 60000 }
+})
+
+// External subscription — WebSocket, EventSource, etc.
+.chip('price', 'currency', {
+  display: { subscribe: (cb) => stockTicker.on('AAPL', cb) }
+})
+```
+
+Display chips render with no border and a pastel background. They're
+visually distinct from interactive chips — the user can see them but
+can't edit them.
+
+### Info Popup
+
+Display chips can show provenance info on click:
+
+```ts
+.chip('elapsed', 'text', {
+  display: (state) => formatElapsed(new Date('2026-05-15')),
+  info: 'Time elapsed since May 15, 2026',
+})
+
+// Dynamic info content
+.chip('total', 'currency', {
+  display: (state) => computeTotal(state),
+  info: (value, state) => `Sum of ${countItems(state)} line items`,
+})
+```
+
+### Source Types
+
+| Shorthand | Source | Description |
+|-----------|--------|-------------|
+| Primitive (`'Praxis'`, `42`) | `static` | Fixed value, set once |
+| Function (`(state) => ...`) | `derived` | Recomputes on state change |
+| `{ url, extract, interval? }` | `remote` | Fetches from URL, optional polling |
+| `{ subscribe }` | `external` | Consumer-managed subscription |
+
+### Visual States
+
+| State | Appearance |
+|-------|-----------|
+| Normal | Pastel background, no border |
+| Loading | Subtle pulse animation |
+| Error | Error-colored border |
+| Info open | Accent glow (same as expanded interactive chips) |
+
+### Serialization
+
+Static display chips are included in serialized output (they hold real
+values). Derived, remote, and external display chips are excluded — their
+values are ephemeral.
+
 ## Reading State
 
 The `onChange` callback receives a `SentenceState` on every change:
