@@ -29,7 +29,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
   const { definition, state, clauseById, dispatch } = useSentence();
   const { open, close, isOpen } = usePopup();
   useReferenceDisplay(domain, value, clauseId, chipId, dispatch);
-  useDisplaySource(chipDefinition, state, dispatch);
+  useDisplaySource(chipDefinition, clauseId, state, clauseById, dispatch);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Resolve context for dynamic prefix/suffix (only when expression mode has function affixes)

@@ -9,15 +9,18 @@
  */
 
 import { useEffect, useRef } from 'react';
-import type { ChipDefinition } from '../core/types';
-import type { SentenceState } from '../core/state';
+import type { ChipDefinition, ClauseDefinition } from '../core/types';
+import type { SentenceState, ContextScope } from '../core/state';
 import type { SentenceAction } from '../core/reducer';
+import { buildClauseContext } from '../core/context-resolution';
 
 type Dispatch = (action: SentenceAction) => void;
 
 export function useDisplaySource(
   chipDefinition: ChipDefinition,
+  clauseId: string,
   state: SentenceState,
+  clauseById: Map<string, ClauseDefinition>,
   dispatch: Dispatch,
 ): void {
   const mode = chipDefinition.mode;
@@ -33,11 +36,16 @@ export function useDisplaySource(
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (source.type !== 'derived') return;
-    const newValue = source.compute(state);
+    const clauseDef = clauseById.get(clauseId);
+    const clauseState = state.clauses[clauseId];
+    const context = clauseDef && clauseState
+      ? buildClauseContext(clauseId, clauseDef, clauseState.chips, clauseById, state.contexts)
+      : {};
+    const newValue = source.compute(context, state);
     if (Object.is(newValue, prevDerivedRef.current)) return;
     prevDerivedRef.current = newValue;
     dispatch({ type: 'SET_DISPLAY_VALUE', chipId, value: newValue });
-  }, [source, state, dispatch, chipId]);
+  }, [source, state, dispatch, chipId, clauseId, clauseById]);
 
   // Remote source: fetch + optional polling
   // eslint-disable-next-line react-hooks/rules-of-hooks

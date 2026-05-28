@@ -444,9 +444,9 @@ or live subscriptions. Add `display` to any `.chip()` call:
 // Static value — debugging, scaffolding, or contextually fixed data
 .chip('project', 'projectName', { display: 'Praxis' })
 
-// Derived from sentence state — recomputes when chips change
+// Derived from context — uses the same ctx pattern as contingency lambdas
 .chip('cost', 'currency', {
-  display: (state) => lookupPrice(state.clauses['item']?.chips['item']?.value)
+  display: (ctx) => lookupPrice(ctx.item)
 })
 
 // Remote fetch — one-shot or polling
@@ -470,13 +470,13 @@ Display chips can show provenance info on click:
 
 ```ts
 .chip('elapsed', 'text', {
-  display: (state) => formatElapsed(new Date('2026-05-15')),
+  display: (ctx) => formatElapsed(new Date('2026-05-15')),
   info: 'Time elapsed since May 15, 2026',
 })
 
 // Dynamic info content
 .chip('total', 'currency', {
-  display: (state) => computeTotal(state),
+  display: (ctx) => computeTotal(ctx),
   info: (value, state) => `Sum of ${countItems(state)} line items`,
 })
 ```
@@ -486,7 +486,7 @@ Display chips can show provenance info on click:
 | Shorthand | Source | Description |
 |-----------|--------|-------------|
 | Primitive (`'Praxis'`, `42`) | `static` | Fixed value, set once |
-| Function (`(state) => ...`) | `derived` | Recomputes on state change |
+| Function (`(ctx) => ...`) | `derived` | Recomputes on state change, receives clause context |
 | `{ url, extract, interval? }` | `remote` | Fetches from URL, optional polling |
 | `{ subscribe }` | `external` | Consumer-managed subscription |
 

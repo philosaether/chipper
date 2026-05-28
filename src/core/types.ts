@@ -127,10 +127,10 @@ export interface StaticDisplaySource<T = unknown> {
   value: T;
 }
 
-/** A display chip whose value derives from sentence state. */
+/** A display chip whose value derives from sentence context or state. */
 export interface DerivedDisplaySource<T = unknown> {
   type: 'derived';
-  compute: (state: import('./state').SentenceState) => T;
+  compute: (context: SentenceContext, state: import('./state').SentenceState) => T;
 }
 
 /** A display chip whose value is fetched from a URL. */

@@ -30,14 +30,14 @@ import { chipperPalette } from '../palette';
 /** Display shorthand accepted by the builder `display` key on ChipOptions. */
 export type DisplayShorthand<T = unknown> =
   | T
-  | ((state: import('../core/state').SentenceState) => T)
+  | ((context: import('../core/types').SentenceContext, state: import('../core/state').SentenceState) => T)
   | { url: string; extract: (response: unknown) => T; interval?: number }
   | { subscribe: (callback: (value: T) => void) => (() => void) };
 
 /** Resolve builder `display` shorthand into a DisplaySource. */
 function resolveDisplaySource(display: DisplayShorthand): DisplaySource {
   if (typeof display === 'function') {
-    return { type: 'derived', compute: display as (state: import('../core/state').SentenceState) => unknown };
+    return { type: 'derived', compute: display as (context: import('../core/types').SentenceContext, state: import('../core/state').SentenceState) => unknown };
   }
   if (typeof display === 'object' && display !== null) {
     const obj = display as Record<string, unknown>;
