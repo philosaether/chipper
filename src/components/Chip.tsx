@@ -79,19 +79,27 @@ export function Chip({ clauseId, chipId }: ChipProps) {
 
   return (
     <span className="chipper-chip" style={chipStyle}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className={triggerClasses}
-        onClick={handleClick}
-        aria-expanded={showPopup}
-        aria-haspopup="listbox"
-      >
-        <span className="chipper-chip-trigger__text">
-          {displayValue}
+      {isInteractive ? (
+        <button
+          ref={triggerRef}
+          type="button"
+          className={triggerClasses}
+          onClick={handleClick}
+          aria-expanded={showPopup}
+          aria-haspopup="listbox"
+        >
+          <span className="chipper-chip-trigger__text">
+            {displayValue}
+          </span>
+        </button>
+      ) : (
+        <span className={triggerClasses}>
+          <span className="chipper-chip-trigger__text">
+            {displayValue}
+          </span>
         </span>
-      </button>
-      {showPopup && (
+      )}
+      {showPopup && isInteractive && (
         <ChipPopup
           clauseId={clauseId}
           chipId={chipId}
