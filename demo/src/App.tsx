@@ -432,9 +432,10 @@ function convertTemp(celsius: number, unit: string): string {
 /**
  * Subscribe to weather data for all cities.
  * Fetches from Open-Meteo (free, no API key, CORS-friendly).
- * Pushes updates to the callback — the callback value is the raw cache object.
+ * Pushes the default city (NYC) temperature in Fahrenheit as a string.
+ * Also populates the shared weatherCache for derived chips.
  */
-function subscribeToWeather(callback: (value: Record<string, number>) => void): () => void {
+function subscribeToWeather(callback: (value: string) => void): () => void {
   let active = true;
 
   const fetchAll = async () => {
@@ -450,7 +451,10 @@ function subscribeToWeather(callback: (value: Record<string, number>) => void): 
       for (let i = 0; i < cities.length && i < results.length; i++) {
         weatherCache[cities[i]!.value] = results[i]?.current?.temperature_2m ?? 0;
       }
-      if (active) callback({ ...weatherCache });
+      if (active) {
+        const nycCelsius = weatherCache['nyc'] ?? 0;
+        callback(convertTemp(nycCelsius, 'fahrenheit'));
+      }
     } catch {
       // Silently fail — display chip will show last known value or placeholder
     }
