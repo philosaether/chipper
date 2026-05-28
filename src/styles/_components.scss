@@ -172,8 +172,8 @@
 
   &:focus {
     outline: none;
-    border-color: var(--chipper-accent);
-    box-shadow: var(--chipper-focus-ring);
+    border-color: var(--chip-trigger-color-bg, var(--chipper-accent));
+    box-shadow: 0 0 0 2px var(--chip-trigger-color-bg, var(--chipper-accent-glow));
   }
 
   &::placeholder {
@@ -250,8 +250,8 @@
 
   &:focus {
     outline: none;
-    border-color: var(--chipper-accent);
-    box-shadow: var(--chipper-focus-ring);
+    border-color: var(--chip-trigger-color-bg, var(--chipper-accent));
+    box-shadow: 0 0 0 2px var(--chip-trigger-color-bg, var(--chipper-accent-glow));
   }
 }
 
