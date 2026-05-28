@@ -416,13 +416,13 @@
 .chipper-reference-popup__item--non-selectable {
   border-radius: 0.375rem;
   font-family: var(--chipper-font);
-  color: var(--chipper-text-muted);
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  background: transparent;
   border: 1px solid transparent;
   transition: all 0.15s ease;
 
   &:hover {
     border-color: var(--chip-trigger-color-text, var(--chipper-border));
-    color: var(--chipper-text-primary);
   }
 
   // Override: label inside non-selectable row has no colored background
