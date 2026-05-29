@@ -11,15 +11,19 @@ import type { Hue } from './types';
 /** Parse a hex color string (#RRGGBB or #RGB) into [r, g, b] channels. */
 function parseHex(hex: string): [number, number, number] {
   const cleaned = hex.replace('#', '');
+  let r: number, g: number, b: number;
   if (cleaned.length === 3) {
-    const r = parseInt(cleaned.charAt(0) + cleaned.charAt(0), 16);
-    const g = parseInt(cleaned.charAt(1) + cleaned.charAt(1), 16);
-    const b = parseInt(cleaned.charAt(2) + cleaned.charAt(2), 16);
-    return [r, g, b];
+    r = parseInt(cleaned.charAt(0) + cleaned.charAt(0), 16);
+    g = parseInt(cleaned.charAt(1) + cleaned.charAt(1), 16);
+    b = parseInt(cleaned.charAt(2) + cleaned.charAt(2), 16);
+  } else {
+    r = parseInt(cleaned.slice(0, 2), 16);
+    g = parseInt(cleaned.slice(2, 4), 16);
+    b = parseInt(cleaned.slice(4, 6), 16);
   }
-  const r = parseInt(cleaned.slice(0, 2), 16);
-  const g = parseInt(cleaned.slice(2, 4), 16);
-  const b = parseInt(cleaned.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    throw new Error(`Invalid hex color: ${hex}`);
+  }
   return [r, g, b];
 }
 

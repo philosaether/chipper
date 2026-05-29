@@ -44,9 +44,6 @@ const STRUCTURE_KEYS: ReadonlyArray<[keyof ChipperTheme['structure'], string]> =
   ['transition', '--chipper-transition'],
 ];
 
-/** Hue token suffixes that every hue produces. */
-const HUE_SUFFIXES = ['-text', '-bg', '-hover', '-glow'] as const;
-
 /** Resolve a hue by role name, falling back to the theme's fallback hue. */
 function resolveHue(theme: ChipperTheme, roleName: string): Hue | undefined {
   if (theme.hues[roleName]) return theme.hues[roleName];
@@ -116,39 +113,12 @@ export function themeToProperties(
   return properties;
 }
 
-/** Collect all CSS property names that a theme would set. */
-function collectPropertyNames(theme: ChipperTheme, hueRoles?: string[]): string[] {
-  const names: string[] = [];
-
-  for (const [, prop] of SURFACE_KEYS) names.push(prop);
-  for (const [, prop] of ACCENT_KEYS) names.push(prop);
-  for (const [, prop] of SEMANTIC_KEYS) names.push(prop);
-  for (const [, prop] of STRUCTURE_KEYS) names.push(prop);
-
-  const allRoles = new Set(Object.keys(theme.hues));
-  if (hueRoles) {
-    for (const role of hueRoles) allRoles.add(role);
-  }
-
-  for (const roleName of allRoles) {
-    const prefix = `--chipper-color-${roleName}`;
-    for (const suffix of HUE_SUFFIXES) {
-      names.push(`${prefix}${suffix}`);
-    }
-  }
-
-  return names;
-}
-
 export interface ApplyThemeOptions {
   /** DOM element to apply tokens to. Defaults to document.documentElement. */
   container?: HTMLElement;
   /** Hue role names used by the consumer's palette. Enables fallback
       for roles not explicitly defined in the theme. */
   hueRoles?: string[];
-  /** Previously applied theme — its tokens are cleared before applying
-      the new one. If not provided, all known chipper tokens are cleared. */
-  previousTheme?: ChipperTheme;
 }
 
 /**
@@ -164,19 +134,7 @@ export function applyTheme(
   const container = options?.container ?? document.documentElement;
 
   // Clear previous theme's properties
-  if (options?.previousTheme) {
-    const previousProps = collectPropertyNames(options.previousTheme, options?.hueRoles);
-    for (const prop of previousProps) {
-      container.style.removeProperty(prop);
-    }
-  } else {
-    // No previous theme specified — clear all known chipper properties.
-    // Collect from the new theme to know the full property set.
-    const allProps = collectPropertyNames(theme, options?.hueRoles);
-    for (const prop of allProps) {
-      container.style.removeProperty(prop);
-    }
-  }
+  clearTheme(container);
 
   // Apply new theme
   const properties = themeToProperties(theme, options?.hueRoles);

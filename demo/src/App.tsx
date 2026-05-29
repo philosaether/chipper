@@ -48,10 +48,13 @@ function switchTheme(themeName: string) {
   }
 
   // Demo-specific: match page font for terminal theme (separate concern)
-  const demoFont = themeName === 'terminal'
-    ? "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace"
-    : '';
-  document.documentElement.style.setProperty('--demo-font', demoFont || '');
+  if (themeName === 'terminal') {
+    document.documentElement.style.setProperty(
+      '--demo-font', "'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace",
+    );
+  } else {
+    document.documentElement.style.removeProperty('--demo-font');
+  }
 }
 
 const themePalette = extendPalette({

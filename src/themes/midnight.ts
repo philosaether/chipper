@@ -8,18 +8,6 @@
  */
 
 import type { ChipperTheme } from './types';
-import type { Hue } from './types';
-
-/** Create a midnight hue with explicit values and hue-tinted glow. */
-function midnightHue(
-  name: string,
-  text: string,
-  background: string,
-  hover: string,
-  glow: string,
-): Hue {
-  return { name, text, background, hover, glow };
-}
 
 export const midnightTheme: ChipperTheme = {
   name: 'midnight',
@@ -61,15 +49,15 @@ export const midnightTheme: ChipperTheme = {
   },
 
   hues: {
-    gold: midnightHue('gold', '#d4af37', '#2e2810', '#3a3218', 'rgba(212, 175, 55, 0.2)'),
-    plum: midnightHue('plum', '#b88ad4', '#2a1e3a', '#332644', 'rgba(184, 138, 212, 0.2)'),
-    copper: midnightHue('copper', '#d4a87a', '#2e2418', '#3a2e20', 'rgba(212, 168, 122, 0.2)'),
-    sage: midnightHue('sage', '#7ac47a', '#1a2e1a', '#223822', 'rgba(122, 196, 122, 0.2)'),
-    slate: midnightHue('slate', '#7aaad4', '#1a2240', '#222a4a', 'rgba(122, 170, 212, 0.2)'),
-    stone: midnightHue('stone', '#b0a898', '#2a2822', '#33302a', 'rgba(176, 168, 152, 0.2)'),
-    teal: midnightHue('teal', '#6ac4be', '#1a2e2c', '#223836', 'rgba(106, 196, 190, 0.2)'),
-    rose: midnightHue('rose', '#d48a96', '#2e1a1e', '#382228', 'rgba(212, 138, 150, 0.2)'),
-    umber: midnightHue('umber', '#c4b060', '#2a2818', '#333020', 'rgba(196, 176, 96, 0.2)'),
-    indigo: midnightHue('indigo', '#8a9ad4', '#1e2240', '#262c4a', 'rgba(138, 154, 212, 0.2)'),
+    gold:   { name: 'gold',   text: '#d4af37', background: '#2e2810', hover: '#3a3218', glow: 'rgba(212, 175, 55, 0.2)' },
+    plum:   { name: 'plum',   text: '#b88ad4', background: '#2a1e3a', hover: '#332644', glow: 'rgba(184, 138, 212, 0.2)' },
+    copper: { name: 'copper', text: '#d4a87a', background: '#2e2418', hover: '#3a2e20', glow: 'rgba(212, 168, 122, 0.2)' },
+    sage:   { name: 'sage',   text: '#7ac47a', background: '#1a2e1a', hover: '#223822', glow: 'rgba(122, 196, 122, 0.2)' },
+    slate:  { name: 'slate',  text: '#7aaad4', background: '#1a2240', hover: '#222a4a', glow: 'rgba(122, 170, 212, 0.2)' },
+    stone:  { name: 'stone',  text: '#b0a898', background: '#2a2822', hover: '#33302a', glow: 'rgba(176, 168, 152, 0.2)' },
+    teal:   { name: 'teal',   text: '#6ac4be', background: '#1a2e2c', hover: '#223836', glow: 'rgba(106, 196, 190, 0.2)' },
+    rose:   { name: 'rose',   text: '#d48a96', background: '#2e1a1e', hover: '#382228', glow: 'rgba(212, 138, 150, 0.2)' },
+    umber:  { name: 'umber',  text: '#c4b060', background: '#2a2818', hover: '#333020', glow: 'rgba(196, 176, 96, 0.2)' },
+    indigo: { name: 'indigo', text: '#8a9ad4', background: '#1e2240', hover: '#262c4a', glow: 'rgba(138, 154, 212, 0.2)' },
   },
 };
