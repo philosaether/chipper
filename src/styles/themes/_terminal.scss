@@ -1,0 +1,45 @@
+// Terminal theme — black surfaces, green everything, monospace font.
+// Single hue: every domain renders in terminal green. Consumer palettes
+// with any hue role name will fall back to green via the CSS fallback
+// chain (no matching --chipper-color-{role}-* tokens → component
+// fallbacks render in neutral, but applyTheme with fallbackHue handles
+// the runtime case).
+
+@use '../mixins' as *;
+
+$terminal-palette: (
+  "green": (#33ff33, #0a1a0a, rgba(51, 255, 51, 0.25)),
+);
+
+:root {
+  // Surface
+  --chipper-bg-primary: #0a0a0a;
+  --chipper-bg-secondary: #141414;
+  --chipper-bg-tertiary: #1e1e1e;
+  --chipper-bg-elevated: #1a1a1a;
+  --chipper-text-primary: #33ff33;
+  --chipper-text-secondary: #22bb22;
+  --chipper-text-muted: #117711;
+  --chipper-border: #1a3a1a;
+  --chipper-border-subtle: rgba(26, 58, 26, 0.4);
+
+  // Accent (green)
+  --chipper-accent: #33ff33;
+  --chipper-accent-bright: #66ff66;
+  --chipper-accent-dim: #22aa22;
+  --chipper-accent-glow: #0a2a0a;
+
+  // Semantic
+  --chipper-success: #33ff33;
+  --chipper-warning: #ffaa00;
+  --chipper-error: #ff3333;
+  --chipper-info: #33ff33;
+
+  // Classification — single hue, runtime fallback handles the rest
+  @include chip-colors($terminal-palette);
+
+  // Structural overrides
+  --chipper-font: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  --chipper-focus-ring: 0 0 0 2px rgba(51, 255, 51, 0.3);
+  --chipper-popup-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}

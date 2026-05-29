@@ -87,6 +87,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
     '--chip-trigger-color-text': `var(--chipper-color-${domain.color}-text)`,
     '--chip-trigger-color-bg': `var(--chipper-color-${domain.color}-bg)`,
     '--chip-trigger-color-hover': `var(--chipper-color-${domain.color}-hover)`,
+    '--chip-trigger-color-glow': `var(--chipper-color-${domain.color}-glow, rgba(0, 0, 0, 0.12))`,
   } as React.CSSProperties;
 
   // Resolve info popup content for display chips

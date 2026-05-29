@@ -1,0 +1,52 @@
+// Midnight theme — cool dark surfaces, blue accents.
+// Desaturated cool hues on dark pastel backgrounds. Each hue includes
+// a glow color for elevated/expanded chip states.
+// See .meta/inbox/color-scheme.md for the praxis design rationale;
+// midnight inverts the light/dark relationship while preserving hue identity.
+
+@use '../mixins' as *;
+
+$midnight-palette: (
+  "gold":   (#d4af37, #2e2810, rgba(212, 175, 55, 0.2)),
+  "plum":   (#b88ad4, #2a1e3a, rgba(184, 138, 212, 0.2)),
+  "copper": (#d4a87a, #2e2418, rgba(212, 168, 122, 0.2)),
+  "sage":   (#7ac47a, #1a2e1a, rgba(122, 196, 122, 0.2)),
+  "slate":  (#7aaad4, #1a2240, rgba(122, 170, 212, 0.2)),
+  "stone":  (#b0a898, #2a2822, rgba(176, 168, 152, 0.2)),
+  "teal":   (#6ac4be, #1a2e2c, rgba(106, 196, 190, 0.2)),
+  "rose":   (#d48a96, #2e1a1e, rgba(212, 138, 150, 0.2)),
+  "umber":  (#c4b060, #2a2818, rgba(196, 176, 96, 0.2)),
+  "indigo": (#8a9ad4, #1e2240, rgba(138, 154, 212, 0.2)),
+);
+
+:root {
+  // Surface
+  --chipper-bg-primary: #1a1b2e;
+  --chipper-bg-secondary: #232440;
+  --chipper-bg-tertiary: #2d2f50;
+  --chipper-bg-elevated: #2a2c48;
+  --chipper-text-primary: #e0e0ef;
+  --chipper-text-secondary: #a0a0c0;
+  --chipper-text-muted: #6a6a8a;
+  --chipper-border: #3a3c5e;
+  --chipper-border-subtle: rgba(58, 60, 94, 0.4);
+
+  // Accent (blue)
+  --chipper-accent: #7b9fd4;
+  --chipper-accent-bright: #a8c4e8;
+  --chipper-accent-dim: #5a7fb0;
+  --chipper-accent-glow: #3a4a6e;
+
+  // Semantic
+  --chipper-success: #66bb6a;
+  --chipper-warning: #ffa726;
+  --chipper-error: #ef5350;
+  --chipper-info: #42a5f5;
+
+  // Classification
+  @include chip-colors($midnight-palette);
+
+  // Structural overrides
+  --chipper-focus-ring: 0 0 0 2px rgba(123, 159, 212, 0.3);
+  --chipper-popup-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

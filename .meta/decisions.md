@@ -70,3 +70,6 @@ Append-only log. Don't edit old entries.
 2026-05-28: Expression input focus color: text, numeric, and reference search inputs use chip domain pastel color for focus border instead of page accent gold.
 2026-05-28: Derived display chip compute signature: (context, state) => T. Context-first matches the contingency lambda pattern consumers already know.
 2026-05-28: Auto-indent rule tightened: lines only auto-indent when at least one clause is optional (has toggle icon). Lines of only contingent/display clauses stay flush left.
+2026-05-29: Deferred: /ttyl cleanup enhancements (to philset — inbox auto-clean + commit step).
+2026-05-29: Theming v2 design accepted (designs/theming-v2.md). Hue abstraction formalizes chip color roles as typed objects. Runtime theme switching via applyTheme(). fallbackHue defaults to first hue. createHue() helper auto-computes hover. Three themes ship as both TS objects and SCSS: praxis, midnight, terminal. ChipperTheme/Hue types re-exported from main entry; applyTheme stays in chipper/themes.
+2026-05-29: Deferred: sample custom hue using createHue() on demo page (rolled into demo page v1.0 roadmap item).

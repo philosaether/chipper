@@ -14,9 +14,15 @@
       "types": "./dist/headless.d.ts",
       "import": "./dist/headless.js"
     },
+    "./themes": {
+      "types": "./dist/themes/index.d.ts",
+      "import": "./dist/themes/index.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./styles/base.css": "./dist/base.css",
-    "./themes/praxis.css": "./dist/themes/praxis.css"
+    "./themes/praxis.css": "./dist/themes/praxis.css",
+    "./themes/midnight.css": "./dist/themes/midnight.css",
+    "./themes/terminal.css": "./dist/themes/terminal.css"
   },
   "files": [
     "dist",
@@ -26,7 +32,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build && npm run build:css",
-    "build:css": "sass --style=compressed --no-source-map src/styles/chipper.scss:dist/styles.css src/styles/chipper-base.scss:dist/base.css src/styles/themes/praxis-theme.scss:dist/themes/praxis.css",
+    "build:css": "sass --style=compressed --no-source-map src/styles/chipper.scss:dist/styles.css src/styles/chipper-base.scss:dist/base.css src/styles/themes/praxis-theme.scss:dist/themes/praxis.css src/styles/themes/midnight-theme.scss:dist/themes/midnight.css src/styles/themes/terminal-theme.scss:dist/themes/terminal.css",
     "lint": "eslint src/",
     "test": "vitest run",
     "test:watch": "vitest",
