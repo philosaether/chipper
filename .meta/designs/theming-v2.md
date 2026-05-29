@@ -2,8 +2,11 @@
 Status: accepted
 Date: 2026-05-29
 Accepted: 2026-05-29
-Assessment: ../assessments/theming-engine-v2.md
+Implemented: 2026-05-29 (feature/theming-v2)
+Assessment: ../assessments/archive/2026-05-29-theming-engine-v2.md
 Supersedes: theming-engine.md (extends, does not invalidate — v1 SASS architecture stays)
+Divergences: none
+Deferred: sample custom hue on demo page (rolled into demo page v1.0)
 ---
 
 # Theming Engine v2 — Desired State

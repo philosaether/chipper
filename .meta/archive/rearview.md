@@ -18,3 +18,9 @@
   four source strategies (static, derived, remote, external). Includes
   info popup, serialization rules, visual states, and builder DX sugar.
   Completed: 2026-05-28 (feature/readonly-chip-mode).
+
+- **Theming engine v2 — runtime theme switching** — Hue abstraction,
+  typed ChipperTheme, applyTheme()/clearTheme() API, createHue() helper.
+  Three themes (praxis, midnight, terminal) as both TS objects and SCSS.
+  Per-chip glow token for dark theme shadows.
+  Completed: 2026-05-29 (feature/theming-v2).
