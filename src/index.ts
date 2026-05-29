@@ -126,3 +126,6 @@ export {
   ReferencePopup,
   type ReferencePopupProps,
 } from './components';
+
+// Theme types (runtime API lives in chipper/themes, only types re-exported here)
+export type { ChipperTheme, Hue } from './themes/types';

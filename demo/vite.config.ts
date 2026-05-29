@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       'chipper/styles.css': resolve(__dirname, '../src/styles/chipper.scss'),
+      'chipper/themes': resolve(__dirname, '../src/themes/index.ts'),
       'chipper': resolve(__dirname, '../src/index.ts'),
     },
   },

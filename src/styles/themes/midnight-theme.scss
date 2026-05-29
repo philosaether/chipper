@@ -1,0 +1,8 @@
+// Midnight theme — standalone entry point.
+// Import alongside chipper/styles/base.css for explicit theme selection.
+//
+// Usage:
+//   import 'chipper/styles/base.css'
+//   import 'chipper/themes/midnight.css'
+
+@use 'midnight' as theme;
