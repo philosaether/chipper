@@ -6,55 +6,48 @@ Current work state. Update constantly, delete items when done.
 
 ## Active
 
-- **Keyword grouping** — implementing designs/keyword-grouping.md.
-  Branch: feature/keyword-grouping.
+- **Theming v2** (feature/theming-v2) — runtime theme switching, hue
+  abstraction, applyTheme API, three shipped themes. Design: theming-v2.md.
+
+## Parked
+
+- **riff/demo-prep** — pre-release riff sweep. Display chip mode done,
+  remaining items not started. Branch has one track note (readonly chip,
+  superseded by display chip design). Resume to tackle remaining riffs.
+
+## Done This Session (2026-05-28)
+
+- [x] Display chip mode — design + implementation + review (feature/readonly-chip-mode):
+      Unified readonly/live/computed into single display mode with four source
+      strategies (static, derived, remote, external). Info popup, builder DX,
+      serialization, visual states, demo page with live weather data.
+- [x] Visual polish pass — elevation shadows on expanded chips + popups,
+      chip-themed input focus colors, info popup styling
+- [x] Reference popup fixes — drill-only click bug, search focus color,
+      non-selectable row styling
+- [x] Auto-indent refinement — only indent when line has optional clause toggle
+- [x] README display chips section
 
 ## Next Session
 
 Pick from pre-release roadmap. Likely candidates:
 
-- **Screen reader support** — aria-live, aria-invalid, role=option. Keyboard
-  nav infrastructure is in place; this is the ARIA semantic layer on top.
-- **Demo page v1.0** — rebuild as cohesive release page. Multi-font panels,
-  explainer update, import/export panel (tests serialization API).
-- **Builder DX wishlist riff** — clause ergonomics, predicate helpers,
-  `.chip()` footgun, `displayLabel` → `display`, config/options naming.
-- **Keyword grouping** — visual separator / groups in popup keyword lists.
-- **Theming engine v2** — runtime theme switching as first-class library feature.
+- **Demo page v1.0** (draft) — cohesive release page, error behavior validation
+- **Screen reader support** (riff) — ARIA semantic layer on keyboard nav
+- **Builder DX wishlist** (riff) — clause ergonomics, `.chip()` footgun, config naming
+- **Theming engine v2** (draft) — runtime theme switching
+- **Demo import/export panel** (riff) — serialization API showcase
 
-See `roadmap.md` for full pre-release and post-release item lists.
+See `roadmap.md` for full list.
 
 ## Tech Debt
 
-- Architecture doc refresh — chipper-architecture.md §3 and §4 are stale.
-  logical-architecture.md is current.
-- `Domain<T>` variance — blocks demo tsconfig (strict mode).
-- Clause definition index — repeated `.find()`/`.filter()` in reducer. Not
-  urgent at sentence scale.
-- `useReferenceDisplay` hook — restored references show raw IDs until popup
-  interaction. Serialization design defers cache hydration to this hook.
+- Test files have strict-mode errors (implicit any, missing `!` assertions).
+  Not blocking — tests pass at runtime. Low priority.
+- Architecture doc §2 still references old chip modes (readonly/live/computed).
+  Should be updated to reflect unified display mode on next arch refresh.
 
 ## v1.0 Feature Inventory
 
-Full assessment: assessments/v1-feature-scope.md.
-
-### Done This Session (2026-05-24)
-- [x] Context-aware punctuation — `.punc()` builder method (done 2026-05-24)
-- [x] Keyboard navigation — useKeyboardNavigation hook, focus trap/restore,
-      all popup types, aria-labels, focus-visible CSS (done 2026-05-24)
-- [x] Serialization/deserialization — serialize/deserialize utilities,
-      initialValues overlay, custom serializer support (done 2026-05-24)
-- [x] Reference domain demo — genre tree sentence on demo page (done 2026-05-24)
-- [x] praxisPalette extracted to separate file (done 2026-05-24)
-
-### Previously Done
-- All domain archetypes (KOE, multiSelect, altCoordinate, reference, composite)
-- Core engine (contingency, context propagation, chip-level contingency,
-  line grouping, mode-switching, context-aware display)
-- Builder DX (rename clause→builder, chip/produces shorthands, expression
-  helpers, keyword displayLabel, default cascade, contingentOn lambda)
-- Theming engine + praxis theme
-- v1 developer documentation (README.md)
-
-### Remaining for v1.0
-See `roadmap.md` Pre-Release section.
+See `roadmap.md` Pre-Release section for remaining items.
+See `archive/rearview.md` for completed items.

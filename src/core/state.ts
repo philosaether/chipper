@@ -28,8 +28,11 @@ export interface ChipState<T = unknown> {
   /** Whether a live source is currently fetching (live chips only) */
   loading?: boolean;
 
-  /** Error message from live source or computed derivation */
+  /** Error message from source resolution */
   error?: string;
+
+  /** Timestamp of last successful source resolution (remote/external display chips only) */
+  lastUpdated?: number;
 }
 
 /** State of a single clause. */

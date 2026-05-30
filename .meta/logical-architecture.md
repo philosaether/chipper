@@ -42,7 +42,7 @@ core/
     ├── set-chip-value.ts — SET_CHIP_VALUE: update value, validate, display, cascade validity, trigger context propagation
     ├── toggle-clause.ts  — TOGGLE_CLAUSE: flip user-controlled activation on optional clauses
     ├── set-context.ts    — SET_CONTEXT: delegate to evaluateContingency for presence + reconfiguration
-    └── set-live-value.ts — SET_LIVE_VALUE: (stub) update live chip from external source
+    └── set-display-value.ts — SET_DISPLAY_VALUE: update display chip from source (static/derived/remote/external)
 ```
 
 ### domains/
@@ -104,6 +104,7 @@ components/
 │                           text segments (punctuation) at render time; skips them in dormant mode.
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
+├── ChipInfoPopup.tsx     — Read-only info popup for display chips (click-to-reveal provenance)
 ├── popups/
 │   ├── KeywordGroupList.tsx — Shared rendering for grouped keywords: labels, prefixes, flow/grid layout.
 │   │                          Used by KOE, multi-select, and alt-coordinate popups.
@@ -129,6 +130,9 @@ hooks/
 │                              aria-activedescendant pattern. Internal only (not re-exported from index.ts).
 ├── useReferenceDisplay.ts — Eager display resolution for reference chips on mount.
 │                              Calls source.resolveDisplay(), populates displayCache, re-dispatches.
+│                              Internal only (not re-exported from index.ts).
+├── useDisplaySource.ts    — Display chip value resolution (derived/remote/external sources).
+│                              Memoizes derived results, handles fetch+polling, manages subscriptions.
 │                              Internal only (not re-exported from index.ts).
 └── index.ts              — Re-exports all hooks + SentenceProvider
 ```

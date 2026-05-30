@@ -10,7 +10,7 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [react-hooks.md](react-hooks.md) | accepted | React hooks: useSentence, useChip, usePopup, SentenceProvider. Stage 3 of vertical slice. |
 | [interactive-components.md](interactive-components.md) | accepted | Interactive components: Sentence, Clause, Chip, ChipPopup, EnumPopup. Stage 4 of vertical slice. |
 | [demo-page.md](demo-page.md) | accepted | Demo page v0.1: vertical slice sentence, state inspector, explainer. Stage 5 of vertical slice. |
-| [theming-engine.md](theming-engine.md) | accepted | SASS theming engine: token contract, file architecture, praxis-theme as default. |
+| ~~theming-engine.md~~ | superseded | *(see theming-v2.md)* |
 | [keyword-or-expression-domain.md](keyword-or-expression-domain.md) | accepted | keywordOrExpressionDomain: keywords + text input popup, second archetype. |
 | [multi-select-alt-coordinate.md](multi-select-alt-coordinate.md) | accepted | multiSelectDomain + alternativeCoordinateDomain: toggle grid and tabbed mode popups. |
 | [visual-polish.md](visual-polish.md) | accepted | Visual polish: popup density, font-size token, WCAG contrast, caret, multi-font demo. |
@@ -25,3 +25,5 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [keyboard-navigation.md](keyboard-navigation.md) | accepted | Keyboard navigation: useKeyboardNavigation hook, aria-activedescendant, focus trap/restore, AA compliance. |
 | [serialization.md](serialization.md) | accepted | Serialization: serialize/deserialize utilities, initialValues overlay, SerializedSentence format, SentenceViewModel pattern. |
 | [keyword-grouping.md](keyword-grouping.md) | accepted | Keyword grouping: visual groups within popup keyword lists, group wrapper pattern, grid/flow layout per group. |
+| [display-chip-mode.md](display-chip-mode.md) | accepted | Display chip mode: unified readonly/live/computed, source strategies, info popup for provenance. |
+| [theming-v2.md](theming-v2.md) | accepted | Theming v2: runtime switching, hue abstraction, applyTheme API, three shipped themes. |

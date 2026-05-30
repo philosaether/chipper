@@ -16,22 +16,10 @@ Items that must ship before npm publish.
   rebuild as a cohesive release page. Includes killer app showcase
   (praxis demo sentence as hero, many fun examples throughout).
   NB: validate and demonstrate error behavior (aria-invalid, visual
-  error states, invalid-on-submit).
-
-- **Theming engine v2 — runtime theme switching** — the demo's theme
-  toggle (praxis/midnight/terminal) works by applying CSS custom property
-  overrides via JS. This should be a first-class library feature, not
-  demo-only code. Design questions: (1) Should themes be JS objects or
-  SCSS-compiled CSS files? (2) Chip classification colors as part of
-  theme contract. (3) Font token `inherit` default. (4) Theme restoration
-  fragility.
+  error states, invalid-on-submit). Include a sample custom hue using
+  `createHue()` to showcase the theme authoring API.
 
 ### Riffs
-
-- **Readonly + live chip modes** — implement readonly and live chip
-  rendering. Types and reducer stubs exist; needs component rendering,
-  live source fetching (polling + one-shot), loading/error states.
-  Deferred from: chipper/meta/architecture-refresh (2026-05-27).
 
 - **Screen reader support** — aria-live, aria-invalid, role=option.
   Keyboard nav infrastructure is in place; this is the ARIA semantic layer.

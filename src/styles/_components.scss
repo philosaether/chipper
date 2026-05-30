@@ -64,18 +64,48 @@
   }
 
   &--expanded {
-    border-color: var(--chipper-accent);
-    box-shadow: 0 0 0 2px var(--chipper-accent-glow);
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    box-shadow: 0 4px 12px var(--chip-trigger-color-glow, rgba(0, 0, 0, 0.12)),
+                0 1px 3px rgba(0, 0, 0, 0.08);
   }
 
-  &--readonly {
+  &--display {
     border-color: transparent;
-    opacity: 0.7;
+    background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
 
     &:hover {
-      border-color: transparent;
+      background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
     }
   }
+
+  &--loading {
+    animation: chipper-pulse 1.5s ease-in-out infinite;
+  }
+
+  &--error {
+    border-color: var(--chipper-error);
+    border-style: solid;
+  }
+}
+
+@keyframes chipper-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+// Info popup (display chips) -----------------------------------------------
+
+.chipper-chip-info {
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px var(--chip-trigger-color-glow, rgba(0, 0, 0, 0.12)),
+              0 1px 3px rgba(0, 0, 0, 0.08);
+  color: var(--chip-trigger-color-text, var(--chipper-text-secondary));
+}
+
+.chipper-chip-info__caret {
+  background: var(--chip-trigger-color-bg, var(--chipper-bg-elevated));
 }
 
 // Popup --------------------------------------------------------------------
@@ -84,7 +114,7 @@
   background: var(--chipper-bg-elevated);
   border: 1px solid var(--chipper-border);
   border-radius: 1rem;
-  box-shadow: 0 12px 32px rgba(77, 70, 53, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 0.75rem;
   font-size: var(--chipper-popup-font-size);
 }
@@ -144,8 +174,8 @@
 
   &:focus {
     outline: none;
-    border-color: var(--chipper-accent);
-    box-shadow: var(--chipper-focus-ring);
+    border-color: var(--chip-trigger-color-bg, var(--chipper-accent));
+    box-shadow: 0 0 0 2px var(--chip-trigger-color-bg, var(--chipper-accent-glow));
   }
 
   &::placeholder {
@@ -222,8 +252,8 @@
 
   &:focus {
     outline: none;
-    border-color: var(--chipper-accent);
-    box-shadow: var(--chipper-focus-ring);
+    border-color: var(--chip-trigger-color-bg, var(--chipper-accent));
+    box-shadow: 0 0 0 2px var(--chip-trigger-color-bg, var(--chipper-accent-glow));
   }
 }
 
@@ -376,7 +406,7 @@
   }
 }
 
-// Drill button on selectable items — subtle box on hover
+// Drill button on selectable items — border on hover, transparent background
 .chipper-reference-popup__item-drill {
   color: var(--chipper-text-muted);
   font-family: var(--chipper-font);
@@ -384,21 +414,26 @@
   transition: all 0.15s ease;
 
   &:hover {
-    color: var(--chipper-accent);
-    background: var(--chipper-bg-tertiary);
+    color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
   }
 }
 
-// Non-selectable row — no colored background, whole-row hover
-.chipper-reference-popup__item--non-selectable {
+// Non-selectable row — transparent bg, border on hover encloses full row.
+// Uses &.chipper-popup-option to override the shared pill styles.
+.chipper-reference-popup__item--non-selectable.chipper-popup-option {
   border-radius: 0.375rem;
   font-family: var(--chipper-font);
-  color: var(--chipper-text-muted);
+  color: var(--chip-trigger-color-text, var(--chipper-text-primary));
+  background: transparent;
+  border: 1px solid transparent;
   transition: all 0.15s ease;
 
-  &:hover {
-    background: var(--chipper-bg-tertiary);
-    color: var(--chipper-text-primary);
+  &:hover,
+  &.chipper-popup-option--active {
+    background: transparent;
+    border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    color: var(--chip-trigger-color-text, var(--chipper-text-primary));
   }
 
   // Override: label inside non-selectable row has no colored background
@@ -419,8 +454,8 @@
 
   &:focus {
     outline: none;
-    border-color: var(--chipper-accent);
-    box-shadow: var(--chipper-focus-ring);
+    border-color: var(--chip-trigger-color-bg, var(--chipper-accent));
+    box-shadow: 0 0 0 2px var(--chip-trigger-color-bg, var(--chipper-accent-glow));
   }
 
   &::placeholder {

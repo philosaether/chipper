@@ -24,5 +24,8 @@
     --chipper-color-#{$role}-text: #{$text};
     --chipper-color-#{$role}-bg: #{$bg};
     --chipper-color-#{$role}-hover: #{round-color(color.mix($text, $bg, 12%))};
+    @if list.length($colors) >= 3 {
+      --chipper-color-#{$role}-glow: #{list.nth($colors, 3)};
+    }
   }
 }

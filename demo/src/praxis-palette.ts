@@ -191,7 +191,7 @@ export const praxisPalette = extendPalette({
       placeholder: 'New Task',
     }),
     project: keywordDomain({
-      color: 'stone',
+      color: 'slate',
       keywords: [{ value: 'praxis', label: 'Praxis' }],
       default: 'praxis',
     }),

@@ -12,6 +12,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         headless: resolve(__dirname, 'headless.ts'),
+        'themes/index': resolve(__dirname, 'src/themes/index.ts'),
       },
       formats: ['es'],
     },

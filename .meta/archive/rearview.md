@@ -13,3 +13,14 @@
 - **Architecture doc refresh** — chipper-architecture.md §2–§5, §8 updated
   to reflect current API (builder, facades, hooks, state types, package structure).
   Completed: 2026-05-27 (meta/architecture-refresh).
+
+- **Readonly + live chip modes** — unified into display chip mode with
+  four source strategies (static, derived, remote, external). Includes
+  info popup, serialization rules, visual states, and builder DX sugar.
+  Completed: 2026-05-28 (feature/readonly-chip-mode).
+
+- **Theming engine v2 — runtime theme switching** — Hue abstraction,
+  typed ChipperTheme, applyTheme()/clearTheme() API, createHue() helper.
+  Three themes (praxis, midnight, terminal) as both TS objects and SCSS.
+  Per-chip glow token for dark theme shadows.
+  Completed: 2026-05-29 (feature/theming-v2).

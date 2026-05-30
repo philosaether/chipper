@@ -10,8 +10,12 @@ export type {
   Keyword,
   ExpressionMode,
   ChipMode,
-  LiveSource,
-  ComputedSource,
+  DisplaySource,
+  StaticDisplaySource,
+  DerivedDisplaySource,
+  RemoteDisplaySource,
+  ExternalDisplaySource,
+  DisplayConfig,
   ChipDefinition,
   TextSegment,
   ChipSegment,
@@ -43,7 +47,7 @@ export { serialize, deserialize, type SerializedSentence } from './core/serializ
 export type { SetChipValueAction } from './core/actions/set-chip-value';
 export type { ToggleClauseAction } from './core/actions/toggle-clause';
 export type { SetContextAction } from './core/actions/set-context';
-export type { SetLiveValueAction } from './core/actions/set-live-value';
+export type { SetDisplayValueAction } from './core/actions/set-display-value';
 
 // Domains — facade factories (sugar)
 export {
@@ -122,3 +126,6 @@ export {
   ReferencePopup,
   type ReferencePopupProps,
 } from './components';
+
+// Theme types (runtime API lives in chipper/themes, only types re-exported here)
+export type { ChipperTheme, Hue } from './themes/types';
