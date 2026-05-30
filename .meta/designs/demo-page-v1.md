@@ -1,8 +1,9 @@
 ---
-Status: draft
+Status: accepted
 Date: 2026-05-30
+Accepted: 2026-05-30
 Assessment: assessments/demo-page-use-cases.md
-Likely-supersedes: demo-page.md
+Supersedes: demo-page.md
 ---
 
 # Demo Page v1.0 — Desired State
@@ -215,8 +216,16 @@ everything else.
 Per-session (draft→ship cycle) is the natural unit — it maps to one
 feature and one token bill. Per-commit is too granular and hard to
 attribute to a feature.
-Chosen: per-session. Record in a JSON or markdown file that the "what
-it costs" overlay reads at build time.
+Chosen: per-session. Manual log from Claude Code web GUI before/after
+each session.
+
+**Demo page in chipper repo vs. philbas.com**
+The maze page is a marketing site with Cloudflare Workers, audience
+personalities, Spotify embeds, and page reskins — none of that belongs
+in `npm install chipper`. Building against the published package
+dogfoods the real developer workflow. Every DX pain point surfaces
+immediately. chipper/demo/ stays as a minimal dev playground.
+Chosen: philbas.com/chipper. npm publish moves before demo page work.
 
 ## Open Questions
 
@@ -224,15 +233,18 @@ it costs" overlay reads at build time.
    (copy from Claude Code usage stats), or automated extraction?
    Manual is simpler and guaranteed accurate. Automated would need
    to parse Claude Code's billing output.
+   - Manual, I suppose. I can check the web GUI before and after each session, if that's the best way to do it
 
 2. **Spotify embed**: need to test unauthenticated genre playlist
    embeds cross-browser. Fallback is a display chip with track info.
+   - Will test as part of that feature
 
 3. **Audience × demo interactions**: Beyond music genre filtering,
    what audience-specific demo mods are worth building? Cyberpunk
    contract builder with neon styling? Academics get a citation
    builder instead of contract? These are leaf/flower decisions —
    defer until we see the page taking shape.
+   - Agreed
 
 ## Out of Scope
 

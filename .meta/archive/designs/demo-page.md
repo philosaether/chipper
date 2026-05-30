@@ -1,10 +1,10 @@
 ---
-Status: accepted
+Status: superseded
 Date: 2026-04-28
 Accepted: 2026-04-28
 Implemented: 2026-04-28 (feature/demo-page)
-Divergences: none
-Deferred: multiple examples (v0.2), complexity toggle (v0.3), playground (v0.4)
+Superseded: 2026-05-30
+Superseded-by: demo-page-v1.md
 ---
 
 # Demo Page v0.1 — Desired State

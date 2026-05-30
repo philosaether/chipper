@@ -8,72 +8,17 @@ item should say *why* it was deferred and *what* would trigger picking it up.
 
 ## Pre-Release
 
-Items that must ship before npm publish. Demo page is a multi-cycle
-build — each item below is its own draft→ship session.
-Design: `designs/demo-page-v1.md`.
-
-### Demo Page — Roots (shared infrastructure)
-
-- **Token cost tracker** — utility recording actual token cost per
-  draft→ship cycle. Surfaces in "what it costs" overlay. Supporting
-  data for philset essay.
-- **Audience context** — React context + wrapper components for
-  audience-driven text transforms and conditional rendering.
-  `<AudienceText>`, `<AudienceOnly>`, `useAudience()`.
-- **Section router + deep-link codec** — conditional rendering from
-  navigator sentence state, URL serialization/deserialization.
-- **Demo wrapper component** — renders demo + stat chips + annotations.
-
-### Demo Page — Trunk (navigator + core page)
-
-- **Navigator sentence** — audience + section + details optional clause.
-- **Page layout** — header, time-ago chip, navigator, primary section,
-  teasers, footer.
-- **Time-ago display chip** — derived, color-aging, always visible.
-- **Praxis task sentence** (evolved) — org chart reference domain,
-  multi-select notifications, when/and clause cascade.
-
-### Demo Page — Branches (core demos, one draft→ship each)
-
-- **Excuse generator** — KOE with absurd keywords, viral deep-links.
-- **Cocktail menu** — keyword filtering, derived recipe display chip.
-- **Stock ticker** — external display chips, createHue for gain/loss.
-- **D&D encounter builder** — alt-coord ranges, multi-select, derived 5e math.
-- **Pet personality profiler** — contingent multi-select grid per animal.
-- **CI pipeline → YAML** — custom serializer, live preview panel.
-- **Contract clause builder** — contingent clauses, import/export panel.
-
-### Demo Page — Canopy (full fill)
-
-- **Astrology compatibility** — contingent clauses, snarky derived quotes.
-- **Reddit shade machine** — Cloudflare Worker cache, shade function.
-- **Music + vibes** — Spotify embed toggle, page reskin unlock.
-- **Tweet scheduler** — tone selector, derived preview.
-- **Details overlay** — stat chips, cost data, source code panels.
-- **Exploration tracker + Surprise me teleporter**.
-
-### Demo Page — Leaves (audience personalities)
-
-- **Finance bros** — "$" substitution, compounding numerics, green theme.
-- **Bronies** — MLP pastels via createHue, horse emoji bullets.
-- **Cottagecore** — earth tones, serif, gregorian chant genre additions.
-- **Cyberpunk** — neon-on-black, mono, electronic-only music filtering.
-- **Academics** — citation chips, footnotes, serif.
-
-### Demo Page — Flowers (polish + delight)
-
-- **Page reskins** — MySpace, GeoCities, Windows 95, hacker movie, Tumblr.
-- **createHue live builder** in footer.
-- **Developer mode** — hoverable code annotations on praxis sentence.
-- **Deep-link sharing UI** — copy button, QR code.
-
-### Gate
-
-- **npm publish**
+- **npm publish** — next step. Demo page v1.0 moves to philbas.com
+  and imports the published package, dogfooding the real DX.
 
 ---
 
 ## Post-Release
+
+### Demo Page v1.0
+
+Lives in philbas.com, not chipper. Design doc: `designs/demo-page-v1.md`.
+Roadmap items copied to `~/Development/html/.meta/inbox/chipper-demo-page-roadmap.md`.
 
 ### Design Sessions Needed
 

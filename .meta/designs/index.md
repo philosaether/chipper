@@ -9,7 +9,7 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [state-reducer.md](state-reducer.md) | accepted | State initializer and reducer: SentenceStore, domain resolution, SET_CHIP_VALUE, extension points. |
 | [react-hooks.md](react-hooks.md) | accepted | React hooks: useSentence, useChip, usePopup, SentenceProvider. Stage 3 of vertical slice. |
 | [interactive-components.md](interactive-components.md) | accepted | Interactive components: Sentence, Clause, Chip, ChipPopup, EnumPopup. Stage 4 of vertical slice. |
-| [demo-page.md](demo-page.md) | accepted | Demo page v0.1: vertical slice sentence, state inspector, explainer. Stage 5 of vertical slice. |
+| ~~demo-page.md~~ | superseded | *(see demo-page-v1.md)* |
 | ~~theming-engine.md~~ | superseded | *(see theming-v2.md)* |
 | [keyword-or-expression-domain.md](keyword-or-expression-domain.md) | accepted | keywordOrExpressionDomain: keywords + text input popup, second archetype. |
 | [multi-select-alt-coordinate.md](multi-select-alt-coordinate.md) | accepted | multiSelectDomain + alternativeCoordinateDomain: toggle grid and tabbed mode popups. |
@@ -27,4 +27,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [keyword-grouping.md](keyword-grouping.md) | accepted | Keyword grouping: visual groups within popup keyword lists, group wrapper pattern, grid/flow layout per group. |
 | [display-chip-mode.md](display-chip-mode.md) | accepted | Display chip mode: unified readonly/live/computed, source strategies, info popup for provenance. |
 | [theming-v2.md](theming-v2.md) | accepted | Theming v2: runtime switching, hue abstraction, applyTheme API, three shipped themes. |
-| [demo-page-v1.md](demo-page-v1.md) | draft | Demo page v1.0: maze navigation, audience adaptation, 12 demos across 4 sections, deep-links. |
+| [demo-page-v1.md](demo-page-v1.md) | accepted | Demo page v1.0: maze navigation, audience adaptation, 14 demos across 3 sections + overlay, deep-links. Implementation lives in philbas.com. |
