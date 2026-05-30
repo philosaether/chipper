@@ -18,34 +18,37 @@ what you see.
 
 ## 1. The Navigator
 
-A single chipper sentence controls the entire page. It's the first
-thing you see and the only UI chrome.
+A two-line chipper sentence controls the entire page.
 
 ```
-Show me chipper for [audience] — I want to see [section].
+Show me chipper for [audience] — I want to see [section],
+  ↳ and show me [the details].
 ```
 
 ### Audience chip (keyword)
 
 | Value | Effect | Tone |
 |-------|--------|------|
-| `everyone` | Default. Broadest, most accessible demos. | Warm, welcoming |
-| `developers` | Adds code snippets, architecture callouts, builder API annotations | Professional, technically precise |
-| `product people` | Emphasizes embeddability, configurability, "put this on any page" | Business value, ROI framing |
-| `finance bros` | Every "s" becomes "$". All numeric display chips compound at 2%/min. Gratuitous green. | Affectionate mockery |
-| `bronies` | MLP theme (createHue showcase!). Horse emoji replaces all bullet points. Pastel explosion. | Gentle, inclusive mockery |
-| `pirates` | Arrr. Pirate English throughout. Accent color: skull gold. | Talk Like a Pirate Day energy |
-| `academics` | Every sentence gets a citation chip: `[citation needed]`. Footnotes everywhere. Serif font. | Dry, deadpan |
+| `everyone` | Default. Broadest, most accessible. | Warm, welcoming |
+| `developers` | Code snippets, architecture callouts, builder API annotations | Technically precise |
+| `product people` | Embeddability, configurability, "put this on any page" | Business value, ROI |
+| `finance bros` | Every "s" → "$". Numerics compound at 2%/min. Gratuitous green. | Affectionate mockery |
+| `bronies` | MLP theme via createHue. Horse emoji replaces bullets. Pastel explosion. | Gentle, inclusive |
+| `cottagecore` | Warm earth tones, serif font, gregorian chant + harpsichord in music player | Cozy, wholesome |
+| `cyberpunk` | Neon on black, mono font, music player filters to electronic only | Blade Runner energy |
+| `academics` | Citation chips: `[citation needed]` on everything. Footnotes. Serif. | Dry, deadpan |
 
 The audience chip affects:
-- Page-level theme (MLP pastels, pirate gold, academic serif)
-- Text transforms on all display chips and explainer copy
-- Which annotation layer is visible (code for devs, value props for product)
+- Page-level theme (createHue showcase — each joke audience IS a custom theme)
+- Text transforms on display chips and explainer copy
+- Annotation layer (code for devs, value props for product people)
 - Tone of info popup content
+- Music genre filtering (cyberpunk: electronic only; cottagecore: adds
+  gregorian chant and harpsichord)
 
 NB: The joke audiences are personality tests for the user. Picking
-"finance bros" tells us something about the visitor — and we can use
-that to make the rest of the page funnier for them specifically.
+one tells us something about the visitor — and we use that to make
+the rest of the page funnier for them specifically.
 
 ### Section chip (keyword)
 
@@ -54,45 +57,69 @@ that to make the rest of the page funnier for them specifically.
 | `what it can do` | The Gallery — capability showcases |
 | `something fun` | The Playground — silly demos |
 | `real-world apps` | The Workshop — practical use cases with serialization |
-| `how it works` | The Mirror — self-documenting architecture layer |
 
-Only one section is "expanded" at a time (primary content area), but
-a persistent sidebar/footer shows one-line teasers for other sections
-so users know more exists.
+Only one section is visible at a time. Teasers for the other sections
+appear below to prevent feeling lost.
+
+### Details chip (optional clause, keyword)
+
+The second line is an optional clause — toggle it on to add an overlay
+on top of whatever section is showing:
+
+| Value | Overlay effect |
+|-------|----------------|
+| `how it works` | Per-demo stat chips, code annotations, architecture callouts |
+| `what it costs` | Token/byte counts: serialized state size, definition line count, estimated render weight |
+| `the source code` | Inline code panel below each demo showing the builder() definition |
+
+This is better than making "how it works" a section — it layers on
+top of existing content instead of replacing it. The optional clause
+toggle (↳) naturally teaches users that chipper has optional clauses.
+
+### Footer
+
+```
+You've explored [4 of 14] demos. Viewing in [midnight] theme.
+  ↳ Or, create your own: base color [#3d5a80], name it [ocean]. Preview: [■].
+[Surprise me] · v1.0 · chipper
+```
+
+- Exploration tracker: derived display chips counting interactions
+- Theme/createHue showcase as a contingent clause
+- `[Surprise me]` — teleports to a random curated state. ~100
+  hand-picked state/URL pairs that showcase interesting combinations.
+  Each click picks a random one and pushes the deep-link.
 
 ### Deep-links
 
-URL encodes navigator state + all active sentence states:
+Hybrid encoding: navigator in query params, sentences in hash.
 
 ```
-/demo?audience=finance+bros&section=something+fun&excuse.animal=iguana&excuse.verb=ate
+/demo?audience=finance+bros&section=fun#eyJleGN1c2UiOnsi...
 ```
 
-Implementation: serialize all sentence states, base64 or query-param
-encode, push to URL on every chip change. On load, deserialize and
-hydrate. Chipper's serialization API makes this ~10 lines of code.
+On every chip change: serialize → encode → pushState.
+On page load: parse → deserialize → hydrate via initialValues.
 
 ## 2. The Gallery — "What It Can Do"
 
-Capability showcases. Default section for `everyone`.
+Default section for `everyone`. Capability showcases.
 
-### 2a. Time-ago chip
+### 2a. Time-ago chip (foyer greeter)
 
-The foyer greeter. First thing anyone sees, above the navigator or
-integrated into it:
+Always visible above the navigator, regardless of section:
 
 ```
 This page was last updated [3 hours ago].
 ```
 
 - Derived display chip, computed from a real timestamp
-- Fallback ladder: "just now" → "3 minutes ago" → "2 hours ago" →
+- Fallback ladder: "just now" → "3 min ago" → "2 hours ago" →
   "yesterday" → "3 days ago" → "last week" → "3 weeks ago" →
-  "last month" → "6 months ago" → "last year" → "2 years ago"
-- Color fades from green (fresh) → amber (aging) → muted (stale)
+  "last month" → "6 months ago" → "last year"
+- Color fades: green (fresh) → amber (aging) → muted (stale)
 - Info popup: "Last updated May 30, 2026 at 9:15 AM PST"
-- This is the chip a nontechnical user immediately understood and
-  wanted. It goes first.
+- The chip a nontechnical user immediately understood and wanted
 
 ### 2b. Excuse generator
 
@@ -104,36 +131,32 @@ before [the full moon].
 
 Every chip is a KOE: curated absurd keywords + free text.
 
-Keywords for `[animal]`: "iguana", "emotional support peacock",
-"time-traveling dog", "sentient roomba", "the neighbor's goat"
+`[animal]`: "iguana", "emotional support peacock", "time-traveling dog",
+"sentient roomba", "the neighbor's goat"
 
-Keywords for `[verb]`: "ate", "is holding hostage", "accidentally
-teleported", "formed a union with", "proposed marriage to"
+`[verb]`: "ate", "is holding hostage", "accidentally teleported",
+"formed a union with", "proposed marriage to"
 
-The sentence updates in real-time as you click. Maximum
-shareability — the deep-link is the punchline.
+Maximum shareability — the deep-link IS the punchline.
 
 ### 2c. Weather dashboard (existing, evolved)
 
-Keep the live weather sentence. It's the display chip proof-of-concept.
-Expand to show all three display source types in one place:
-- External: live temperature subscription
-- Derived: unit conversion
-- Static: city label display chip
+Keep the live weather sentence as-is. It's the display chip
+proof-of-concept, already working with all three source types
+(external subscription, derived conversion, static labels).
 
 ### 2d. Cocktail menu
 
 ```
-I'm in the mood for something [refreshing] with [gin]. Shaken or
-stirred? [shaken]. Served [on the rocks].
+I'm in the mood for something [refreshing] with [gin].
+  [shaken] or stirred, served [on the rocks].
 Your drink: [Gin Fizz].
-Recipe: [2oz gin, 1oz lemon, 0.75oz simple, soda top].
+  Recipe: [2oz gin, 1oz lemon, 0.75oz simple, soda top].
 ```
 
-- Keywords select from a real cocktail database (hardcoded ~20 drinks)
-- `[Gin Fizz]` — derived display chip, best match from the menu
-- `[Recipe]` — derived display chip, ingredients list
-- Info popup on the drink name shows garnish, glassware, origin story
+- Hardcoded menu of ~20 real cocktails with recipes
+- Chips filter the menu; display chip shows best match
+- Info popup: garnish, glassware, origin story
 - Killer app framing: "embed this on your bar's website"
 
 ### 2e. Stock ticker
@@ -143,19 +166,16 @@ Recipe: [2oz gin, 1oz lemon, 0.75oz simple, soda top].
 Portfolio: [$47,230.00]
 ```
 
-- External display chips with simulated live feed (random walk on
-  real-ish starting prices — we're not hooking up a brokerage API
-  for the demo, but the architecture supports it)
-- Each ticker gets its own hue: green for up, red for down (dynamic
-  hue assignment via createHue — this IS the createHue showcase)
+- Simulated live feed (random walk on real starting prices)
+- Per-ticker hue via createHue: green for up, red for down
 - Info popup: ticker name, shares held, cost basis, day change %
-- Portfolio: computed display chip summing all positions
+- Portfolio: computed display chip summing positions
 - Finance bros mode: numbers compound at 2%/min on top of the
   random walk. "Your portfolio is up 847% since you opened this tab."
 
 ## 3. The Playground — "Something Fun"
 
-Silly demos that reward explorers.
+Silly demos that reward explorers. Getting lost is the point.
 
 ### 3a. D&D encounter builder
 
@@ -165,12 +185,10 @@ Set up a [medium] encounter for [4] level-[5] players in a [forest].
   XP budget: [1,000]. Suggested: [2 Wights + 4 Skeletons].
 ```
 
-- `[medium]` — keyword: "trivial", "easy", "medium", "hard", "deadly",
-  "TPK Friday"
-- `[2-3]` — alternative coordinate: range presets / custom min-max
-- `[undead]` — multi-select creature type grid (options change based
-  on environment — forest gets beasts, crypt gets undead)
-- XP budget and suggestions: derived display chips with real D&D 5e math
+- `[medium]`: includes "TPK Friday"
+- `[2-3]`: alternative coordinate (range presets / custom min-max)
+- `[undead]`: multi-select, options change based on environment
+- XP budget + suggestions: derived display chips with real 5e math
 - Info popup on suggestion shows stat blocks
 
 ### 3b. Pet personality profiler
@@ -180,13 +198,12 @@ My [cat] named [Chairman Meow] is [chaotic, affectionate, food-motivated].
   Spirit animal: [Raccoon (87% match)].
 ```
 
-- Animal type changes the personality trait multi-select grid:
-  - Cat: "knocks things off tables", "3 AM zoomies", "if I fits I sits"
-  - Dog: "eats homework", "existential tail chasing", "selective hearing"
-  - Hamster: "escape artist", "wheel enthusiast", "hoards everything"
-- `[Raccoon (87%)]` — derived display chip with snarky match description
-- Info popup: compatibility breakdown ("Chaos: 95%. Snack motivation: 92%.
-  Opposable thumbs: 0%, but trying.")
+- Multi-select trait grid changes per animal type:
+  Cat: "knocks things off tables", "3 AM zoomies", "if I fits I sits"
+  Dog: "eats homework", "existential tail chasing", "selective hearing"
+  Hamster: "escape artist", "wheel enthusiast", "hoards everything"
+- Info popup: "Chaos: 95%. Snack motivation: 92%.
+  Opposable thumbs: 0%, but trying."
 
 ### 3c. Astrology compatibility
 
@@ -196,11 +213,9 @@ I'm a [Scorpio] sun / [Aquarius] moon / [Leo] rising.
   Compatibility: [72% — "intense but worth it"].
 ```
 
-- Contingent clause: "My crush is a..." appears after you set your chart
-- Additional contingent clause: "Tell me more →" reveals crush's
-  moon/rising for a detailed breakdown
-- Derived display chip with zodiac-aware snarky quote
-- Info popup: per-planet compatibility with emoji severity ratings
+- Crush clause contingent on your chart being set
+- "Tell me more" contingent clause reveals crush moon/rising
+- Snarky zodiac-aware compatibility quotes
 - Maximum screenshot bait
 
 ### 3d. Reddit shade machine
@@ -211,10 +226,10 @@ Right now on Reddit: [1. Scientists discover...] [2. AITA for...]
 Hot take: [Oh, so NOW scientists are discovering things?]
 ```
 
-- Remote display chips fetching Reddit front page titles (via CORS
-  proxy or RSS feed)
-- `[Hot take]` — derived display chip running a keyword-matching shade
-  function against the titles
+- Remote display chips fetching Reddit front page titles
+- Data served from Cloudflare cache updated hourly (piggybacks on
+  existing philbas.com infra — no new services)
+- Shade function: keyword-match against titles, generate hot takes
   - "Scientists discover" → "Oh, so NOW scientists are discovering things?"
   - "AITA" → "Yes. The answer is always yes."
   - "TIL" → "Welcome to what the rest of us learned in 2019."
@@ -224,11 +239,9 @@ Hot take: [Oh, so NOW scientists are discovering things?]
 
 ## 4. The Workshop — "Real-World Apps"
 
-Practical demos with serialization. Developer-facing but accessible to all.
+Practical demos with serialization.
 
 ### 4a. Praxis task sentence (evolved hero)
-
-The existing cadence + task sentence, expanded:
 
 ```
 Every [2] [weeks] on [Monday],
@@ -239,21 +252,13 @@ create a task named [weekly review] in [Praxis]
   ↳ when [status] changes to [blocked], also notify [Engineering > Lead].
 ```
 
-New chips beyond current:
-- `[Engineering > Phil]` — reference domain (org chart tree)
-- `[Slack, email]` — multi-select notification channels
-- `[status]` — keyword (task field names)
-- `[blocked]` — keyword (status values, contingent on selected field)
-- The when/and clause cascade: optional clauses chain via contingency
-- This is the Praxis ad — show how expressive task automation can be
+New chips: reference domain org chart, multi-select notification
+channels, contingent when/and clause cascade. This is the Praxis ad.
 
-In developer mode: hoverable code annotations showing the builder calls
-that produce each clause. Display chip: "This sentence is `[52]` lines
-of TypeScript."
+Developer overlay: hoverable code annotations, display chip counting
+lines of TypeScript ("This sentence is `[52]` lines of TypeScript.").
 
 ### 4b. Music + vibes
-
-Evolve the existing genre picker:
 
 ```
 Play something in the [Electronic > House] genre.
@@ -261,17 +266,15 @@ Play something in the [Electronic > House] genre.
   ↳ and while you're at it, make the whole thing look like [MySpace].
 ```
 
-- `[▶ playing]` — keyword toggle: "▶ playing" / "⏸ paused"
-- When playing: embed a Spotify genre playlist iframe (contingent clause)
-- `[MySpace]` — keyword: "MySpace", "GeoCities", "Tumblr circa 2013",
-  "Windows 95", "a hacker movie"
-  - Each applies a CSS class that grotesquely reskins the page
+- `[▶ playing]` / `[⏸ paused]`: keyword toggle, contingent Spotify embed
+- `[MySpace]`: keyword reskin, contingent on music playing
   - MySpace: tiled background, Comic Sans, auto-play badge, visitor counter
   - GeoCities: under construction GIF, marquee text, rainbow HR
-  - This entire clause is contingent on music playing — you only unlock
-    the page reskin if you first choose to play music
-  - Deep cut: the fact that you have to "unlock" the vibes layer by
-    playing music is the kind of hidden interaction that rewards exploration
+  - Tumblr circa 2013: dark theme, sans-serif, infinite scroll feel
+  - Windows 95: grey boxes, beveled borders, Start button
+  - a hacker movie: green-on-black, falling characters, "ACCESS GRANTED"
+- Hidden unlock: the vibes layer only appears when music is on.
+  You have to play music to discover the page reskin. Rewards exploration.
 
 ### 4c. CI pipeline → GitHub Actions YAML
 
@@ -281,14 +284,11 @@ On [push to main], run [tests, lint, build] on [Node 20, Node 22],
   Timeout: [15 minutes].
 ```
 
-Below the sentence: a live YAML preview panel showing the equivalent
-GitHub Actions config, updating in real time as you change chips.
+Below the sentence: live YAML preview updating in real time.
+Custom serializer outputs `.github/workflows/ci.yml` format.
+"Copy YAML" button. The serialization API showcase.
 
-- Custom serializer that outputs `.github/workflows/ci.yml` format
-- "Copy YAML" button
-- This is the serialization API showcase and the "I would genuinely
-  use this" demo
-- Deferred: making this a standalone tool on philbas.com (post-release)
+Deferred: standalone tool on philbas.com (post-release).
 
 ### 4d. Contract clause builder
 
@@ -299,13 +299,11 @@ The [Tenant] shall pay [$2,400] on the [1st] of each [month],
   ↳ not to exceed [$200].
 ```
 
-- "Not to exceed" clause: contingent on "per day" or "percentage"
-  being selected (vanishes for flat fee)
-- Below the sentence: a formatted clause preview showing the
-  legal-ish output
-- Import/export panel: JSON view of sentence state, copy/paste to
-  share or restore
-- Deferred: standalone legalese generator on philbas.com (post-release)
+Contingent "not to exceed" clause vanishes for flat fee.
+Below: formatted legal clause preview.
+Import/export panel: JSON sentence state, copy/paste to restore.
+
+Deferred: standalone legalese generator on philbas.com (post-release).
 
 ### 4e. Tweet scheduler
 
@@ -316,200 +314,150 @@ Tweet about [how hard I'm working] every [Saturday] at [8 PM].
             No big deal. #BuildInPublic #Engineering"]
 ```
 
-- `[how hard I'm working]` — KOE: keyword topics + free text
-- `[humble brag]` — keyword: "humble brag", "earnest", "shitpost",
-  "corporate speak", "unhinged"
-- `[Preview]` — derived display chip generating a fake tweet based
-  on topic + tone. Hardcoded templates with mad-libs-style substitution.
-- Info popup: character count, estimated engagement ("Projected likes:
-  12. Projected ratio: medium.")
+- `[humble brag]`: keyword tone selector — "humble brag", "earnest",
+  "shitpost", "corporate speak", "unhinged"
+- `[Preview]`: derived display chip with mad-libs-style tweet generation
+- Info popup: character count, "Projected likes: 12. Ratio: medium."
 
-## 5. The Mirror — Self-Awareness Layer
+## 5. Implementation Layers
 
-Woven throughout the page, not a separate section. Appears when
-the user selects "how it works."
+The tree metaphor: trunk is strong and functional, branches add shape,
+leaves and flowers are creative polish. We can stop at any layer and
+have a shippable page.
 
-### 5a. Per-demo stat chips
+### Layer 1: Trunk — Page Skeleton + Navigator
 
-Every demo section gets a small annotation line:
+**Goal**: The maze works. Sections switch. Deep-links encode/decode.
 
-```
-This demo: [5] chips, [3] domain types, [2] contingent clauses, [1] display chip.
-```
+- [ ] Navigator sentence: audience + section chips
+- [ ] Section routing: render correct demo set based on section value
+- [ ] Deep-link encoding: serialize navigator state to URL, hydrate on load
+- [ ] Layout: header, navigator, primary section, teaser footer
+- [ ] Time-ago chip (always visible, above navigator)
+- [ ] Evolve existing demos: weather stays as-is, praxis task sentence
+      gets notification chips + when/and cascade
 
-All derived from the actual SentenceDefinition — self-documenting.
-Visible in all modes, but in developer mode they're clickable with
-info popups showing the sentence's internal structure.
+### Layer 2: Branches — Core Demos
 
-### 5b. Exploration tracker
+**Goal**: Each section has 2-3 demos that showcase distinct capabilities.
 
-Persistent at the bottom of the page:
+- [ ] Excuse generator (Gallery — KOE showcase, viral hook)
+- [ ] Cocktail menu (Gallery — derived display chips, practical charm)
+- [ ] Stock ticker (Gallery — external display, createHue for gain/loss)
+- [ ] D&D encounter builder (Playground — alt-coord, multi-select, derived)
+- [ ] Pet personality profiler (Playground — contingent multi-select grid)
+- [ ] CI pipeline → YAML (Workshop — custom serializer, live preview)
+- [ ] Contract clause (Workshop — contingent clauses, import/export panel)
 
-```
-You've explored [4 of 12] demos. [3] features of chipper remain unseen.
-```
+### Layer 3: Canopy — Full Section Fill
 
-Derived from tracking which sections the user has interacted with
-(at least one chip click in a section = explored). Light gamification.
+**Goal**: Every section feels complete. No thin spots.
 
-### 5c. Theme + createHue showcase
+- [ ] Astrology compatibility (Playground)
+- [ ] Reddit shade machine (Playground — Cloudflare cache integration)
+- [ ] Music + vibes with Spotify embed (Workshop)
+- [ ] Tweet scheduler (Workshop)
+- [ ] Details overlay clause: "how it works" / "what it costs" / "source code"
+- [ ] Per-demo stat chips (Mirror layer)
+- [ ] Exploration tracker in footer
 
-```
-Viewing in [midnight] theme ([3] ship with chipper).
-  ↳ Or, create your own: base color [#3d5a80], name it [ocean].
-    Preview: [chip in ocean hue].
-```
+### Layer 4: Leaves — Audience Personalities
 
-- The createHue contingent clause reveals a live hue builder
-- Numeric expression for hex color input
-- Text expression for hue name
-- Display chip showing a sample chip rendered in the custom hue
-- In developer mode: shows the createHue() code that produces it
+**Goal**: Joke audiences transform the page. Each one is a createHue demo.
 
-## 6. Page Architecture
+- [ ] Finance bros: "$" substitution, compounding numerics, green theme
+- [ ] Bronies: MLP pastel theme, horse emoji bullets
+- [ ] Cottagecore: warm earth tones, serif, genre filtering (gregorian chant)
+- [ ] Cyberpunk: neon-on-black, mono font, electronic-only music
+- [ ] Academics: citation chips, footnotes, serif
 
-### Layout
+### Layer 5: Flowers — Polish + Delight
 
-```
-┌─────────────────────────────────────────┐
-│  Chipper                        [GitHub] │
-│  Plain-English editing interfaces.       │
-│                                         │
-│  This page was last updated [3 hrs ago] │
-├─────────────────────────────────────────┤
-│  Show me chipper for [everyone]         │
-│  — I want to see [what it can do].      │
-├─────────────────────────────────────────┤
-│                                         │
-│  ┌─────────────────────────────────┐    │
-│  │  PRIMARY SECTION                │    │
-│  │  (controlled by section chip)   │    │
-│  │                                 │    │
-│  │  Demo A                         │    │
-│  │  Demo B                         │    │
-│  │  Demo C                         │    │
-│  └─────────────────────────────────┘    │
-│                                         │
-│  ── Other sections (teaser links) ──    │
-│  "something fun" · "real-world apps"    │
-│  · "how it works"                       │
-│                                         │
-├─────────────────────────────────────────┤
-│  You've explored [4/12] demos.          │
-│  Viewing in [midnight] theme.           │
-│  v1.0 · chipper                         │
-└─────────────────────────────────────────┘
-```
+**Goal**: The moments that make people tweet about us.
 
-### Section ↔ Demo mapping
-
-| Section | Demos |
-|---------|-------|
-| what it can do | Weather, Cocktail, Stock ticker, Sourdough calc |
-| something fun | Excuse generator, D&D, Pet profiler, Astrology, Reddit shade |
-| real-world apps | Praxis task, Music+vibes, CI pipeline, Contract, Tweet scheduler |
-| how it works | Mirror layer (stats, tracker, theme/hue), + any current section's demos with annotations |
-
-"How it works" is an overlay — it doesn't hide the current section,
-it enhances it with stat chips, code annotations, and architecture
-callouts. Switching to "how it works" keeps whatever section was
-showing and adds the Mirror layer on top.
-
-### State encoding for deep-links
-
-```typescript
-interface DemoPageState {
-  audience: string;
-  section: string;
-  sentences: Record<string, SerializedSentence>;
-}
-
-// URL: /demo#eyJhdWRpZW5jZSI6...  (base64 of JSON)
-// Or: /demo?a=finance+bros&s=fun&excuse=base64...
-```
-
-On every chip change in any sentence:
-1. Serialize all sentence states
-2. Encode to URL hash or query params
-3. pushState (no page reload)
-
-On page load:
-1. Parse URL
-2. Deserialize sentence states
-3. Hydrate via initialValues
+- [ ] Page reskins (MySpace, GeoCities, Windows 95, hacker movie, Tumblr)
+- [ ] `[Surprise me]` random teleporter (curate ~100 states)
+- [ ] createHue live builder in footer
+- [ ] Finance bros compounding animation
+- [ ] Sourdough calculator (if the page needs another derived-display demo)
+- [ ] Deep-link sharing UI (copy button, QR code?)
+- [ ] Developer mode: hoverable code annotations on praxis task sentence
 
 ## Tradeoffs
 
+**Details as optional clause vs. section**
+Making "how it works" an optional clause instead of a fourth section
+means it layers onto existing content instead of replacing it. The
+toggle itself demonstrates optional clauses. The section chip stays
+at three values, which is cleaner.
+Chosen: optional clause. Opens design space for other overlays
+("what it costs", "source code") sharing the same chip.
+
 **Base64 hash vs. query params for deep-links**
-Query params are readable (`?audience=pirates`) but get long fast
-with many sentences. Base64 hash is opaque but compact. Hybrid:
-navigator state in query params (readable, shareable), sentence
-states in hash (compact, secondary).
-Chosen: hybrid. Revisit if URLs get unwieldy.
+Hybrid: navigator in readable query params, sentence states in
+compact hash. Best of both worlds.
 
-**One section visible vs. vertical scroll of all**
-Maze architecture (one section at a time) creates discovery and
-surprise. Vertical scroll is more conventional and googleable.
-Chosen: maze. The whole point is that the page reconfigures. A
-vertical scroll defeats the tesseract metaphor. Teaser links at
-the bottom prevent users from feeling lost.
+**Simulated vs. real data for stocks**
+Real stock APIs are doable but add failure modes and rate limits
+that distract from the demo's purpose. Simulated random walk on
+real starting prices demonstrates the architecture identically.
+Chosen: simulated for v1. Real data is a nice-to-have flower.
+Revisit if the page evolves into a standalone tool.
 
-**Simulated vs. real data for stock ticker / Reddit**
-Real APIs add CORS complexity, rate limits, and failure modes.
-Simulated data is reliable and still demonstrates the architecture.
-Chosen: simulated for stocks (random walk), real for Reddit (RSS
-feed, with graceful fallback). Weather stays real (Open-Meteo,
-already working). The point is showing the capability, not building
-a production dashboard.
+**Reddit via Cloudflare cache vs. hardcoded sample**
+Cloudflare Worker updating hourly is trivial (fits existing
+philbas.com infra) and keeps content fresh. Hardcoded sample
+gets stale and loses the "live data" wow factor.
+Chosen: Cloudflare cache. Graceful fallback to hardcoded sample
+if the worker is down.
 
-**Joke audiences as createHue showcase vs. separate demo**
-The joke audiences (finance bros, bronies, pirates) naturally
-exercise createHue — each one applies a custom theme. This makes
-the theme authoring API a discovery, not a tutorial section.
-Chosen: dual purpose. The joke IS the showcase.
+**~100 curated states vs. random generation for "Surprise me"**
+Random generation produces mostly boring states. Curated states
+guarantee every teleport is interesting — "finance bros + D&D
+encounter + TPK Friday", "cyberpunk + stock ticker", etc.
+Chosen: curated. Build the list during development as we
+discover fun combinations.
 
-**Spotify embed vs. simulated playback**
-A real Spotify embed requires auth and may not work for all users.
-A fake "now playing" display chip is more reliable.
-Chosen: try real embed via Spotify's unauthenticated genre playlist
-embeds (no login required, iframe-based). Fall back to a display
-chip showing "▶ Playing: Electronic > House" if embed fails.
+## Resolved Questions
+
+1. **How many demos?** More. Getting lost is the point. 14 demos
+   across 3 sections + overlay. Implementation layers let us ship
+   at any point.
+
+2. **Sourdough?** Build cocktail first, decide later. Parked as a
+   Layer 5 flower.
+
+3. **Reskin depth?** Build in stages. Layer 2-3 gets the CSS class
+   swap working. Layer 5 makes it grotesquely beautiful.
+
+4. **Reddit CORS?** Cloudflare Worker cache, hourly refresh,
+   graceful fallback to hardcoded sample.
+
+5. **Audience list?** everyone, developers, product people, finance
+   bros, bronies, cottagecore, cyberpunk, academics. Pirates scratched.
 
 ## Open Questions
 
-1. **How many demos is too many?** The assessment lists 14+. The
-   current design has ~12 spread across 4 sections. Is that a maze
-   or a labyrinth? Should we cut to 8-9 for v1 and add more later?
+1. **"What it costs" overlay**: What token/cost data is interesting
+   to show? Ideas: serialized state size in bytes, SentenceDefinition
+   object size, number of React renders per chip change, bundle size
+   contribution. How much of this is trivially available vs. needs
+   instrumentation?
 
-2. **Sourdough calculator: keep or cut?** It's a great derived-display
-   showcase but doesn't have a personality hook. The cocktail builder
-   hits the same feature (derived display) with more charm. Keep both,
-   or let cocktail carry that weight?
+2. **Spotify embed reliability**: Unauthenticated genre playlist
+   embeds — do they work reliably across browsers without login?
+   Need to test. Fallback is a display chip with track name.
 
-3. **Page reskin depth (MySpace/GeoCities mode):** How far do we go?
-   A CSS class swap with 20 lines of comedy CSS? Or a fully committed
-   grotesque transformation? The funnier it is, the more work it is.
-
-4. **Reddit CORS strategy:** Reddit's RSS works but is rate-limited.
-   Options: CORS proxy (Cloudflare Worker), cache on build, or
-   hardcode "sample front page" with a refresh button that tries
-   the real feed. Leaning toward hardcoded sample with live refresh
-   as a bonus.
-
-5. **Audience chip: more groups to gently mock?** Current list:
-   finance bros, bronies, pirates, academics. Others to consider:
-   "hustle culture", "cottagecore", "cyberpunk", "LinkedIn influencers",
-   "that guy who replies-all". Each one needs a theme + text transform,
-   so they're not free.
+3. **Audience × demo interactions beyond music**: Cyberpunk filters
+   music to electronic. Cottagecore adds genres. What other
+   audience-specific demo modifications are worth building?
+   e.g., does "academics" add citation chips to the contract builder?
 
 ## Out of Scope
 
-- **Standalone tools** (GitHub Actions generator, legalese generator as
-  top-level philbas.com pages) — deferred post-release. The demo page
-  shows the concept; the standalone pages are separate projects.
-- **Real brokerage API integration** — simulated random walk only.
-- **Mobile-optimized layout** — desktop-first for v1. Popups work on
-  mobile but the maze navigation is designed for pointer interaction.
-- **Server-side rendering** — demo page is client-only SPA.
-- **i18n** — English only. The sentence-as-UI paradigm is inherently
-  language-specific; l10n is a bigger design question.
+- **Standalone tools** (GitHub Actions YAML generator, legalese
+  generator) — deferred to post-release philbas.com pages.
+- **Real brokerage API** — simulated random walk only.
+- **Mobile-optimized layout** — desktop-first for v1.
+- **Server-side rendering** — client-only SPA.
+- **i18n** — English only.
