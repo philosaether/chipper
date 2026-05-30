@@ -74,6 +74,9 @@ export function NumericInput({
           if (e.key === 'Enter' && onSubmit) onSubmit();
         }}
         aria-label="Numeric value"
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={isValid ? current : undefined}
       />
       <button
         type="button"

@@ -87,6 +87,8 @@ export function Chip({ clauseId, chipId }: ChipProps) {
           onClick={handleClick}
           aria-expanded={showPopup}
           aria-haspopup="listbox"
+          aria-invalid={!valid || undefined}
+          aria-controls={showPopup ? `chipper-popup-${chipId}` : undefined}
         >
           <span className="chipper-chip-trigger__text">
             {displayValue}

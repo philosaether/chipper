@@ -270,6 +270,11 @@
     color: var(--chipper-text-primary);
   }
 
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--chipper-focus-ring);
+  }
+
   &--active {
     color: var(--chipper-text-primary);
     border-bottom-color: var(--chipper-accent);

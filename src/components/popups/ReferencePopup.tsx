@@ -256,7 +256,7 @@ export function ReferencePopup({
       )}
 
       {/* Item list */}
-      <div className="chipper-reference-popup__items">
+      <div className="chipper-reference-popup__items" aria-live="polite">
         {isLoading && (
           <div className="chipper-reference-popup__loading">Loading…</div>
         )}

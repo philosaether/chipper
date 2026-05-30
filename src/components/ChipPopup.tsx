@@ -28,7 +28,7 @@ export interface ChipPopupProps {
   onClose: () => void;
 }
 
-export function ChipPopup({ domain, value, expressionActive, context, onSelect, onClose }: ChipPopupProps) {
+export function ChipPopup({ chipId, domain, value, expressionActive, context, onSelect, onClose }: ChipPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
@@ -152,6 +152,7 @@ export function ChipPopup({ domain, value, expressionActive, context, onSelect, 
   return (
     <div
       ref={popupRef}
+      id={`chipper-popup-${chipId}`}
       className="chipper-popup chipper-popup--open"
       role="listbox"
       aria-label={domain.placeholder ?? domain.type}
