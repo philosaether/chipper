@@ -1,5 +1,5 @@
 {
-  "name": "chipper",
+  "name": "@philosaether/chipper",
   "version": "0.1.0",
   "description": "Plain-English editing interfaces for complex configuration",
   "type": "module",
