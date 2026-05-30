@@ -73,6 +73,7 @@ export function NumericInput({
         onKeyDown={(e) => {
           if (e.key === 'Enter' && onSubmit) onSubmit();
         }}
+        role="spinbutton"
         aria-label="Numeric value"
         aria-valuemin={min}
         aria-valuemax={max}

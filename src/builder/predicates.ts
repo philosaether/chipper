@@ -13,7 +13,7 @@ import type { SentenceContext } from '../core/types';
 export function isNumeric(key: string): (context: SentenceContext) => boolean {
   return (context) => {
     const value = context[key];
-    return value !== undefined && value !== '' && !isNaN(Number(value));
+    return value != null && value !== '' && !isNaN(Number(value));
   };
 }
 

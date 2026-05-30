@@ -160,9 +160,10 @@ export function builder(): ClauseBuilder {
       return clauseBuilder;
     },
     chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions) {
-      // Standalone chip() handles the object-in-second-arg shift
+      // Shift object-in-second-arg before passing to standalone chip()
       if (typeof domainName === 'object' && domainName !== null) {
         options = domainName;
+        domainName = undefined;
       }
       const chipDef = chip(id, domainName, options);
       chips.push(chipDef);

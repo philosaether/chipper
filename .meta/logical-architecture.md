@@ -83,11 +83,12 @@ Sentence builder API. Imperative composition of clauses from palette domains.
 
 ```
 builder/
-└── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
-                           contingentOn() accepts bare lambda as presence shorthand.
-                           punc() adds context-aware punctuation via sentinel + post-build binding.
-                           resolveDefaultPunctuation() implements default comma/period logic.
-                           PuncConfig type for custom display/present.
+├── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
+│                           contingentOn() accepts bare lambda as presence shorthand.
+│                           punc() adds context-aware punctuation via sentinel + post-build binding.
+│                           resolveDefaultPunctuation() implements default comma/period logic.
+│                           PuncOptions type for custom display/present.
+└── predicates.ts         — isNumeric(), isOneOf(). Predicate factories for present/contingentOn/punc.
 ```
 
 ### components/

@@ -5,7 +5,7 @@ Accepted: 2026-05-24
 Assessment: assessments/keyboard-navigation.md
 Implemented: 2026-05-24 (feature/keyboard-navigation)
 Divergences: aria-activedescendant on focused element (input or container) per ARIA spec, not always on listbox; Escape scoped to document (standard modal pattern); Tab in AltCoordinate uses standard focus trap instead of tab/slot routing
-Deferred: aria-controls on Chip trigger, Backspace breadcrumb nav in Reference, .chipper-alt-popup__tab:focus-visible CSS
+Deferred: Backspace breadcrumb nav in Reference
 ---
 
 # Keyboard Navigation — Desired State
