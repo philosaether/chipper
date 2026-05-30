@@ -18,21 +18,8 @@ Items that must ship before npm publish.
   NB: validate and demonstrate error behavior (aria-invalid, visual
   error states, invalid-on-submit). Include a sample custom hue using
   `createHue()` to showcase the theme authoring API.
-
-### Riffs
-
-- **Screen reader support** — aria-live, aria-invalid, role=option.
-  Keyboard nav infrastructure is in place; this is the ARIA semantic layer.
-
-- **Demo import/export panel** — lightweight UI on the demo page to
-  serialize the current sentence state to JSON and import it back.
-  Tests and advertises the serialization API.
-  Deferred from: chipper/feature/serialization (2026-05-24).
-
-- **Builder DX wishlist** — Address remaining items in
-  `.meta/inbox/devex-wishlist.md`: clause definition ergonomics,
-  type-checking helpers for predicates, `.chip()` positional arg footgun.
-  Standardize `config` vs `options` argument naming.
+  AC: import/export panel — lightweight UI to serialize current sentence
+  state to JSON and import it back. Tests and advertises serialization API.
 
 ### Gate
 
