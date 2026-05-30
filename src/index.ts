@@ -93,7 +93,10 @@ export { createPalette, extendPalette, type PaletteConfig } from './palette';
 
 // Builder
 export { sentence, builder, chip, repeating } from './builder';
-export type { ClauseBuilder, ChipOptions, TextOptions, PuncConfig } from './builder';
+export type { ClauseBuilder, ChipOptions, TextOptions, PuncOptions } from './builder';
+
+// Predicate helpers
+export { isNumeric, isOneOf } from './builder/predicates';
 
 // Hooks
 export {

@@ -65,9 +65,14 @@ function resolveDisplaySource(display: DisplayShorthand): DisplaySource {
  */
 export function chip(
   id: string,
-  domainName?: string,
+  domainName?: string | ChipOptions,
   options?: ChipOptions,
 ): ChipDefinition {
+  // Detect .chip('id', { present: ... }) — second arg is options, not domain name
+  if (typeof domainName === 'object' && domainName !== null) {
+    options = domainName;
+    domainName = undefined;
+  }
   let mode: ChipMode = { type: 'interactive' };
   if (options?.display !== undefined) {
     const source = resolveDisplaySource(options.display);
@@ -100,7 +105,7 @@ export interface TextOptions {
   present?: (context: SentenceContext) => boolean;
 }
 
-export interface PuncConfig {
+export interface PuncOptions {
   display?: (context: SentenceContext) => string;
   present?: (context: SentenceContext) => boolean;
 }
@@ -112,7 +117,7 @@ export interface ClauseBuilder {
   leads(first: string, rest: string): ClauseBuilder;
   placeholder(text: string): ClauseBuilder;
   chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions): ClauseBuilder;
-  punc(config?: PuncConfig): ClauseBuilder;
+  punc(options?: PuncOptions): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
@@ -155,23 +160,22 @@ export function builder(): ClauseBuilder {
       return clauseBuilder;
     },
     chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions) {
-      // Detect .chip('id', { present: ... }) footgun — second arg is options, not domain name
+      // Standalone chip() handles the object-in-second-arg shift
       if (typeof domainName === 'object' && domainName !== null) {
         options = domainName;
-        domainName = undefined;
       }
       const chipDef = chip(id, domainName, options);
       chips.push(chipDef);
       segments.push({ type: 'chip', chipId: id, present: options?.present });
       return clauseBuilder;
     },
-    punc(config?: PuncConfig) {
+    punc(options?: PuncOptions) {
       // Push a sentinel segment — sentence().build() replaces it with a bound resolver.
       // The sentinel carries the clause ID and optional user config.
       segments.push({
         type: 'text',
         value: '__punctuation_sentinel__',
-        __punctuation: { config },
+        __punctuation: { config: options },
       } as ClauseSegment);
       return clauseBuilder;
     },
@@ -356,7 +360,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
         for (let i = 0; i < clauseDef.segments.length; i++) {
           const segment = clauseDef.segments[i] as unknown as Record<string, unknown>;
           if (segment.__punctuation) {
-            const { config } = segment.__punctuation as { config?: PuncConfig };
+            const { config } = segment.__punctuation as { config?: PuncOptions };
             const clauseId = clauseDef.id;
             const idx = allClauseIds.indexOf(clauseId);
             const subsequentIds = allClauseIds.slice(idx + 1);
