@@ -4,10 +4,10 @@
   "description": "Plain-English editing interfaces for complex configuration",
   "type": "module",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js"
     },
     "./headless": {
@@ -15,7 +15,7 @@
       "import": "./dist/headless.js"
     },
     "./themes": {
-      "types": "./dist/themes/index.d.ts",
+      "types": "./dist/src/themes/index.d.ts",
       "import": "./dist/themes/index.js"
     },
     "./styles.css": "./dist/styles.css",
@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.build.json && vite build && npm run build:css",
+    "build": "vite build && tsc -p tsconfig.build.json && npm run build:css",
     "build:css": "sass --style=compressed --no-source-map src/styles/chipper.scss:dist/styles.css src/styles/chipper-base.scss:dist/base.css src/styles/themes/praxis-theme.scss:dist/themes/praxis.css src/styles/themes/midnight-theme.scss:dist/themes/midnight.css src/styles/themes/terminal-theme.scss:dist/themes/terminal.css",
     "lint": "eslint src/",
     "test": "vitest run",
@@ -58,6 +58,7 @@
     "vitest": "^3.0.0"
   },
   "license": "MIT",
+  "homepage": "https://github.com/philosaether/chipper",
   "repository": {
     "type": "git",
     "url": "https://github.com/philosaether/chipper"

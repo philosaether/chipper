@@ -640,7 +640,7 @@ export function App() {
       </section>
 
       <footer className="demo-footer">
-        v0.2 · chipper
+        v0.1.0 · chipper
       </footer>
     </div>
   );
