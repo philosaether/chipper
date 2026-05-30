@@ -27,3 +27,4 @@ Current design docs only. If it's here, it's active. Superseded docs live in `ar
 | [keyword-grouping.md](keyword-grouping.md) | accepted | Keyword grouping: visual groups within popup keyword lists, group wrapper pattern, grid/flow layout per group. |
 | [display-chip-mode.md](display-chip-mode.md) | accepted | Display chip mode: unified readonly/live/computed, source strategies, info popup for provenance. |
 | [theming-v2.md](theming-v2.md) | accepted | Theming v2: runtime switching, hue abstraction, applyTheme API, three shipped themes. |
+| [demo-page-v1.md](demo-page-v1.md) | draft | Demo page v1.0: maze navigation, audience adaptation, 12 demos across 4 sections, deep-links. |
