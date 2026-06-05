@@ -472,6 +472,87 @@ const weatherSentence = sentence(weatherPalette)
 //  DISPLAY LOGIC
 //
 
+//
+//  COCKTAIL DEMO — exercises .a() and .period()
+//
+
+const cocktailPalette = extendPalette({
+  chips: {
+    mood: keywordDomain({
+      color: 'copper',
+      keywords: [
+        { value: 'refreshing' },
+        { value: 'strong' },
+        { value: 'bitter' },
+        { value: 'elegant' },
+        { value: 'adventurous' },
+      ],
+      default: 'refreshing',
+    }),
+    spirit: keywordDomain({
+      color: 'copper',
+      keywords: [
+        { value: 'whiskey' },
+        { value: 'gin' },
+        { value: 'tequila' },
+        { value: 'rum' },
+        { value: 'vodka' },
+      ],
+      default: 'gin',
+    }),
+    method: keywordDomain({
+      color: 'sage',
+      keywords: [
+        { value: 'shaken' },
+        { value: 'stirred' },
+      ],
+      default: 'shaken',
+    }),
+    serve: keywordDomain({
+      color: 'sage',
+      keywords: [
+        { value: 'on the rocks' },
+        { value: 'neat' },
+        { value: 'up' },
+      ],
+      default: 'on the rocks',
+    }),
+  },
+});
+
+const cocktailSentence = sentence(cocktailPalette)
+  .clause('order', builder()
+    .text("I want")
+    .a()
+    .chip('mood')
+    .text('drink with')
+    .chip('spirit')
+    .punc()
+    .produces({ mood: 'mood', spirit: 'spirit' })
+  )
+  .line()
+  .clause('method', builder()
+    .optional()
+    .contingentOn('order', () => true)
+    .chip('method')
+    .text('not')
+    .chip('methodInverse', 'method', {
+      display: (ctx) =>
+        (ctx.method as string) === 'stirred' ? 'shaken' : 'stirred',
+    })
+    .punc()
+    .produces({ method: 'method' })
+  )
+  .line()
+  .clause('serve', builder()
+    .optional()
+    .contingentOn('order', () => true)
+    .text('Served')
+    .chip('serve')
+    .period()
+  )
+  .build();
+
 const fontPanels = [
   {
     id: 'bookish',
@@ -523,6 +604,20 @@ export function App() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="demo-section">
+        <div className="demo-section__label">Article &amp; period helpers</div>
+        <p className="demo-section__desc">
+          Uses <code>.a()</code> for dynamic &ldquo;a&rdquo;/&ldquo;an&rdquo; and <code>.period()</code> for
+          sentence-terminal punctuation. Try changing the mood to
+          &ldquo;elegant&rdquo; and watch the article switch to &ldquo;an&rdquo;.
+        </p>
+        <div className="demo-font-panel">
+          <div className="demo-font-panel__sentence">
+            <Chipper sentence={cocktailSentence} />
+          </div>
+        </div>
       </section>
 
       <section className="demo-section">
