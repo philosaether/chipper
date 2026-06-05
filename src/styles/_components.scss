@@ -157,13 +157,13 @@
 
   &:hover {
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    background: var(--chip-trigger-color-bg, var(--chipper-accent-glow));
+    background: var(--chip-trigger-color-hover, var(--chipper-accent-glow));
     color: var(--chip-trigger-color-text, var(--chipper-accent));
   }
 
   &--active {
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
-    background: var(--chip-trigger-color-bg, var(--chipper-accent-glow));
+    background: var(--chip-trigger-color-hover, var(--chipper-accent-glow));
     color: var(--chip-trigger-color-text, var(--chipper-accent));
   }
 
@@ -250,6 +250,7 @@
 
   &:hover:not(:disabled) {
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    background: var(--chip-trigger-color-hover, var(--chipper-bg-tertiary));
   }
 
   &:disabled {
@@ -405,6 +406,7 @@
 
   &:hover {
     border-color: var(--chip-trigger-color-text, var(--chipper-accent));
+    background: var(--chip-trigger-color-hover, var(--chipper-bg-tertiary));
   }
 
   &--selected {
@@ -434,6 +436,7 @@
   &:hover {
     color: var(--chip-trigger-color-text, var(--chipper-text-primary));
     border-color: var(--chip-trigger-color-text, var(--chipper-border));
+    background: var(--chip-trigger-color-hover, var(--chipper-bg-tertiary));
   }
 }
 
@@ -449,7 +452,7 @@
 
   &:hover,
   &.chipper-popup-option--active {
-    background: transparent;
+    background: var(--chip-trigger-color-hover, var(--chipper-bg-tertiary));
     border-color: var(--chip-trigger-color-text, var(--chipper-border));
     color: var(--chip-trigger-color-text, var(--chipper-text-primary));
   }
