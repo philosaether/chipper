@@ -1,7 +1,7 @@
 {
   "name": "@philosaether/chipper",
-  "version": "0.1.0",
-  "description": "Plain-English editing interfaces for complex configuration",
+  "version": "0.1.1",
+  "description": "Plain-English input for complex configuration",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
