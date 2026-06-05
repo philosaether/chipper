@@ -118,6 +118,8 @@ export interface ClauseBuilder {
   placeholder(text: string): ClauseBuilder;
   chip(id: string, domainName?: string | ChipOptions, options?: ChipOptions): ClauseBuilder;
   punc(options?: PuncOptions): ClauseBuilder;
+  a(): ClauseBuilder;
+  period(options?: { present?: (context: SentenceContext) => boolean }): ClauseBuilder;
   contingentOn(superclauseId: string, config: Omit<ContingencyConfig, 'superclauseId'> | ((context: SentenceContext) => boolean)): ClauseBuilder;
   produces(chipIdOrMapping: string | Record<string, string>): ClauseBuilder;
   _build(id: string): ClauseDefinition;
@@ -177,6 +179,26 @@ export function builder(): ClauseBuilder {
         type: 'text',
         value: '__punctuation_sentinel__',
         __punctuation: { config: options },
+      } as ClauseSegment);
+      return clauseBuilder;
+    },
+    a() {
+      // Push a sentinel — sentence().build() replaces it with a resolver
+      // that reads the next chip's displayValue and returns "a" or "an".
+      segments.push({
+        type: 'text',
+        value: '__article_sentinel__',
+        __article: true,
+      } as ClauseSegment);
+      return clauseBuilder;
+    },
+    period(options?: { present?: (context: SentenceContext) => boolean }) {
+      // Push a sentinel — sentence().build() uses it as a punc boundary
+      // and replaces it with a resolver that returns ".".
+      segments.push({
+        type: 'text',
+        value: '__period_sentinel__',
+        __period: { config: options },
       } as ClauseSegment);
       return clauseBuilder;
     },
@@ -350,21 +372,39 @@ export function sentence(palette?: Palette): SentenceBuilder {
         deserializer: deserializerFn,
       };
 
-      // Post-build pass: replace punctuation sentinels with bound resolvers
-      // Precompute clause lookup + ordering once for all punc resolvers
+      // Post-build pass: replace sentinels with bound resolvers.
+      // Precompute clause lookup + ordering once for all resolvers.
       const clauseByIdMap = new Map(definition.clauses.map((c) => [c.id, c]));
       const allClauseIds = definition.lines
         ? definition.lines.flatMap(l => l.clauseIds)
         : definition.clauses.map(c => c.id);
 
+      // First pass: find period boundaries so punc knows where to stop.
+      // Map clause ID → true if clause contains a period sentinel.
+      const periodClauseIds = new Set<string>();
+      for (const clauseDef of definition.clauses) {
+        for (const segment of clauseDef.segments) {
+          if ((segment as unknown as Record<string, unknown>).__period) {
+            periodClauseIds.add(clauseDef.id);
+          }
+        }
+      }
+
       for (const clauseDef of definition.clauses) {
         for (let i = 0; i < clauseDef.segments.length; i++) {
           const segment = clauseDef.segments[i] as unknown as Record<string, unknown>;
+
+          // Punctuation sentinel → bound resolver
           if (segment.__punctuation) {
             const { config } = segment.__punctuation as { config?: PuncOptions };
             const clauseId = clauseDef.id;
             const idx = allClauseIds.indexOf(clauseId);
-            const subsequentIds = allClauseIds.slice(idx + 1);
+            // Subsequent IDs stop at the next period boundary
+            const rawSubsequentIds = allClauseIds.slice(idx + 1);
+            const periodBoundaryIdx = rawSubsequentIds.findIndex(id => periodClauseIds.has(id));
+            const subsequentIds = periodBoundaryIdx >= 0
+              ? rawSubsequentIds.slice(0, periodBoundaryIdx + 1)
+              : rawSubsequentIds;
             clauseDef.segments[i] = {
               type: 'text',
               value: config?.display
@@ -375,6 +415,42 @@ export function sentence(palette?: Palette): SentenceBuilder {
                     return config.display!(context);
                   }
                 : (state: SentenceState) => resolveDefaultPunctuation(clauseId, subsequentIds, state),
+              present: config?.present,
+            };
+          }
+
+          // Article sentinel → bound resolver reading next chip's displayValue
+          if (segment.__article) {
+            const nextChipSegment = clauseDef.segments.slice(i + 1).find(s => s.type === 'chip');
+            if (!nextChipSegment || nextChipSegment.type !== 'chip') {
+              throw new Error(`.a() in clause "${clauseDef.id}" has no subsequent chip segment`);
+            }
+            const nextChipId = nextChipSegment.chipId;
+            const clauseId = clauseDef.id;
+            clauseDef.segments[i] = {
+              type: 'text',
+              value: (state: SentenceState) => {
+                const chipState = state.clauses[clauseId]?.chips[nextChipId];
+                if (!chipState) return 'a';
+                const display = chipState.displayValue;
+                if (!display) return 'a';
+                const firstChar = display[0]!.toLowerCase();
+                return 'aeiou'.includes(firstChar) ? 'an' : 'a';
+              },
+            };
+          }
+
+          // Period sentinel → bound resolver
+          if (segment.__period) {
+            const { config } = segment.__period as { config?: { present?: (context: SentenceContext) => boolean } };
+            const clauseId = clauseDef.id;
+            clauseDef.segments[i] = {
+              type: 'text',
+              value: (state: SentenceState) => {
+                const cs = state.clauses[clauseId];
+                if (!cs?.present || !cs?.active) return '';
+                return '.';
+              },
               present: config?.present,
             };
           }
