@@ -434,7 +434,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 if (!chipState) return 'a';
                 const display = chipState.displayValue;
                 if (!display) return 'a';
-                const firstChar = display[0]!.toLowerCase();
+                const firstChar = display[0]?.toLowerCase() ?? '';
                 return 'aeiou'.includes(firstChar) ? 'an' : 'a';
               },
             };

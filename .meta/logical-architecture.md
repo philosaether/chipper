@@ -86,6 +86,10 @@ builder/
 ├── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
 │                           contingentOn() accepts bare lambda as presence shorthand.
 │                           punc() adds context-aware punctuation via sentinel + post-build binding.
+│                           a() indefinite article helper: reads next chip's displayValue,
+│                           renders "a" or "an" based on first character.
+│                           period() sentence-terminal punctuation: boundary marker for punc(),
+│                           always renders "." when owning clause is active.
 │                           resolveDefaultPunctuation() implements default comma/period logic.
 │                           PuncOptions type for custom display/present.
 └── predicates.ts         — isNumeric(), isOneOf(). Predicate factories for present/contingentOn/punc.
@@ -103,9 +107,12 @@ components/
 ├── Clause.tsx            — Three modes: latent (hidden), dormant (muted italic plain text),
 │                           active (interactive chips with × toggle). Resolves function-valued
 │                           text segments (punctuation) at render time; skips them in dormant mode.
-├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable
+├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable.
+│                           Arrow indicator (▸/▾) on interactive chips. Display chips without
+│                           info popup render as non-interactive spans.
 ├── ChipPopup.tsx         — Popup container: Escape, outside-click, archetype routing
-├── ChipInfoPopup.tsx     — Read-only info popup for display chips (click-to-reveal provenance)
+├── ChipInfoPopup.tsx     — Read-only info popup for display chips (click-to-reveal provenance).
+│                           Accepts ReactNode content for rich markup.
 ├── popups/
 │   ├── KeywordGroupList.tsx — Shared rendering for grouped keywords: labels, prefixes, flow/grid layout.
 │   │                          Used by KOE, multi-select, and alt-coordinate popups.
