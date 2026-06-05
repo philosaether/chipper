@@ -5,10 +5,11 @@
  * renders a simple text block instead of domain-specific input UI.
  */
 
+import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
 export interface ChipInfoPopupProps {
-  content: string;
+  content: ReactNode;
   onClose: () => void;
 }
 

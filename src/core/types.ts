@@ -8,6 +8,8 @@
  * Runtime state is defined in state.ts.
  */
 
+import type { ReactNode } from 'react';
+
 // ---------------------------------------------------------------------------
 // Domains
 // ---------------------------------------------------------------------------
@@ -161,8 +163,8 @@ export type DisplaySource<T = unknown> =
 /** Configuration for a display chip's info popup. */
 export interface DisplayConfig<T = unknown> {
   source: DisplaySource<T>;
-  /** Content shown in info popup. Omit for no popup. */
-  info?: string | ((value: T, state: import('./state').SentenceState) => string);
+  /** Content shown in info popup. Omit for no popup. Accepts ReactNode for rich content. */
+  info?: ReactNode | ((value: T, state: import('./state').SentenceState) => ReactNode);
 }
 
 export type ChipMode =

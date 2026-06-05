@@ -94,8 +94,8 @@ export function chip(
 export interface ChipOptions {
   /** Make this a display chip. Accepts a value, function, or source config. */
   display?: DisplayShorthand;
-  /** Info popup content for display chips. */
-  info?: string | ((value: unknown, state: import('../core/state').SentenceState) => string);
+  /** Info popup content for display chips. Accepts ReactNode for rich content. */
+  info?: import('react').ReactNode | ((value: unknown, state: import('../core/state').SentenceState) => import('react').ReactNode);
   /** Legacy mode key — prefer `display` for non-interactive chips. */
   mode?: ChipMode;
   present?: (context: SentenceContext) => boolean;
