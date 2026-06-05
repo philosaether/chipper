@@ -66,6 +66,21 @@
   cursor: pointer;
 }
 
+.chipper-chip-trigger__arrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.25rem;
+  border-top: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid transparent;
+  border-left: 0.3rem solid currentColor;
+  transition: transform 0.2s ease;
+
+  .chipper-chip-trigger--expanded & {
+    transform: rotate(90deg);
+  }
+}
+
 .chipper-chip-trigger--display {
   cursor: default;
 }

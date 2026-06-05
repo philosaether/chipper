@@ -116,6 +116,7 @@ export function Chip({ clauseId, chipId }: ChipProps) {
           <span className="chipper-chip-trigger__text">
             {displayValue}
           </span>
+          {isInteractive && <span className="chipper-chip-trigger__arrow" aria-hidden="true" />}
         </button>
       ) : (
         <span className={triggerClasses}>

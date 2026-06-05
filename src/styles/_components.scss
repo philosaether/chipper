@@ -76,6 +76,11 @@
     &:hover {
       background: var(--chip-trigger-color-bg, var(--chipper-bg-secondary));
     }
+
+    &:focus-visible {
+      box-shadow: none;
+      border-color: transparent;
+    }
   }
 
   &--loading {
