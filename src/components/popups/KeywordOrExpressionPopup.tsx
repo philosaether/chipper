@@ -238,7 +238,7 @@ export function KeywordOrExpressionPopup({
                 } else {
                   handleSubmit();
                 }
-              } else {
+              } else if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Escape'].includes(e.key)) {
                 keyboard.handleKeyDown(e);
               }
             }}
