@@ -29,8 +29,8 @@ export interface ExpressionTrigger {
 
 /** Expression mode configuration for the text input. */
 export interface ExpressionConfig {
-  /** Input type — 'text', 'number' (stepper UI), or 'date' (calendar picker). Required. */
-  inputType: 'text' | 'number' | 'date';
+  /** Input type — 'text', 'number' (stepper UI), 'date' (calendar picker), or 'textarea' (multiline). Required. */
+  inputType: 'text' | 'number' | 'date' | 'textarea';
 
   /** Placeholder text for the input field */
   placeholder?: string;

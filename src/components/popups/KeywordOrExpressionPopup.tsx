@@ -59,6 +59,7 @@ export function KeywordOrExpressionPopup({
 
   const isNumeric = expressionMode?.inputType === 'number';
   const isDate = expressionMode?.inputType === 'date';
+  const isTextarea = expressionMode?.inputType === 'textarea';
   const [inputValue, setInputValue] = useState(
     // No expression visible → no input state needed.
     // Numeric/date inputs always initialize with the current value.
@@ -204,6 +205,23 @@ export function KeywordOrExpressionPopup({
                 onClose();
               }
             }}
+            autoFocus={keywords.length === 0}
+          />
+        ) : isTextarea ? (
+          <textarea
+            className="chipper-koe-popup__input chipper-koe-popup__input--textarea"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              // Ctrl/Cmd+Enter submits; plain Enter inserts newline
+              if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            placeholder={expressionMode!.label}
+            maxLength={maxLength}
+            rows={3}
             autoFocus={keywords.length === 0}
           />
         ) : (

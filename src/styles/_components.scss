@@ -199,6 +199,11 @@
   &::placeholder {
     color: var(--chipper-text-muted);
   }
+
+  &--textarea {
+    resize: vertical;
+    min-height: 4rem;
+  }
 }
 
 .chipper-koe-popup__separator {

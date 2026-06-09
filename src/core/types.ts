@@ -52,8 +52,8 @@ export interface ExpressionMode<T = any> {
   /** Maximum character length for text input (omit for unlimited) */
   maxLength?: number;
 
-  /** Input type — 'text' (default), 'number' (stepper UI), or 'date' (calendar picker) */
-  inputType?: 'text' | 'number' | 'date';
+  /** Input type — 'text' (default), 'number' (stepper UI), 'date' (calendar picker), or 'textarea' (multiline) */
+  inputType?: 'text' | 'number' | 'date' | 'textarea';
 
   /** Minimum value (number inputs only) */
   min?: number;
