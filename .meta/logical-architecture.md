@@ -57,10 +57,11 @@ domains/
 │                                 normalizeKeywords() (flat), normalizeKeywordGroups() (grouped + flat).
 │                                 buildDisplayMap(), resolveDefault(), isKeywordGroup().
 ├── facades.ts                 — Sugar factories: textDomain, numberDomain, dateDomain, keywordDomain
-│                                 All delegate to keywordOrExpressionDomain
+│                                 All delegate to keywordOrExpressionDomain.
+│                                 textDomain accepts multiline?: boolean for textarea rendering.
 ├── keyword-or-expression.ts   — keywordOrExpressionDomain() + expressionDomain() alias: keywords + text input
 │                                 Expression helpers: textExpression(), numericExpression(), dateExpression()
-│                                 inputType: 'text' | 'number' | 'date'
+│                                 inputType: 'text' | 'number' | 'date' | 'textarea'
 ├── multi-select.ts            — multiSelectDomain(): toggle grid, Domain<string[]>, group keyword shortcuts
 ├── alternative-coordinate.ts  — alternativeCoordinateDomain(): tabbed modes with slots, compose/decompose
 │                                 ResolvedAlternativeCoordinateMode, ResolvedModeSlot for normalized slot keywords.
@@ -85,6 +86,8 @@ Sentence builder API. Imperative composition of clauses from palette domains.
 builder/
 ├── index.ts              — sentence(), builder(), chip(), repeating(). Builder pattern returning SentenceDefinition.
 │                           contingentOn() accepts bare lambda as presence shorthand.
+│                           text() accepts optional display callback for context-dependent text
+│                           (same sentinel + post-build binding as punc/article).
 │                           punc() adds context-aware punctuation via sentinel + post-build binding.
 │                           a() indefinite article helper: reads next chip's displayValue,
 │                           renders "a" or "an" based on first character.
@@ -103,10 +106,12 @@ React components. Depend on hooks for state access.
 components/
 ├── Chipper.tsx           — Auto-render entry point: wraps SentenceProvider + Sentence
 ├── Sentence.tsx          — Renders clauses grouped by LineDefinition. Auto-indents lines
-│                           where all clauses are optional or contingent.
+│                           where all clauses are optional or contingent. Collapses lines
+│                           where all clauses are latent (contingent + not present).
 ├── Clause.tsx            — Three modes: latent (hidden), dormant (muted italic plain text),
 │                           active (interactive chips with × toggle). Resolves function-valued
-│                           text segments (punctuation) at render time; skips them in dormant mode.
+│                           text segments at render time in both dormant and active modes.
+│                           Dormant row is fully clickable to activate; active × is sole deactivation target.
 ├── Chip.tsx              — Trigger button + popup mount point, per-domain color via CSS variable.
 │                           Arrow indicator (▸/▾) on interactive chips. Display chips without
 │                           info popup render as non-interactive spans.
@@ -116,7 +121,7 @@ components/
 ├── popups/
 │   ├── KeywordGroupList.tsx — Shared rendering for grouped keywords: labels, prefixes, flow/grid layout.
 │   │                          Used by KOE, multi-select, and alt-coordinate popups.
-│   ├── KeywordOrExpressionPopup.tsx — Keywords + text input for koe domains (also handles keywords-only)
+│   ├── KeywordOrExpressionPopup.tsx — Keywords + text/textarea input for koe domains (also handles keywords-only)
 │   ├── MultiSelectPopup.tsx — Toggle grid for multi-select domains (stays open)
 │   ├── AlternativeCoordinatePopup.tsx — Tabbed popup with slot-based selection
 │   └── ReferencePopup.tsx — Tree navigation + search for reference domains

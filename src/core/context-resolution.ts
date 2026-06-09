@@ -9,7 +9,7 @@
  * contingency-engine.md §3 (Context Propagation).
  */
 
-import type { SentenceContext, SentenceDefinition, ClauseDefinition } from './types';
+import type { SentenceContext, ClauseDefinition } from './types';
 import type { ChipState, ClauseState, ContextScope } from './state';
 import type { SentenceStore } from './store';
 import { computeClauseValidity, computeDisplayValue, computeSentenceValidity, buildContextFromChips, evaluateVisibleChips } from './initialize';

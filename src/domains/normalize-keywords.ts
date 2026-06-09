@@ -139,7 +139,7 @@ export function buildDisplayMap<T>(keywords: Keyword<T>[]): Map<T, string> {
  */
 export function resolveDefault<T>(
   config: { default?: T; defaultValue?: T; placeholder?: string },
-  keywords: Keyword<unknown>[],
+  _keywords: Keyword<unknown>[],
   firstKeywordValue: T | undefined,
   fallbackEmpty: T,
 ): T {

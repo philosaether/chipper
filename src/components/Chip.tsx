@@ -26,7 +26,7 @@ export interface ChipProps {
 export function Chip({ clauseId, chipId }: ChipProps) {
   const { displayValue, valid, domain, chipDefinition, value, expressionMode, loading, error, setValue } =
     useChip(clauseId, chipId);
-  const { definition, state, clauseById, dispatch } = useSentence();
+  const { state, clauseById, dispatch } = useSentence();
   const { open, close, isOpen } = usePopup();
   useReferenceDisplay(domain, value, clauseId, chipId, dispatch);
   useDisplaySource(chipDefinition, clauseId, state, clauseById, dispatch);

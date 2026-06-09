@@ -20,7 +20,7 @@ import type {
   SentenceDefinition,
 } from '../core/types';
 import type { SentenceState } from '../core/state';
-import { buildClauseContext as buildPuncContext } from '../core/context-resolution';
+import { buildClauseContext } from '../core/context-resolution';
 import { chipperPalette } from '../palette';
 
 // ---------------------------------------------------------------------------
@@ -102,6 +102,8 @@ export interface ChipOptions {
 }
 
 export interface TextOptions {
+  /** Dynamic text content based on sentence context. When provided, overrides the static string. */
+  display?: (context: SentenceContext) => string;
   present?: (context: SentenceContext) => boolean;
 }
 
@@ -149,7 +151,17 @@ export function builder(): ClauseBuilder {
       return clauseBuilder;
     },
     text(value: string, options?: TextOptions) {
-      segments.push({ type: 'text', value, present: options?.present });
+      if (options?.display) {
+        // Push sentinel — post-build pass binds context resolution
+        segments.push({
+          type: 'text',
+          value,
+          present: options.present,
+          __textDisplay: options.display,
+        } as ClauseSegment);
+      } else {
+        segments.push({ type: 'text', value, present: options?.present });
+      }
       return clauseBuilder;
     },
     leads(_first: string, _rest: string) {
@@ -411,7 +423,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 ? (state: SentenceState) => {
                     const cs = state.clauses[clauseId];
                     if (!cs?.present || !cs?.active) return '';
-                    const context = buildPuncContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
+                    const context = buildClauseContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
                     return config.display!(context);
                   }
                 : (state: SentenceState) => resolveDefaultPunctuation(clauseId, subsequentIds, state),
@@ -437,6 +449,22 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 const firstChar = display[0]?.toLowerCase() ?? '';
                 return 'aeiou'.includes(firstChar) ? 'an' : 'a';
               },
+            };
+          }
+
+          // Text display sentinel → bound resolver
+          if (segment.__textDisplay) {
+            const displayFn = segment.__textDisplay as (context: SentenceContext) => string;
+            const clauseId = clauseDef.id;
+            clauseDef.segments[i] = {
+              type: 'text',
+              value: (state: SentenceState) => {
+                const cs = state.clauses[clauseId];
+                if (!cs) return segment.value as string;
+                const context = buildClauseContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
+                return displayFn(context);
+              },
+              present: (segment as unknown as { present?: (context: SentenceContext) => boolean }).present,
             };
           }
 

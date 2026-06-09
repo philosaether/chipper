@@ -31,6 +31,8 @@ export interface TextDomainConfig {
   default?: string;
   /** Character limit (default 140) */
   maxLength?: number;
+  /** Render a textarea instead of a single-line input */
+  multiline?: boolean;
   /** Custom validation beyond non-empty */
   validate?: (value: string) => boolean;
   /** Format value for chip trigger display */
@@ -56,11 +58,9 @@ export function textDomain(config: TextDomainConfig): Domain<string> {
     placeholder: config.placeholder,
     default: config.default,
     keywords: config.keywords,
-    expression: textExpression({
-      maxLength: config.maxLength ?? 140,
-      validate: config.validate,
-      display: config.display,
-    }),
+    expression: config.multiline
+      ? { inputType: 'textarea' as const, placeholder: config.placeholder, maxLength: config.maxLength ?? 140, validate: config.validate, display: config.display }
+      : textExpression({ maxLength: config.maxLength ?? 140, validate: config.validate, display: config.display }),
   });
 }
 

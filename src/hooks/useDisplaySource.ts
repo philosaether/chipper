@@ -8,7 +8,7 @@
  * - external: subscribes to consumer-managed data stream
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ChipDefinition, ClauseDefinition } from '../core/types';
 import type { SentenceState } from '../core/state';
 import type { SentenceAction } from '../core/reducer';

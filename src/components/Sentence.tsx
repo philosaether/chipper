@@ -14,6 +14,7 @@
 
 import { useSentence } from '../hooks/useSentence';
 import type { ClauseDefinition, LineDefinition } from '../core/types';
+import type { SentenceState } from '../core/state';
 import { Clause } from './Clause';
 
 /**
@@ -39,10 +40,32 @@ function shouldIndent(
   return allNonRequired && hasOptional;
 }
 
+/**
+ * Returns true when every clause on a line is contingent and not present
+ * (latent). A latent line should not render at all — its empty wrapper
+ * would otherwise consume flex gap space.
+ */
+function isLineLatent(
+  line: LineDefinition,
+  clausesByIds: Map<string, ClauseDefinition>,
+  state: SentenceState,
+): boolean {
+  return line.clauseIds.every((id) => {
+    const clauseDef = clausesByIds.get(id);
+    if (!clauseDef) return true;
+    if (!clauseDef.contingency) return false;
+    return !state.clauses[id]?.present;
+  });
+}
+
 function Line({ line, clausesByIds }: {
   line: LineDefinition;
   clausesByIds: Map<string, ClauseDefinition>;
 }) {
+  const { state } = useSentence();
+
+  if (isLineLatent(line, clausesByIds, state)) return null;
+
   const indent = shouldIndent(line, clausesByIds);
   const className = indent
     ? 'chipper-line chipper-line--indent'

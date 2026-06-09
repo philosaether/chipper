@@ -19,6 +19,9 @@ import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { NumericInput } from './NumericInput';
 import { KeywordGroupList } from './KeywordGroupList';
 
+/** Keys forwarded from text/textarea inputs to keyboard navigation. */
+const TEXT_INPUT_NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape']);
+
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
   keywordGroups?: NormalizedKeywordGroup<string>[];
@@ -59,6 +62,7 @@ export function KeywordOrExpressionPopup({
 
   const isNumeric = expressionMode?.inputType === 'number';
   const isDate = expressionMode?.inputType === 'date';
+  const isTextarea = expressionMode?.inputType === 'textarea';
   const [inputValue, setInputValue] = useState(
     // No expression visible → no input state needed.
     // Numeric/date inputs always initialize with the current value.
@@ -206,12 +210,31 @@ export function KeywordOrExpressionPopup({
             }}
             autoFocus={keywords.length === 0}
           />
+        ) : isTextarea ? (
+          <textarea
+            className="chipper-koe-popup__input chipper-koe-popup__input--textarea"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onFocus={() => keyboard.setActiveIndex(-1)}
+            onKeyDown={(e) => {
+              // Ctrl/Cmd+Enter submits; plain Enter inserts newline
+              if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            placeholder={expressionMode!.label}
+            maxLength={maxLength}
+            rows={3}
+            autoFocus={keywords.length === 0}
+          />
         ) : (
           <input
             type="text"
             className="chipper-koe-popup__input"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            onFocus={() => keyboard.setActiveIndex(-1)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 // Highlighted keyword takes priority over input submission
@@ -220,7 +243,7 @@ export function KeywordOrExpressionPopup({
                 } else {
                   handleSubmit();
                 }
-              } else {
+              } else if (TEXT_INPUT_NAV_KEYS.has(e.key)) {
                 keyboard.handleKeyDown(e);
               }
             }}
