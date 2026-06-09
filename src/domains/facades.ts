@@ -59,7 +59,7 @@ export function textDomain(config: TextDomainConfig): Domain<string> {
     default: config.default,
     keywords: config.keywords,
     expression: config.multiline
-      ? { inputType: 'textarea' as const, maxLength: config.maxLength ?? 140, validate: config.validate, display: config.display }
+      ? { inputType: 'textarea' as const, placeholder: config.placeholder, maxLength: config.maxLength ?? 140, validate: config.validate, display: config.display }
       : textExpression({ maxLength: config.maxLength ?? 140, validate: config.validate, display: config.display }),
   });
 }
