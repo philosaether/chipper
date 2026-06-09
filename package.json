@@ -1,6 +1,6 @@
 {
   "name": "@philosaether/chipper",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plain-English input for complex configuration",
   "type": "module",
   "main": "./dist/index.js",
