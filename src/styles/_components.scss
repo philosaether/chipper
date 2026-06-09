@@ -28,6 +28,10 @@
   }
 }
 
+.chipper-clause--dormant {
+  cursor: pointer;
+}
+
 .chipper-clause--dormant .chipper-clause__text {
   color: var(--chipper-text-muted);
   font-style: italic;

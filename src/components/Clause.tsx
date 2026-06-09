@@ -31,15 +31,17 @@ export function Clause({ clauseId }: ClauseProps) {
   // Optional clause that is not active: show toggle + segments as plain text
   if (clauseDef.necessity === 'optional' && !clauseState?.active) {
     return (
-      <div className="chipper-clause chipper-clause--dormant">
-        <button
-          type="button"
-          className="chipper-clause__toggle"
-          aria-label="activate clause"
-          onClick={() => dispatch({ type: 'TOGGLE_CLAUSE', clauseId })}
-        >
+      <div
+        className="chipper-clause chipper-clause--dormant"
+        onClick={() => dispatch({ type: 'TOGGLE_CLAUSE', clauseId })}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dispatch({ type: 'TOGGLE_CLAUSE', clauseId }); } }}
+        role="button"
+        tabIndex={0}
+        aria-label="activate clause"
+      >
+        <span className="chipper-clause__toggle" aria-hidden="true">
           ↳
-        </button>
+        </span>
         {clauseDef.segments.map((segment, index) => {
           if (segment.type === 'text') {
             const textValue = typeof segment.value === 'function'
