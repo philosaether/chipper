@@ -20,7 +20,7 @@ import type {
   SentenceDefinition,
 } from '../core/types';
 import type { SentenceState } from '../core/state';
-import { buildClauseContext as buildPuncContext } from '../core/context-resolution';
+import { buildClauseContext } from '../core/context-resolution';
 import { chipperPalette } from '../palette';
 
 // ---------------------------------------------------------------------------
@@ -423,7 +423,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 ? (state: SentenceState) => {
                     const cs = state.clauses[clauseId];
                     if (!cs?.present || !cs?.active) return '';
-                    const context = buildPuncContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
+                    const context = buildClauseContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
                     return config.display!(context);
                   }
                 : (state: SentenceState) => resolveDefaultPunctuation(clauseId, subsequentIds, state),
@@ -461,7 +461,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
               value: (state: SentenceState) => {
                 const cs = state.clauses[clauseId];
                 if (!cs) return segment.value as string;
-                const context = buildPuncContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
+                const context = buildClauseContext(clauseId, clauseDef, cs.chips, clauseByIdMap, state.contexts);
                 return displayFn(context);
               },
               present: (segment as unknown as { present?: (context: SentenceContext) => boolean }).present,

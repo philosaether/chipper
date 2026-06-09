@@ -19,6 +19,9 @@ import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { NumericInput } from './NumericInput';
 import { KeywordGroupList } from './KeywordGroupList';
 
+/** Keys forwarded from text/textarea inputs to keyboard navigation. */
+const TEXT_INPUT_NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape']);
+
 export interface KeywordOrExpressionPopupProps {
   keywords: Keyword<string>[];
   keywordGroups?: NormalizedKeywordGroup<string>[];
@@ -240,7 +243,7 @@ export function KeywordOrExpressionPopup({
                 } else {
                   handleSubmit();
                 }
-              } else if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Escape'].includes(e.key)) {
+              } else if (TEXT_INPUT_NAV_KEYS.has(e.key)) {
                 keyboard.handleKeyDown(e);
               }
             }}
