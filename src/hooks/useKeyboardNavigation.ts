@@ -28,6 +28,13 @@ export interface KeyboardNavigationOptions {
 export interface KeyboardNavigationResult {
   /** Currently highlighted option index (-1 = none) */
   activeIndex: number;
+  /**
+   * How the current highlight was set. Consumers that mix an option list
+   * with a text input (KOE) use this to let hover highlights lose to
+   * typed-text submission on Enter — only arrow-key highlights signal
+   * "I mean that option."
+   */
+  activeSource: 'init' | 'keyboard' | 'mouse';
   /** Set active index imperatively (e.g., on mouse hover) */
   setActiveIndex: (index: number) => void;
   /** Attach to the popup container's onKeyDown */
@@ -53,7 +60,13 @@ export function useKeyboardNavigation({
   closeOnSelect = true,
   idPrefix = 'chipper-option',
 }: KeyboardNavigationOptions): KeyboardNavigationResult {
-  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [activeIndex, setActiveIndexState] = useState(initialIndex);
+  const [activeSource, setActiveSource] = useState<'init' | 'keyboard' | 'mouse'>('init');
+
+  const setActiveIndex = useCallback((index: number) => {
+    setActiveIndexState(index);
+    setActiveSource('init');
+  }, []);
 
   // Clamp activeIndex when itemCount shrinks (e.g., drill in reference,
   // trigger pill toggle in KOE, search results update)
@@ -78,27 +91,31 @@ export function useKeyboardNavigation({
         case 'ArrowDown':
         case 'ArrowRight': {
           event.preventDefault();
-          setActiveIndex((prev) =>
+          setActiveIndexState((prev) =>
             prev < itemCount - 1 ? prev + 1 : 0,
           );
+          setActiveSource('keyboard');
           break;
         }
         case 'ArrowUp':
         case 'ArrowLeft': {
           event.preventDefault();
-          setActiveIndex((prev) =>
+          setActiveIndexState((prev) =>
             prev > 0 ? prev - 1 : itemCount - 1,
           );
+          setActiveSource('keyboard');
           break;
         }
         case 'Home': {
           event.preventDefault();
-          setActiveIndex(0);
+          setActiveIndexState(0);
+          setActiveSource('keyboard');
           break;
         }
         case 'End': {
           event.preventDefault();
-          setActiveIndex(itemCount - 1);
+          setActiveIndexState(itemCount - 1);
+          setActiveSource('keyboard');
           break;
         }
         case 'Enter': {
@@ -136,7 +153,10 @@ export function useKeyboardNavigation({
         'chipper-popup-option',
         index === activeIndex && 'chipper-popup-option--active',
       ].filter(Boolean).join(' '),
-      onMouseEnter: () => setActiveIndex(index),
+      onMouseEnter: () => {
+        setActiveIndexState(index);
+        setActiveSource('mouse');
+      },
       onClick: () => {
         onSelect(index);
         if (closeOnSelect) onClose();
@@ -150,6 +170,7 @@ export function useKeyboardNavigation({
 
   return {
     activeIndex,
+    activeSource,
     setActiveIndex,
     handleKeyDown,
     getOptionProps,

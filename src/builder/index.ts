@@ -21,6 +21,7 @@ import type {
 } from '../core/types';
 import type { SentenceState } from '../core/state';
 import { buildClauseContext } from '../core/context-resolution';
+import { chooseIndefiniteArticle } from './indefinite-article';
 import { chipperPalette } from '../palette';
 
 // ---------------------------------------------------------------------------
@@ -446,8 +447,7 @@ export function sentence(palette?: Palette): SentenceBuilder {
                 if (!chipState) return 'a';
                 const display = chipState.displayValue;
                 if (!display) return 'a';
-                const firstChar = display[0]?.toLowerCase() ?? '';
-                return 'aeiou'.includes(firstChar) ? 'an' : 'a';
+                return chooseIndefiniteArticle(display);
               },
             };
           }

@@ -110,7 +110,19 @@ export function normalizeKeywordGroups<T>(
       layout: group.layout ?? 'flow',
       columns: group.columns,
       prefix: group.prefix,
-      keywords: normalizeKeywords(group.keywords),
+      // A group prefix is part of the selected value's reading ("this" +
+      // "spring" reads "this spring"), so bake it into each keyword's
+      // display for the chip trigger. Explicit per-keyword display wins.
+      keywords: normalizeKeywords(group.keywords).map((keyword) =>
+        group.prefix
+          ? {
+              ...keyword,
+              display:
+                keyword.display ??
+                `${group.prefix} ${typeof keyword.label === 'string' ? keyword.label : String(keyword.value)}`,
+            }
+          : keyword,
+      ),
     });
   }
 

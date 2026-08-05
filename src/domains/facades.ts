@@ -75,7 +75,7 @@ export interface NumberDomainConfig {
   /** Text shown in chip trigger when empty */
   placeholder?: string;
   /** Initial value (defaults to '' → shows placeholder) */
-  default?: string;
+  default?: string | number;
   /** Minimum value */
   min?: number;
   /** Maximum value */
@@ -111,7 +111,7 @@ export function numberDomain(config: NumberDomainConfig): Domain<string> {
   return keywordOrExpressionDomain({
     color: config.color,
     placeholder: config.placeholder,
-    default: config.default,
+    default: config.default === undefined ? undefined : String(config.default),
     keywords: config.keywords,
     expression: numericExpression({
       min: config.min,

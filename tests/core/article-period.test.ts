@@ -190,3 +190,25 @@ describe('period() — sentence-terminal punctuation', () => {
     expect((puncOnly.value as (state: any) => string)(store.state)).toBe(',');
   });
 });
+
+describe('chooseIndefiniteArticle — phonetic exceptions (ENYC bug)', async () => {
+  const { chooseIndefiniteArticle } = await import('../../src/builder/indefinite-article');
+
+  it('vowel letters with consonant sounds take "a"', () => {
+    for (const word of ['unique experience', 'unicorn', 'university', 'used car', 'one-off', 'european tour', 'u-turn']) {
+      expect(chooseIndefiniteArticle(word), word).toBe('a');
+    }
+  });
+
+  it('consonant letters with vowel sounds take "an"', () => {
+    for (const word of ['hour', 'honest mistake', 'honor', 'heirloom', 'herb garden']) {
+      expect(chooseIndefiniteArticle(word), word).toBe('an');
+    }
+  });
+
+  it('regular words keep first-letter behavior', () => {
+    expect(chooseIndefiniteArticle('apple')).toBe('an');
+    expect(chooseIndefiniteArticle('birthday party')).toBe('a');
+    expect(chooseIndefiniteArticle('')).toBe('a');
+  });
+});

@@ -233,12 +233,22 @@ export function KeywordOrExpressionPopup({
             type="text"
             className="chipper-koe-popup__input"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              // Typing is new intent — drop any lingering option highlight.
+              if (keyboard.activeIndex >= 0) keyboard.setActiveIndex(-1);
+            }}
             onFocus={() => keyboard.setActiveIndex(-1)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                // Highlighted keyword takes priority over input submission
-                if (keyboard.activeIndex >= 0 && keyboard.activeIndex < keywords.length) {
+                // Only an arrow-key highlight outranks the typed text —
+                // a hover highlight on Enter would grab a keyword the
+                // mouse happens to be resting on.
+                if (
+                  keyboard.activeSource === 'keyboard' &&
+                  keyboard.activeIndex >= 0 &&
+                  keyboard.activeIndex < keywords.length
+                ) {
                   keyboard.handleKeyDown(e);
                 } else {
                   handleSubmit();
