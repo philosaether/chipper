@@ -118,3 +118,34 @@ describe('KeywordOrExpressionPopup', () => {
     expect(props.onSelect).toHaveBeenCalledWith('14:30');
   });
 });
+
+describe('Enter with mixed highlight sources (ENYC bug: hover grabs keyword)', () => {
+  it('typed text wins over a hover highlight on Enter', () => {
+    const props = renderPopup();
+    // Mouse drifts over a keyword pill on the way to the input...
+    fireEvent.mouseEnter(screen.getByText('morning'));
+    // ...user types into the expression input and hits Enter.
+    const input = screen.getByPlaceholderText('a specific time');
+    fireEvent.change(input, { target: { value: 'brunch time' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(props.onSelect).toHaveBeenCalledWith('brunch time');
+  });
+
+  it('arrow-key highlight still wins over typed text on Enter', () => {
+    const props = renderPopup();
+    const input = screen.getByPlaceholderText('a specific time');
+    fireEvent.change(input, { target: { value: 'brunch time' } });
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(props.onSelect).toHaveBeenCalledWith('09:00');
+  });
+
+  it('typing after arrowing clears the option highlight', () => {
+    const props = renderPopup();
+    const input = screen.getByPlaceholderText('a specific time');
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.change(input, { target: { value: 'brunch time' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(props.onSelect).toHaveBeenCalledWith('brunch time');
+  });
+});

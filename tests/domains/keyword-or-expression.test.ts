@@ -225,3 +225,17 @@ describe('expressionDomain', () => {
     expect(domain.placeholder).toBe('a new task');
   });
 });
+
+describe('numberDomain numeric default (ENYC bug)', async () => {
+  const { numberDomain } = await import('../../src/domains/facades');
+
+  it('accepts a number for default and stores it as string', () => {
+    const domain = numberDomain({ color: 'gold', min: 5, max: 250, default: 15 });
+    expect(domain.defaultValue).toBe('15');
+  });
+
+  it('still accepts a string default', () => {
+    const domain = numberDomain({ color: 'gold', default: '20' });
+    expect(domain.defaultValue).toBe('20');
+  });
+});

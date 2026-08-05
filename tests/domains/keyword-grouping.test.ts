@@ -180,3 +180,29 @@ describe('domain factories with keyword groups', () => {
     expect(domain.validate('42')).toBe(true); // expression value
   });
 });
+
+describe('group prefix in chip display (ENYC bug)', () => {
+  it('bakes the group prefix into keyword display', () => {
+    const { flat } = normalizeKeywordGroups([
+      {
+        prefix: 'this',
+        keywords: [
+          { value: 'spring', label: 'spring' },
+          { value: 'summer', label: 'summer', display: 'summer season' },
+        ],
+      },
+    ]);
+    expect(flat[0]!.display).toBe('this spring');
+    // Explicit per-keyword display wins over prefix composition
+    expect(flat[1]!.display).toBe('summer season');
+  });
+
+  it('leaves ungrouped and unprefixed keywords untouched', () => {
+    const { flat } = normalizeKeywordGroups([
+      { value: 'daily' },
+      { label: 'Weekly', keywords: [{ value: 'weekly' }] },
+    ]);
+    expect(flat[0]!.display).toBeUndefined();
+    expect(flat[1]!.display).toBeUndefined();
+  });
+});
